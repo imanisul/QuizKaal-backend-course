@@ -1,6 +1,10 @@
 import { Code } from "lucide-react";
+import HttpVisualizer from "@/components/lesson1/HttpVisualizer";
+import LifecycleTimeline from "@/components/lesson1/LifecycleTimeline";
 
 export const MdxComponents = {
+  HttpVisualizer,
+  LifecycleTimeline,
   h1: (props) => <h1 className="text-4xl font-extrabold tracking-tight mb-6 mt-10 text-white" {...props} />,
   h2: (props) => <h2 className="text-2xl font-bold tracking-tight mb-4 mt-12 text-white border-b border-white/10 pb-2" {...props} />,
   h3: (props) => <h3 className="text-xl font-bold tracking-tight mb-3 mt-8 text-white" {...props} />,
