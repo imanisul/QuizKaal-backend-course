@@ -345,8 +345,7 @@ export default function RoadmapContent() {
         </div>
 
         <p className="text-textTertiary text-[10px] md:text-[11px] uppercase tracking-widest font-bold mt-4 md:mt-6 text-center">
-          &copy; 2026 Copyright <span className="text-white ml-1">QuizKaal</span>
-          <span className="text-primary ml-1">Learn</span> India. All Rights Reserved.
+          &copy; 2026 Copyright <span className="text-white ml-1">QuizKaal</span>. All Rights Reserved.
         </p>
       </div>
     </main>

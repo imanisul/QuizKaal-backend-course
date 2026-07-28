@@ -342,8 +342,7 @@ export default function Home() {
         </div>
 
         <p className="text-textTertiary text-[11px] uppercase tracking-widest font-bold mt-4">
-          &copy; 2026 Copyright <span className="text-white ml-1">QuizKaal</span>
-          <span className="text-primary ml-1">Learn</span> India. All Rights Reserved.
+          &copy; 2026 Copyright <span className="text-white ml-1">QuizKaal</span>. All Rights Reserved.
         </p>
       </footer>
       </div>
