@@ -76,7 +76,7 @@ export default function Home() {
           </motion.div>
           
           <h1 className="text-[clamp(2.5rem,8vw,5rem)] font-black tracking-tighter leading-[1.05] mb-6 drop-shadow-2xl flex flex-wrap justify-center gap-x-4 gap-y-2">
-            {["Master", "Backend", "Systems", "from", "Zero", "to", "Production"].map((word, i) => (
+            {["QuizKaal", "Backend", "Systems", "from", "Zero", "to", "Production"].map((word, i) => (
               <motion.span
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
@@ -85,7 +85,9 @@ export default function Home() {
                 className={
                   word === "Production"
                     ? "text-gradient-animated drop-shadow-[0_0_15px_rgba(79,70,229,0.3)]"
-                    : "text-white"
+                    : word === "QuizKaal" 
+                      ? "text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent" 
+                      : "text-white"
                 }
               >
                 {word}
@@ -99,7 +101,7 @@ export default function Home() {
             transition={{ delay: 0.4, duration: 0.8 }}
             className="text-lg md:text-xl text-textSecondary max-w-[600px] mb-10 leading-relaxed"
           >
-            Stop copying boilerplate. Learn how HTTP, databases, and servers actually work. Build scalable systems that handle millions of requests.
+            Welcome to <strong className="text-white font-bold">QuizKaal Learn</strong>. Stop copying boilerplate. Learn how HTTP, databases, and servers actually work. Build scalable backend systems that handle millions of requests.
           </motion.p>
           
           <motion.div

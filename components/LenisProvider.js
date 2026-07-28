@@ -4,6 +4,10 @@ import Lenis from "lenis";
 
 export default function LenisProvider({ children }) {
   useEffect(() => {
+    // Check if it's a bot to prevent rendering issues in Google Search Console
+    const isBot = /bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent);
+    if (isBot) return;
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
