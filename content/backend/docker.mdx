@@ -1,264 +1,196 @@
 ---
 title: "Docker Mastery"
-description: "Master Docker from the ground up: Architecture, Image building, Networking, Security, and Production CI/CD Deployments."
+description: "Master Docker from the ground up: Architecture, Image building, Networking, Security, and Production CI/CD Deployments using our interactive simulator."
 phase: "System Design"
 difficulty: "expert"
 ---
 
-## 🐳 What is Docker?
+## 1. Simple Explanation
 
-Docker is an open-source platform that allows developers to package applications and their dependencies into standardized units called **Containers**. 
+**Docker** is a tool that allows you to package your application and all of its dependencies (libraries, runtime, OS tools) into a single, standardized unit called a **Container**. This container can run on any computer—your laptop, a test server, or a cloud server—and it will behave exactly the same way every time.
 
-Before Docker, deploying software was a nightmare. Developers would say, *"It works on my machine!"*, but when the code was pushed to a production server, it would crash because of different OS versions, missing libraries, or conflicting database versions. 
+## 2. Why this technology exists
 
-Docker solves this by wrapping the code, runtime, system tools, and libraries into a single, portable executable. 
+Before Docker, deploying software was a nightmare. A developer would write code on a Mac, test it, and say, *"It works on my machine!"*. But when they pushed it to a Linux production server, the application would crash. Why? Because the production server might have a different version of Node.js, missing environment variables, or a conflicting database version. Docker was created to completely eliminate environmental inconsistencies.
 
-### Docker vs. Virtual Machines (VMs)
+## 3. What problem it solves
 
-While both provide isolation, their architectures are fundamentally different.
+Docker solves the **"Works on my machine"** problem. It ensures that the environment your code runs in is 100% identical across development, testing, staging, and production. It also allows you to run multiple isolated applications on the same server without them interfering with each other.
 
-<div className="overflow-x-auto my-8">
-  <table className="w-full text-sm text-left">
-    <thead className="bg-white/10 text-white">
-      <tr>
-        <th className="px-4 py-3 border border-white/10">Feature</th>
-        <th className="px-4 py-3 border border-white/10 text-primary">Docker Containers</th>
-        <th className="px-4 py-3 border border-white/10">Virtual Machines (VMs)</th>
-      </tr>
-    </thead>
-    <tbody className="text-textSecondary">
-      <tr>
-        <td className="px-4 py-3 border border-white/10 font-bold text-white">Architecture</td>
-        <td className="px-4 py-3 border border-white/10">Shares the Host OS Kernel. Lightweight.</td>
-        <td className="px-4 py-3 border border-white/10">Requires a full Guest OS per VM. Heavyweight.</td>
-      </tr>
-      <tr>
-        <td className="px-4 py-3 border border-white/10 font-bold text-white">Startup Time</td>
-        <td className="px-4 py-3 border border-white/10">Milliseconds (Instant)</td>
-        <td className="px-4 py-3 border border-white/10">Minutes (Booting an OS)</td>
-      </tr>
-      <tr>
-        <td className="px-4 py-3 border border-white/10 font-bold text-white">Resource Usage</td>
-        <td className="px-4 py-3 border border-white/10">Megabytes (Highly efficient)</td>
-        <td className="px-4 py-3 border border-white/10">Gigabytes (Inflexible allocation)</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+## 4. Real-life analogy
+
+Think of the global shipping industry before the invention of the **Shipping Container**. People shipped goods in barrels, sacks, and wooden crates of all different sizes. Loading a ship took weeks because every item required custom handling.
+
+Then, the standardized steel shipping container was invented. Suddenly, it didn't matter if you were shipping cars, clothes, or electronics—they all went into the exact same 20-foot steel box. Cranes, trucks, and ships were all standardized to handle that one box size.
+
+Docker is the shipping container for software. It doesn't matter if you are running a Node.js API, a Python AI model, or a Java backend; Docker packages them all into a standard "container" that can be deployed instantly anywhere in the world.
 
 ---
 
-## 🧠 Docker Internal Working & Architecture
+## 5. Internal working
 
-Docker uses a **Client-Server architecture**. 
+<ArchitectureDiagram 
+  title="Docker Engine Architecture"
+  nodes={[
+    { id: "cli", name: "Docker CLI", icon: "⌨️", type: "Client", description: "The command line interface where you run commands like 'docker build' and 'docker run'." },
+    { id: "daemon", name: "Docker Daemon", icon: "🧠", type: "Server", description: "The background service (dockerd) that listens for API requests and actually creates/manages images and containers." },
+    { id: "containerd", name: "Containerd", icon: "⚙️", type: "Runtime", description: "The industry-standard core container runtime that manages the complete container lifecycle of its host system." },
+    { id: "registry", name: "Docker Registry", icon: "☁️", type: "Cloud Storage", description: "A remote hub (like Docker Hub or AWS ECR) where images are stored and shared." }
+  ]}
+/>
 
-```mermaid
-graph TD
-    subgraph Client
-    CLI[Docker CLI]
-    end
-
-    subgraph Docker_Host["Docker Host (Server)"]
-    Daemon[Docker Daemon - dockerd]
-    Containers[(Containers)]
-    Images[(Images)]
-    Volumes[(Volumes)]
-    Networks[(Networks)]
-    end
-
-    subgraph Registry
-    Hub[Docker Hub / ECR]
-    end
-
-    CLI -- REST API --> Daemon
-    Daemon --> Containers
-    Daemon --> Images
-    Daemon --> Volumes
-    Daemon --> Networks
-    Daemon -- Pull/Push --> Hub
-```
-
-### Core Linux Technologies
-Docker isn't magic; it's a wrapper around powerful Linux kernel features:
-1. **Namespaces:** Provides *Isolation*. It restricts what a container can see (Process IDs, Networks, Mounts). This is why a container thinks it is running on a dedicated machine.
-2. **cGroups (Control Groups):** Provides *Resource Limiting*. It restricts how much CPU, Memory, and Disk I/O a container can use so it doesn't starve the host OS.
-3. **Union File System (UnionFS):** Provides *Layering*. Images are built in layers. If multiple images share the same base layer (like Ubuntu), Docker only stores it once on disk, saving massive amounts of space.
+Docker relies on powerful Linux Kernel features:
+- **Namespaces:** Provides *Isolation* (PID, NET, MNT). It tricks the container into thinking it's running on a dedicated machine.
+- **cGroups (Control Groups):** Provides *Resource Limiting*. It restricts how much CPU and RAM a container can use so it doesn't crash the host.
+- **UnionFS (Union File System):** Provides *Layering*. Images are built in layers to save disk space.
 
 ---
 
-## 📦 The Docker Workflow
+## 6. Animated Workflow
 
-Here is how code travels from your laptop to a running container:
+Watch how your source code transforms into a running application.
 
-1. **Dockerfile**: A plain text file containing instructions to build an image.
-2. **Docker Image**: The built, read-only template containing your code and dependencies.
-3. **Docker Container**: A running instance of a Docker Image.
-4. **Docker Registry**: A remote storage hub (like Docker Hub or AWS ECR) where you upload images to share with servers.
+<AnimatedWorkflow 
+  title="The Docker Build & Run Lifecycle"
+  steps={[
+    { title: "Dockerfile", icon: "📝", description: "You write a simple text file with instructions on how to build your app." },
+    { title: "Docker Build", icon: "🔨", description: "The Docker Daemon reads the Dockerfile and compiles it into an Image." },
+    { title: "Docker Image", icon: "💿", description: "A read-only, static template containing your code and dependencies." },
+    { title: "Docker Run", icon: "🚀", description: "The Daemon takes the Image and spins up a running Container." },
+    { title: "Container", icon: "📦", description: "Your application is now running live in an isolated environment!" }
+  ]}
+/>
 
 ---
 
-## 📜 The Dockerfile Deep Dive
+## 7. Architecture Diagram: Containers vs VMs
 
-A `Dockerfile` is the blueprint. Let's look at every critical instruction:
+<ArchitectureDiagram 
+  title="Containers vs Virtual Machines"
+  nodes={[
+    { id: "vm", name: "Virtual Machine", icon: "🖥️", type: "Heavyweight", description: "Requires a Hypervisor and a full Guest OS (like Windows or Ubuntu) for every single application. Slow to boot, uses Gigabytes of RAM." },
+    { id: "container", name: "Docker Container", icon: "🐳", type: "Lightweight", description: "Shares the Host OS Kernel. No Guest OS required. Boots in milliseconds, uses Megabytes of RAM. Highly efficient." }
+  ]}
+/>
+
+---
+
+## 8. Request Lifecycle
+
+<RequestLifecycle 
+  title="How a Web Request hits a Dockerized App"
+  steps={[
+    { title: "User Request", description: "A user navigates to your website in their browser." },
+    { title: "Host Port Binding", description: "The request hits your server on Port 80 (HTTP). Docker has bound Port 80 on the host machine to Port 3000 inside the container.", code: "docker run -p 80:3000 myapp" },
+    { title: "Docker Bridge Network", description: "The Docker network stack routes the packet from the host interface to the container's isolated virtual network interface." },
+    { title: "Node.js API", description: "Your Node.js app running inside the container on port 3000 receives the request and processes it." }
+  ]}
+/>
+
+---
+
+## 9. Code Implementation
+
+Here is a production-ready `Dockerfile` for a Node.js application.
 
 ```dockerfile
-# 1. FROM: Defines the base image. Always use specific versions (tags), never 'latest'.
+# 1. Base Image: Use a minimal alpine image
 FROM node:20-alpine AS builder
 
-# 2. WORKDIR: Sets the working directory inside the container.
+# 2. Set the working directory
 WORKDIR /app
 
-# 3. ARG: Build-time variables. Not available when the container is running.
-ARG NODE_ENV=production
-
-# 4. ENV: Runtime environment variables.
-ENV PORT=3000
-
-# 5. COPY: Copies files from your host computer into the container.
-# We copy package.json first to leverage Docker's Build Cache.
+# 3. Copy package files first to leverage Docker Layer Caching!
 COPY package*.json ./
 
-# 6. RUN: Executes a command during the IMAGE BUILD process.
+# 4. Install production dependencies only
 RUN npm ci --only=production
 
-# Copy the rest of the application code
+# 5. Copy the rest of the application code
 COPY . .
 
-# 7. EXPOSE: Documents which port the container listens on (does not actually publish it).
+# 6. Document the port
 EXPOSE 3000
 
-# 8. USER: Drops root privileges for security.
+# 7. Security: Run as a non-root user
 USER node
 
-# 9. HEALTHCHECK: Tells Docker how to test if the app is still alive.
-HEALTHCHECK --interval=30s --timeout=3s \
-  CMD wget --quiet --tries=1 --spider http://localhost:3000/health || exit 1
-
-# 10. CMD: The default command executed when the container STARTS.
+# 8. Start the application
 CMD ["node", "server.js"]
 ```
 
-> [!TIP]
-> **CMD vs ENTRYPOINT:** `CMD` is easily overridden by passing a command to `docker run`. `ENTRYPOINT` is strict and forces the container to run as a specific executable, appending the `docker run` arguments to it.
-
 ---
 
-## 💻 Essential Docker Commands
+## 10. Real-world production example
 
-Master these CLI commands to navigate your containers efficiently:
-
-### Image Management
-- `docker build -t myapp:1.0 .` : Builds an image from a Dockerfile in the current directory (`.`).
-- `docker image ls` : Lists all local images.
-- `docker rmi <image_id>` : Deletes an image.
-- `docker system prune -a` : 🛑 Cleans up unused images, stopped containers, and networks. Use carefully!
-
-### Container Lifecycle
-- `docker run -d -p 8080:3000 --name web myapp:1.0` : Runs a container in detached mode (`-d`), mapping host port 8080 to container port 3000.
-- `docker ps` : Lists running containers. (`-a` for all containers).
-- `docker stop web` : Gracefully stops the container.
-- `docker rm -f web` : Forcefully stops and removes the container.
-
-### Debugging
-- `docker logs -f web` : Streams the logs of the container in real-time.
-- `docker exec -it web sh` : Opens an interactive shell *inside* the running container.
-- `docker inspect web` : Returns detailed JSON metadata about the container (IP addresses, mounts, etc).
-
----
-
-## 🚀 Docker in Node.js (Real-world Implementation)
-
-Let's Dockerize a Node.js API with a Postgres database using **Docker Compose**.
-
-`docker-compose.yml` allows you to define and run multi-container applications using a single YAML file.
-
-```yaml
-version: '3.8'
-
-services:
-  # 1. The Express API
-  api:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - DATABASE_URL=postgres://user:password@db:5432/myapp
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - app-network
-
-  # 2. The PostgreSQL Database
-  db:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: myapp
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d myapp"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-# Define Persistent Storage
-volumes:
-  pgdata:
-
-# Define an isolated network
-networks:
-  app-network:
-    driver: bridge
-```
-
-Run `docker-compose up -d` and your entire stack spins up instantly! The API can connect to the database using the hostname `db` because Docker automatically handles DNS resolution within the `app-network`.
-
----
-
-## 🌐 Advanced Networking & Volumes
-
-### Networking Drivers
-1. **Bridge (Default):** Isolated network inside the host. Containers can talk to each other via IP/Hostname. Port mapping is required for outside access.
-2. **Host:** Removes isolation. The container uses the host machine's network stack directly. Highly performant, but less secure.
-3. **None:** Complete network isolation. No internet access.
-
-### Volumes (Storage)
-Containers are ephemeral. If a container dies, all data inside it is wiped.
-- **Named Volumes:** Managed by Docker. Best for database persistence (like the `pgdata` volume above).
-- **Bind Mounts:** Mounts a specific folder on your host machine directly into the container. Excellent for local development (e.g., mapping your `./src` code folder so nodemon can hot-reload without rebuilding the image).
-
----
-
-## 🔒 Security Best Practices
-
-> [!CAUTION]
-> A compromised container can sometimes lead to a compromised host (container escape). Secure your images!
-
-1. **Never run as root:** Always create a non-root `USER` in your Dockerfile.
-2. **Use minimal base images:** Use `alpine`, `distroless`, or `-slim` images. Fewer utilities = smaller attack surface.
-3. **Scan images for vulnerabilities:** Use tools like `docker scout cves` or Trivy to scan images before deployment.
-4. **Don't bake secrets into images:** Never put API keys in a Dockerfile `ENV`. Pass them at runtime, or use Docker Swarm/Kubernetes Secrets.
-5. **Use Read-Only filesystems:** Run containers with `--read-only` to prevent attackers from writing malware to the container's disk.
-
----
-
-## 📝 Knowledge Check
-
-<Quiz 
-  question="Which Dockerfile command runs during the IMAGE BUILD process, rather than when the container actually starts?"
-  options={["CMD", "ENTRYPOINT", "RUN", "START"]}
-  answer="RUN"
+<RealWorldCaseStudy 
+  company="Spotify"
+  role="Microservices Architecture"
+  challenge="Spotify had hundreds of different engineering teams building thousands of microservices in different languages (Java, Python, Node). Deploying them on bare-metal servers was causing massive dependency conflicts and deployment delays."
+  solution="They migrated their entire infrastructure to Docker containers. This allowed every team to package their specific microservice into a standard container. The operations team no longer needed to worry about dependencies—they just ran the containers."
+  results={["Instant scaling during peak hours", "Eliminated 'works on my machine' bugs", "Enabled thousands of deployments per day"]}
 />
 
+---
+
+## 11. Best practices
+
+1. **Use Multi-stage Builds:** Compile your code in one stage, and only copy the compiled binary to the final image to keep it tiny.
+2. **Leverage the Build Cache:** Always put `COPY package.json` BEFORE `COPY . .`. This prevents npm from reinstalling packages every time you change a single line of application code.
+3. **Use .dockerignore:** Prevent `.git`, `node_modules`, and `.env` files from being copied into the container context.
+
+## 12. Common mistakes
+
+- **Using `latest` tags:** Never use `FROM node:latest`. Tomorrow, `latest` might point to Node 22, which could break your app. Always pin versions (e.g., `node:20.11.0-alpine`).
+- **Storing Data inside the Container:** Containers are ephemeral. If they crash, all data is lost. Always use **Volumes** to store database data.
+
+## 13. Performance considerations
+
+- Image size directly impacts deployment speed. A 2GB image takes minutes to pull across the network. A 50MB alpine image takes seconds. Optimize your images.
+- Be careful with CPU limits. If you don't define limits in a cluster (like Kubernetes), a memory-leak in one container can consume the entire host server, crashing other containers.
+
+## 14. Security considerations
+
+- **Never run as Root:** By default, Docker runs as root. Always add `USER node` to drop privileges. If a hacker breaches the app, they won't have root access to the container.
+- **Scan for CVEs:** Use tools like `docker scout` to scan your images for known vulnerabilities before pushing them to production.
+
+## 15. Scaling strategies
+
+Docker itself doesn't auto-scale. To scale Docker containers horizontally across hundreds of servers, you must use an Orchestration tool like **Kubernetes (K8s)** or **Docker Swarm**. They monitor traffic and automatically spin up more container replicas when load increases.
+
+---
+
+## 16. Interview questions
+
+1. **"What is the difference between an Image and a Container?"**
+   *Answer:* An image is a read-only, static template (like a Class in OOP). A container is a running instance of that image (like an Object).
+2. **"Why do we use Alpine images?"**
+   *Answer:* Alpine is a minimal Linux distribution that is around 5MB in size. It drastically reduces image pull times and minimizes the attack surface area for hackers.
+3. **"Explain how Docker layer caching works."**
+   *Answer:* Each instruction in a Dockerfile creates a layer. If the instruction hasn't changed since the last build, Docker reuses the cached layer. If a layer changes, all subsequent layers must be rebuilt.
+
+---
+
+## 17. Quiz
+
 <Quiz 
-  question="Why is it highly recommended to use a Named Volume for a PostgreSQL database container?"
-  options={["To make the database run faster", "To ensure database data persists even if the container is destroyed", "To expose the database to the internet", "To reduce the CPU usage of the container"]}
-  answer="To ensure database data persists even if the container is destroyed"
+  question="Why should you copy package.json and run 'npm install' BEFORE copying the rest of your source code?"
+  options={[
+    "To make the container run faster",
+    "To leverage Docker's layer caching so dependencies aren't reinstalled on every code change",
+    "Because npm requires package.json to be the first file in the directory",
+    "To reduce the final image size"
+  ]}
+  answer="To leverage Docker's layer caching so dependencies aren't reinstalled on every code change"
 />
+
+---
+
+## 18. Hands-on assignment
+
+1. Create a simple Express.js API.
+2. Write a `Dockerfile` for it using a Node Alpine image.
+3. Create a `.dockerignore` file.
+4. Build the image: `docker build -t my-api .`
+5. Run the container: `docker run -p 4000:3000 my-api`
+6. Test it by opening `http://localhost:4000` in your browser!
