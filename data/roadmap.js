@@ -102,8 +102,20 @@ export const roadmap = [
     gradient: "linear-gradient(135deg, #14b8a6, #2dd4bf)",
     lessons: [
       { id: 24, slug: "langchain-core", emoji: "Layers", title: "LangChain Core & LCEL", summary: "Runnables, chains, and prompts", difficulty: "intermediate", time: "45 min", tags: ["LangChain", "LCEL"] },
-      { id: 25, slug: "rag-deep-dive", emoji: "Search", title: "Advanced RAG", summary: "Hybrid search, chunking, re-ranking", difficulty: "advanced", time: "60 min", tags: ["RAG", "VectorDB"] },
-      { id: 26, slug: "vector-databases", emoji: "Database", title: "Vector Databases", summary: "Pinecone, ChromaDB, Embeddings", difficulty: "intermediate", time: "40 min", tags: ["VectorDB", "Embeddings"] },
+      { id: 25, slug: "vector-databases", emoji: "Database", title: "Vector Databases", summary: "Pinecone, ChromaDB, Embeddings", difficulty: "intermediate", time: "40 min", tags: ["VectorDB", "Embeddings"] },
+    ]
+  },
+  {
+    phase: "Advanced RAG Architectures",
+    emoji: "Search",
+    description: "Master Retrieval-Augmented Generation. From Naive RAG to trending, bleeding-edge approaches.",
+    gradient: "linear-gradient(135deg, #fb923c, #f97316)",
+    lessons: [
+      { id: 100, slug: "naive-rag", emoji: "FileText", title: "Naive RAG & Chunking", summary: "The baseline RAG architecture and text splitting", difficulty: "intermediate", time: "40 min", tags: ["RAG", "Embeddings"] },
+      { id: 101, slug: "hybrid-search", emoji: "Sliders", title: "Hybrid Search & Re-ranking", summary: "Keyword + Vector search, Cross-Encoders, Cohere", difficulty: "advanced", time: "50 min", tags: ["Search", "Rank"] },
+      { id: 102, slug: "graph-rag", emoji: "Share2", title: "GraphRAG & Knowledge Graphs", summary: "Trending: Using Neo4j and graphs for structured retrieval", difficulty: "expert", time: "60 min", tags: ["GraphRAG", "Neo4j"] },
+      { id: 103, slug: "crag-self-rag", emoji: "RefreshCw", title: "Corrective RAG (CRAG) & Self-RAG", summary: "Trending: Self-reflection, evaluating retrieval, and web fallbacks", difficulty: "expert", time: "60 min", tags: ["CRAG", "Reflection"] },
+      { id: 104, slug: "multimodal-rag", emoji: "Image", title: "Multimodal RAG", summary: "Retrieving and reasoning over images and PDFs", difficulty: "expert", time: "45 min", tags: ["Vision", "PDF"] },
     ]
   },
   {
