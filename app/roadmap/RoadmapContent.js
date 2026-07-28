@@ -53,7 +53,6 @@ export default function RoadmapContent() {
   const totalFiltered = roadmap.reduce((acc, g) => acc + filterLessons(g.lessons).length, 0);
 
   return (
-  return (
     <main className="max-w-[1000px] mx-auto px-4 sm:px-8 pt-12 pb-24 relative overflow-hidden">
       {/* 1. HERO & STATS INTEGRATED */}
       <section className="relative pt-12 pb-12 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/[0.06] mb-8">

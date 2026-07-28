@@ -339,7 +339,6 @@ export default function Home() {
           <span className="text-primary ml-1">Learn</span> · 2026
         </p>
       </footer>
-        </div>
       </div>
     </main>
   );

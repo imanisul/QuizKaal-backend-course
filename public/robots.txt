@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://quizkaal.in
+
+# Sitemaps
+Sitemap: https://quizkaal.in/sitemap.xml

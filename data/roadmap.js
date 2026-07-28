@@ -77,7 +77,8 @@ export const roadmap = [
     lessons: [
       { id: 18, slug: "microservices", emoji: "Grid", title: "Monolith to Microservices", summary: "Service discovery, API gateways", difficulty: "expert", time: "55 min", tags: ["Architecture", "Microservices"] },
       { id: 19, slug: "load-balancing-scaling", emoji: "Maximize", title: "Load Balancing & Scaling", summary: "Horizontal scaling, reverse proxies", difficulty: "advanced", time: "40 min", tags: ["Scaling", "Nginx"] },
-      { id: 20, slug: "docker-k8s", emoji: "Box", title: "Docker & Kubernetes", summary: "Containerization and orchestration", difficulty: "expert", time: "60 min", tags: ["DevOps", "K8s"] },
+      { id: 20, slug: "docker", emoji: "Box", title: "Docker Mastery", summary: "Containers, Images, Compose, and Architecture", difficulty: "expert", time: "120 min", tags: ["Docker", "DevOps"] },
+      { id: 201, slug: "kubernetes", emoji: "Grid", title: "Kubernetes (K8s)", summary: "Orchestration, Pods, Deployments", difficulty: "expert", time: "90 min", tags: ["K8s", "DevOps"] },
     ]
   },
 
