@@ -3,22 +3,23 @@ import HttpVisualizer from "@/components/lesson1/HttpVisualizer";
 import LifecycleTimeline from "@/components/lesson1/LifecycleTimeline";
 import MethodVisualizer from "@/components/lesson2/MethodVisualizer";
 import CopyButton from "@/components/ui/CopyButton";
+import Reveal from "@/components/ui/Reveal";
 
 export const MdxComponents = {
   HttpVisualizer,
   LifecycleTimeline,
   MethodVisualizer,
-  h1: (props) => <h1 className="text-4xl font-extrabold tracking-tight mb-6 mt-10 text-white" {...props} />,
-  h2: (props) => <h2 className="text-2xl font-bold tracking-tight mb-4 mt-12 text-white border-b border-white/10 pb-2" {...props} />,
-  h3: (props) => <h3 className="text-xl font-bold tracking-tight mb-3 mt-8 text-white" {...props} />,
-  p: (props) => <p className="leading-relaxed text-textSecondary mb-6 text-[15px]" {...props} />,
-  ul: (props) => <ul className="list-disc pl-6 mb-6 text-textSecondary space-y-2 text-[15px]" {...props} />,
-  ol: (props) => <ol className="list-decimal pl-6 mb-6 text-textSecondary space-y-2 text-[15px]" {...props} />,
+  h1: (props) => <Reveal as="h1" className="text-4xl font-extrabold tracking-tight mb-6 mt-10 text-white" {...props} />,
+  h2: (props) => <Reveal as="h2" className="text-2xl font-bold tracking-tight mb-4 mt-12 text-white border-b border-white/10 pb-2" {...props} />,
+  h3: (props) => <Reveal as="h3" className="text-xl font-bold tracking-tight mb-3 mt-8 text-white" {...props} />,
+  p: (props) => <Reveal as="p" className="leading-relaxed text-textSecondary mb-6 text-[15px]" {...props} />,
+  ul: (props) => <Reveal as="ul" className="list-disc pl-6 mb-6 text-textSecondary space-y-2 text-[15px]" {...props} />,
+  ol: (props) => <Reveal as="ol" className="list-decimal pl-6 mb-6 text-textSecondary space-y-2 text-[15px]" {...props} />,
   li: (props) => <li {...props} />,
   strong: (props) => <strong className="font-semibold text-white" {...props} />,
   a: (props) => <a className="text-primary hover:underline font-medium" {...props} />,
   blockquote: (props) => (
-    <blockquote className="border-l-4 border-primary/50 pl-4 py-1 mb-6 bg-primary/5 rounded-r-lg italic text-textSecondary" {...props} />
+    <Reveal as="blockquote" className="border-l-4 border-primary/50 pl-4 py-1 mb-6 bg-primary/5 rounded-r-lg italic text-textSecondary" {...props} />
   ),
   code: (props) => {
     // If it's a code block (handled by rehype-pretty-code), it comes as a figure/pre usually,
@@ -40,10 +41,10 @@ export const MdxComponents = {
     const rawText = extractText(props.children);
 
     return (
-      <div className="relative group my-8">
+      <Reveal className="relative group my-8">
         <CopyButton text={rawText} />
         <pre {...props} className={`${props.className || ''} p-4 rounded-xl overflow-x-auto text-[14px] bg-[#0d1117] border border-white/10`} />
-      </div>
+      </Reveal>
     );
   },
   Quiz: ({ question, options, answer }) => {
