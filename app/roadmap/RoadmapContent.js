@@ -309,7 +309,7 @@ export default function RoadmapContent() {
           <div className="p-3 bg-white rounded-2xl shadow-xl border-4 border-white/10 ring-1 ring-primary/30 transform hover:scale-105 transition-transform duration-300">
             <Image src="/qrcode.png" alt="QuizKaal Learn App QR Code" width={140} height={140} className="rounded-xl" />
           </div>
-          <div className="mt-4 text-[11px] font-bold tracking-widest uppercase text-primary">Scan to Learn on Mobile</div>
+          <div className="mt-4 text-[11px] font-bold tracking-widest uppercase text-primary">Scan and Donate</div>
         </motion.div>
 
         <motion.div 
