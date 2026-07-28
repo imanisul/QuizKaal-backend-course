@@ -7,9 +7,9 @@ export const metadata = {
 
 export default function CICDPage() {
   return (
-    <div className="flex bg-[#050505] min-h-screen text-white font-ui selection:bg-primary/30">
-      <div className="flex-1 lg:max-w-[1000px] mx-auto min-h-screen relative border-x border-white/[0.02]">
-        <main className="px-6 md:px-12 xl:px-24 pb-32">
+    <div className="flex bg-[#0a0c10] min-h-screen text-white font-ui selection:bg-primary/30">
+      <div className="flex-1 w-[95%] max-w-[1800px] mx-auto min-h-screen relative border-x border-white/[0.02]">
+        <main className="px-4 lg:px-8 xl:px-12 pb-32">
           <CICDContent />
         </main>
       </div>

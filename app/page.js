@@ -60,7 +60,7 @@ export default function Home() {
               y: { delay, duration: 6, repeat: Infinity, ease: "easeInOut" },
             }}
           >
-            <Icon size={32} style={{ color }} />
+            <Icon size={32} style={{ color }} aria-hidden="true" />
           </motion.div>
         ))}
 
@@ -301,14 +301,21 @@ export default function Home() {
 
       {/* ═══════════ FOOTER ═══════════ */}
       <div className="max-w-[1120px] mx-auto px-6 sm:px-8">
-        <div className="footer-section pb-12">
-          <Image src="/logo.png" alt="QuizKaal" width={52} height={52} className="rounded-xl mx-auto mb-4" />
-          <p className="text-textSecondary text-sm max-w-md mx-auto mb-2">
+        <div className="footer-section pb-12 flex flex-col items-center">
+          <motion.div 
+            className="relative rounded-[16px] p-0.5 bg-gradient-to-br from-white/10 to-transparent shadow-[0_0_30px_rgba(255,255,255,0.03)] mb-6"
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 hover:opacity-100 transition-opacity duration-500" />
+            <Image src="/logo.png" alt="QuizKaal" width={56} height={56} className="rounded-[14px] relative z-10 linear-glass ring-1 ring-white/10" />
+          </motion.div>
+          <p className="text-textSecondary text-sm max-w-md mx-auto mb-2 font-medium">
             Built for engineers who learn by building.
           </p>
-          <p className="text-textTertiary text-xs">
-            <span className="font-bold text-white">Quiz</span>
-            <span className="font-bold" style={{ color: "#e53e3e" }}>Kaal</span> Learn · Backend Engineering
+          <p className="text-textTertiary text-[11px] uppercase tracking-widest font-bold">
+            <span className="text-white">Quiz</span>
+            <span style={{ color: "#e53e3e" }}>Kaal</span> Learn · Backend Engineering
           </p>
         </div>
       </div>

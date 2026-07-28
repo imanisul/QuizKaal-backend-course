@@ -36,17 +36,28 @@ export default function TopNav() {
       <nav className={`glass-nav sticky top-0 z-[90] ${scrolled ? "scrolled" : ""}`}>
         <div className="max-w-[1120px] mx-auto px-6 sm:px-8 py-4 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative">
-              <div className="absolute inset-0 bg-primary/30 blur-md rounded-lg group-hover:bg-primary/50 transition-colors duration-500" />
-              <Image src="/logo.png" alt="QuizKaal" width={48} height={48} className="rounded-lg relative z-10" />
-            </div>
-            <div className="flex flex-col leading-tight">
-              <span className="text-[17px] font-extrabold tracking-tight group-hover:text-glow transition-all duration-300">
+          <Link href="/" className="flex items-center gap-3 group" aria-label="Go to Homepage">
+            <motion.div 
+              className="relative rounded-[14px] p-0.5 bg-gradient-to-br from-white/20 to-white/0 shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+              whileHover={{ scale: 1.05, rotate: [0, -2, 2, 0] }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+            >
+              <div className="absolute inset-0 bg-primary/40 blur-xl rounded-full group-hover:bg-primary/60 opacity-0 group-hover:opacity-100 transition-all duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-[14px] opacity-0 group-hover:opacity-100 transition-all duration-500" />
+              <Image 
+                src="/logo.png" 
+                alt="QuizKaal" 
+                width={48} 
+                height={48} 
+                className="rounded-[12px] relative z-10 linear-glass ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500" 
+              />
+            </motion.div>
+            <div className="flex flex-col leading-tight ml-1">
+              <span className="text-[18px] font-extrabold tracking-tight group-hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.5)] transition-all duration-300">
                 <span className="text-white">Quiz</span>
                 <span style={{ color: "#e53e3e" }}>Kaal</span>
               </span>
-              <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-textTertiary hidden sm:block">
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-textTertiary hidden sm:block group-hover:text-white/70 transition-colors">
                 Learn Backend
               </span>
             </div>

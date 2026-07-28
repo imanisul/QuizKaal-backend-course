@@ -1,86 +1,82 @@
 "use client";
-import { Activity, Globe, Server, Box, CheckCircle2 } from "lucide-react";
+import { Activity, Users, Globe2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import PremiumAnalogyCard from "../../ui/PremiumAnalogyCard";
 
-export default function Step11_Production() {
-  const [requests, setRequests] = useState([1]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRequests(prev => [...prev.slice(-4), Date.now()]);
-    }, 800);
-    return () => clearInterval(interval);
-  }, []);
+export default function Step11_Production({ playbackSpeed = 1 }) {
+  // Generate random traffic dots for the world map visualization
+  const trafficDots = Array.from({ length: 30 }).map((_, i) => ({
+    id: i,
+    x: 10 + Math.random() * 80, // percentage
+    y: 20 + Math.random() * 60,
+    delay: Math.random() * 2
+  }));
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-success/10 rounded-xl border border-success/20">
-          <Activity className="text-success" size={24} />
+    <div className="flex flex-col h-full w-full">
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex items-center gap-4 mb-8"
+      >
+        <div className="p-4 bg-gradient-to-br from-success/20 to-success/5 rounded-2xl border border-success/30 shadow-[0_0_30px_rgba(34,197,94,0.3)]">
+          <Activity className="text-success" size={28} />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-white">11. Production Traffic</h2>
-          <p className="text-textSecondary text-sm">Serving millions of users via Load Balancers and Ingress.</p>
+          <h2 className="text-3xl font-black text-white tracking-tight">11. Live Production</h2>
+          <p className="text-textSecondary text-base mt-1">Users are now actively interacting with the new feature you just deployed!</p>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="flex flex-col gap-6 flex-1">
+      <div className="grid grid-cols-1 xl:grid-cols-[60%_40%] 2xl:grid-cols-[65%_35%] xl:gap-12 gap-8 flex-1">
         
-        <div className="bg-surface border border-white/10 rounded-xl p-8 flex items-center justify-between relative overflow-hidden h-[300px]">
+        {/* Animated Globe / Traffic Visualizer */}
+        <div className="bg-surface/50 backdrop-blur-xl border border-white/10 rounded-2xl p-8 flex items-center justify-center relative overflow-hidden h-[400px] shadow-2xl">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(34,197,94,0.15)_0%,transparent_70%)] pointer-events-none" />
           
-          {/* User Browser */}
-          <div className="flex flex-col items-center gap-2 z-10 w-24">
-            <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
-              <Globe size={32} className="text-white" />
-            </div>
-            <span className="text-xs font-bold text-white mt-1">Browser</span>
-          </div>
+          {/* Simulated Global Map */}
+          <div className="relative w-full max-w-[400px] aspect-[2/1] bg-black/40 rounded-3xl border border-white/5 overflow-hidden flex items-center justify-center">
+            
+            {/* World Map SVG placeholder (stylized grid) */}
+            <div className="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg')] bg-no-repeat bg-center bg-contain mix-blend-screen" />
+            
+            <Globe2 size={120} className="text-success/20 animate-[spin_60s_linear_infinite]" />
 
-          {/* Network Path */}
-          <div className="flex-1 h-32 relative flex items-center z-10 px-4">
-             {requests.map((req) => (
-               <motion.div 
-                 key={req}
-                 initial={{ x: 0, opacity: 0, scale: 0.5 }}
-                 animate={{ x: "400px", opacity: [0, 1, 1, 0], scale: 1 }}
-                 transition={{ duration: 2, ease: "linear" }}
-                 className="absolute left-4 w-3 h-3 bg-success rounded-full shadow-[0_0_15px_#34d399]"
-               />
-             ))}
-          </div>
+            {/* Traffic Ping Animations */}
+            {trafficDots.map(dot => (
+              <motion.div
+                key={dot.id}
+                className="absolute w-1.5 h-1.5 bg-success rounded-full shadow-[0_0_10px_#22c55e]"
+                style={{ left: `${dot.x}%`, top: `${dot.y}%` }}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: [0, 1.5, 1], opacity: [0, 1, 0] }}
+                transition={{ 
+                  duration: 2 / playbackSpeed, 
+                  repeat: Infinity, 
+                  delay: dot.delay / playbackSpeed,
+                  ease: "easeOut"
+                }}
+              />
+            ))}
 
-          {/* AWS ALB */}
-          <div className="flex flex-col items-center gap-2 z-10 w-24">
-            <div className="w-16 h-16 rounded-2xl bg-success/20 flex items-center justify-center border border-success/50">
-              <Server size={32} className="text-success" />
-            </div>
-            <span className="text-[10px] uppercase font-bold tracking-widest text-success mt-1 text-center">Load Balancer</span>
-          </div>
-
-          {/* K8s Pods */}
-          <div className="flex flex-col gap-3 ml-8 z-10">
-            <div className="bg-[#0a0b0f] border border-white/10 p-3 rounded-xl flex items-center gap-3">
-              <Box size={16} className="text-blue-400" />
-              <div className="text-xs font-mono text-white">Pod 1</div>
-            </div>
-            <div className="bg-[#0a0b0f] border border-white/10 p-3 rounded-xl flex items-center gap-3">
-              <Box size={16} className="text-blue-400" />
-              <div className="text-xs font-mono text-white">Pod 2</div>
-            </div>
-            <div className="bg-[#0a0b0f] border border-white/10 p-3 rounded-xl flex items-center gap-3">
-              <Box size={16} className="text-blue-400" />
-              <div className="text-xs font-mono text-white">Pod 3</div>
+            <div className="absolute bottom-4 right-4 bg-success/10 border border-success/30 text-success text-[10px] font-mono font-bold px-3 py-1 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.2)]">
+              LIVE TRAFFIC: HTTP 200 OK
             </div>
           </div>
-
         </div>
 
-        <div className="bg-success/5 border border-success/20 rounded-xl p-6 flex flex-col justify-center items-center text-center">
-          <h3 className="font-bold text-white text-lg mb-2 flex items-center gap-2"><CheckCircle2 className="text-success"/> CI/CD Pipeline Complete!</h3>
-          <p className="text-textSecondary text-sm max-w-lg leading-relaxed">
-            Code has successfully traveled from a developer's laptop, through automated testing and security scans, packaged into a Docker image, deployed via Kubernetes, and is now serving live HTTP requests to real users!
-          </p>
+        {/* Analogy */}
+        <div className="flex flex-col h-full justify-center">
+          <PremiumAnalogyCard 
+            icon={Users}
+            title="Production"
+            analogyTitle="The Grand Opening"
+            description="The code you typed on your laptop just 10 minutes ago has now traversed through tests, compilation, security scans, and infrastructure changes. It is now serving thousands of users across the globe."
+            points={[
+              { keyword: "CI (Continuous Integration)", text: "Merging code, testing, and building the container (Steps 1-8)." },
+              { keyword: "CD (Continuous Deployment)", text: "Automatically putting that container on live servers (Steps 9-11)." }
+            ]}
+          />
         </div>
 
       </div>

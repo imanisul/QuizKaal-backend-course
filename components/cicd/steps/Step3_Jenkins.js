@@ -1,62 +1,65 @@
 "use client";
-import { Settings, FileCode2, Terminal } from "lucide-react";
+import { Settings, Play } from "lucide-react";
 import { motion } from "framer-motion";
+import AnimatedTerminal from "../../ui/AnimatedTerminal";
+import PremiumAnalogyCard from "../../ui/PremiumAnalogyCard";
 
-export default function Step3_Jenkins() {
+export default function Step3_Jenkins({ playbackSpeed = 1 }) {
+  const terminalLines = [
+    { type: "output", text: "Started by GitHub push by imanisul", delay: 100 },
+    { type: "output", text: "Obtained Jenkinsfile from git https://github.com/quizkaal/app.git", delay: 300 },
+    { type: "output", text: "[Pipeline] Start of Pipeline", delay: 400 },
+    { type: "output", text: "[Pipeline] node", delay: 450 },
+    { type: "output", text: "Running on Jenkins-Worker-03 in /var/jenkins_home/workspace/app-backend", delay: 600 },
+    { type: "output", text: "[Pipeline] stage", delay: 700 },
+    { type: "output", text: "[Pipeline] { (Preparation) }", delay: 750 },
+    { type: "command", text: "git fetch --tags --progress" },
+    { type: "output", text: "Checking out Revision a1b2c3d (feature-login)", delay: 800 },
+    { type: "output", text: "Commit message: \"feat: added login page\"", delay: 850 },
+    { type: "output", text: "SUCCESS: Pipeline preparation complete.", className: "text-success font-bold mt-2", delay: 1000 }
+  ];
+
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-red-500/10 rounded-xl border border-red-500/20">
-          <Settings className="text-red-400" size={24} />
+    <div className="flex flex-col h-full w-full">
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex items-center gap-4 mb-8"
+      >
+        <div className="p-4 bg-gradient-to-br from-red-500/20 to-red-500/5 rounded-2xl border border-red-500/30 shadow-[0_0_30px_rgba(239,68,68,0.2)]">
+          <Settings className="text-red-400 animate-spin-slow" size={28} />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-white">3. Jenkins Pipeline</h2>
-          <p className="text-textSecondary text-sm">The automation engine wakes up and reads the blueprint.</p>
+          <h2 className="text-3xl font-black text-white tracking-tight">3. CI Server (Jenkins)</h2>
+          <p className="text-textSecondary text-base mt-1">The orchestrator that reads the instructions and begins the assembly line.</p>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1">
+      <div className="grid grid-cols-1 xl:grid-cols-[60%_40%] 2xl:grid-cols-[65%_35%] xl:gap-12 gap-8 flex-1 h-full min-h-[350px]">
         
-        {/* Jenkinsfile View */}
-        <div className="bg-[#0a0b0f] border border-white/10 rounded-xl flex flex-col overflow-hidden">
-          <div className="bg-white/5 px-4 py-2 border-b border-white/10 flex items-center justify-between">
-             <span className="text-xs font-mono text-textSecondary flex items-center gap-2"><FileCode2 size={14}/> Jenkinsfile</span>
-          </div>
-          <div className="p-4 text-xs font-mono text-textSecondary leading-relaxed whitespace-pre overflow-y-auto">
-<span className="text-purple-400">pipeline</span> {"{\n"}
-{"  "}agent <span className="text-blue-400">any</span>{"\n"}
-{"  "}stages {"{\n"}
-{"    "}<span className="text-blue-400">stage</span>(<span className="text-green-400">'Checkout'</span>) {"{\n"}
-{"      "}steps {"{ "}<span className="text-purple-400">checkout</span> scm {"}\n"}
-{"    }\n"}
-{"    "}<span className="text-blue-400">stage</span>(<span className="text-green-400">'Install Deps'</span>) {"{\n"}
-{"      "}steps {"{ "}<span className="text-purple-400">sh</span> <span className="text-green-400">'npm install'</span> {"}\n"}
-{"    }\n"}
-{"    "}<span className="text-blue-400">stage</span>(<span className="text-green-400">'Test'</span>) {"{\n"}
-{"      "}steps {"{ "}<span className="text-purple-400">sh</span> <span className="text-green-400">'npm run test'</span> {"}\n"}
-{"    }\n"}
-{"    "}<span className="text-blue-400">stage</span>(<span className="text-green-400">'Build Docker'</span>) {"{\n"}
-{"      "}steps {"{ "}<span className="text-purple-400">sh</span> <span className="text-green-400">'docker build -t app:latest .'</span> {"}\n"}
-{"    }\n"}
-{"  }\n"}
-{"}"}
-          </div>
+        {/* Animated Terminal */}
+        <div className="h-full">
+          <AnimatedTerminal 
+            title="Jenkins Console Output" 
+            branch="feature-login" 
+            lines={terminalLines} 
+            autoPlayDelay={0.5 / playbackSpeed} 
+          />
         </div>
-
-        {/* Console Log */}
-        <div className="bg-[#0a0b0f] border border-white/10 rounded-xl flex flex-col overflow-hidden">
-          <div className="bg-white/5 px-4 py-2 border-b border-white/10 flex items-center justify-between">
-             <span className="text-xs font-mono text-textSecondary flex items-center gap-2"><Terminal size={14}/> Build #412 Console</span>
-          </div>
-          <div className="p-4 text-xs font-mono text-textTertiary leading-relaxed">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>[Jenkins] Started by GitHub push by anisul</motion.div>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>[Jenkins] Running in Workspace /var/lib/jenkins/jobs/app</motion.div>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }} className="text-blue-400 mt-2">{`>`} git clone https://github.com/quizkaal/app.git</motion.div>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}>Cloning repository...</motion.div>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }} className="text-blue-400 mt-2">{`>`} git checkout -f a1b2c3d</motion.div>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }} className="text-success mt-2">✔ Stage 'Checkout' completed successfully.</motion.div>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.2 }} className="mt-2 text-white font-bold animate-pulse">Moving to stage 'Install Deps'...</motion.div>
-          </div>
+        
+        {/* Analogy */}
+        <div className="flex flex-col h-full justify-center">
+          <PremiumAnalogyCard 
+            icon={Play}
+            title="Jenkins/GitHub Actions"
+            analogyTitle="The Factory Supervisor"
+            description="The CI server is the supervisor of your factory. It doesn't write the code, but the moment new materials arrive, it reads the blueprint (Jenkinsfile) and starts assigning tasks to workers."
+            points={[
+              { keyword: "Trigger", text: "Wakes up when the Webhook fires." },
+              { keyword: "Clone", text: "Downloads the latest code into an isolated workspace." },
+              { keyword: "Pipeline", text: "Reads the YAML/Groovy file to know the exact sequence of steps." }
+            ]}
+          />
         </div>
 
       </div>

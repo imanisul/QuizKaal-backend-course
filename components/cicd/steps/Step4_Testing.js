@@ -1,81 +1,81 @@
 "use client";
-import { CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
+import { CheckCircle2, AlertTriangle, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
+import AnimatedTerminal from "../../ui/AnimatedTerminal";
+import PremiumAnalogyCard from "../../ui/PremiumAnalogyCard";
 
-export default function Step4_Testing({ scenario }) {
-  const isFail = scenario === "test_fail";
+export default function Step4_Testing({ scenario, playbackSpeed = 1 }) {
+  const isFailed = scenario === "test_fail";
+
+  const terminalLines = [
+    { type: "command", text: "npm run test:ci" },
+    { type: "output", text: "jest --ci --coverage --maxWorkers=2", delay: 200 },
+    { type: "output", text: "PASS src/auth/auth.service.spec.ts (1.2s)", className: "text-success", delay: 800 },
+    { type: "output", text: "PASS src/users/users.controller.spec.ts (0.8s)", className: "text-success", delay: 1200 },
+    { type: "output", text: "PASS src/database/prisma.service.spec.ts (0.5s)", className: "text-success", delay: 1500 },
+    
+    ...(isFailed ? [
+      { type: "output", text: "FAIL src/auth/login.spec.ts (0.9s)", className: "text-error font-bold mt-2", delay: 1800 },
+      { type: "output", text: "  ● Login Controller › should return 401 on invalid password", className: "text-error", delay: 1900 },
+      { type: "output", text: "    Expected status: 401\n    Received status: 200", className: "text-error/80", delay: 2000 },
+      { type: "output", text: "\nTest Suites: 1 failed, 3 passed, 4 total", className: "text-error font-bold mt-4", delay: 2100 },
+      { type: "output", text: "npm ERR! Lifecycle script `test:ci` failed with exit code 1", className: "text-error", delay: 2200 }
+    ] : [
+      { type: "output", text: "PASS src/auth/login.spec.ts (0.9s)", className: "text-success", delay: 1800 },
+      { type: "output", text: "\nTest Suites: 4 passed, 4 total", className: "text-success font-bold mt-4", delay: 2100 },
+      { type: "output", text: "Tests:       42 passed, 42 total\nSnapshots:   0 total\nTime:        3.4s", className: "text-textSecondary", delay: 2200 },
+      { type: "output", text: "-----------------|---------|----------|---------|---------|\nFile             | % Stmts | % Branch | % Funcs | % Lines |\n-----------------|---------|----------|---------|---------|\nAll files        |   98.42 |    95.23 |     100 |   98.21 |\n-----------------|---------|----------|---------|---------|", className: "text-blue-400 mt-2", delay: 2500 }
+    ])
+  ];
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center gap-3 mb-6">
-        <div className={`p-3 rounded-xl border ${isFail ? 'bg-error/10 border-error/20' : 'bg-success/10 border-success/20'}`}>
-          {isFail ? <XCircle className="text-error" size={24} /> : <CheckCircle2 className="text-success" size={24} />}
+    <div className="flex flex-col h-full w-full">
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex items-center gap-4 mb-8"
+      >
+        <div className={`p-4 rounded-2xl border shadow-[0_0_30px_rgba(34,197,94,0.2)] bg-gradient-to-br
+          ${isFailed ? 'from-error/20 to-error/5 border-error/30 shadow-[0_0_30px_rgba(244,63,94,0.2)]' : 'from-success/20 to-success/5 border-success/30'}
+        `}>
+          {isFailed ? <AlertTriangle className="text-error" size={28} /> : <CheckCircle2 className="text-success" size={28} />}
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-white">4. Testing</h2>
-          <p className="text-textSecondary text-sm">Validating the logic automatically.</p>
+          <h2 className="text-3xl font-black text-white tracking-tight">4. Automated Testing</h2>
+          <p className="text-textSecondary text-base mt-1">
+            {isFailed ? "The Quality Assurance team found a critical bug!" : "Validating the code works exactly as intended."}
+          </p>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1">
+      <div className="grid grid-cols-1 xl:grid-cols-[60%_40%] 2xl:grid-cols-[65%_35%] xl:gap-12 gap-8 flex-1 h-full min-h-[400px]">
         
-        <div className="bg-[#0a0b0f] border border-white/10 rounded-xl p-6 flex flex-col justify-center">
-          <div className="space-y-4">
-             <TestRunner name="Unit Tests (Jest)" total={142} duration="4.2s" fail={isFail} />
-             {!isFail && (
-               <>
-                 <TestRunner name="Integration Tests" total={45} duration="12.4s" fail={false} delay={1} />
-                 <TestRunner name="Linter (ESLint)" total={1} duration="1.1s" fail={false} delay={2} />
-               </>
-             )}
-          </div>
+        {/* Analogy */}
+        <div className="flex flex-col h-full justify-center">
+          <PremiumAnalogyCard 
+            icon={ShieldCheck}
+            title="Unit Tests"
+            analogyTitle="The Car Crash Test"
+            description="Before selling a car, the manufacturer runs it into a wall with dummies inside to ensure the airbags deploy. Automated testing is slamming your code into a wall virtually."
+            points={[
+              { keyword: "Unit", text: "Testing the seatbelt mechanism in isolation." },
+              { keyword: "Integration", text: "Testing if the seatbelt, airbag, and brakes work together." },
+              { keyword: "Coverage", text: "Did we test 98% of the car, or just the horn?" }
+            ]}
+          />
         </div>
 
-        {isFail ? (
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-error/10 border border-error/20 rounded-xl p-6 flex flex-col">
-            <h3 className="font-bold text-error mb-4 flex items-center gap-2"><AlertTriangle size={18}/> Pipeline Halted</h3>
-            <div className="bg-[#0a0b0f] border border-error/20 p-4 rounded-lg text-xs font-mono text-error/80 whitespace-pre overflow-x-auto flex-1">
-FAIL src/services/auth.test.ts<br/>
-&nbsp;&nbsp;✕ should return 401 for invalid JWT (12 ms)<br/><br/>
-&nbsp;&nbsp;Expected: 401<br/>
-&nbsp;&nbsp;Received: 200<br/><br/>
-Test Suites: 1 failed, 141 passed, 142 total<br/>
-Tests:       1 failed, 843 passed, 844 total
-            </div>
-            <div className="mt-4 text-sm text-textSecondary">
-              Because a test failed, Jenkins immediately marks the build as <strong>FAILED</strong> and sends a Slack alert to the team. The broken code is prevented from reaching production.
-            </div>
-          </motion.div>
-        ) : (
-          <div className="bg-success/5 border border-success/20 rounded-xl p-6 flex flex-col justify-center items-center text-center">
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 2.5, type: 'spring' }} className="w-20 h-20 bg-success/20 rounded-full flex items-center justify-center border border-success/50 mb-4">
-              <CheckCircle2 size={40} className="text-success" />
-            </motion.div>
-            <h3 className="font-bold text-white text-xl mb-2">All Checks Passed!</h3>
-            <p className="text-textSecondary text-sm">Code coverage is at 84%. The pipeline moves on to the Build phase.</p>
-          </div>
-        )}
+        {/* Animated Terminal */}
+        <div className="h-full">
+          <AnimatedTerminal 
+            title={isFailed ? "Jest (Failing)" : "Jest (Passing)"} 
+            branch="feature-login" 
+            lines={terminalLines} 
+            autoPlayDelay={0.5 / playbackSpeed} 
+          />
+        </div>
 
       </div>
     </div>
-  );
-}
-
-function TestRunner({ name, total, duration, fail, delay = 0 }) {
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay }}
-      className={`border rounded-xl p-4 flex items-center justify-between ${fail ? 'bg-error/5 border-error/20' : 'bg-surface border-white/10'}`}
-    >
-      <div>
-        <h4 className="font-bold text-white text-sm">{name}</h4>
-        <p className="text-xs text-textTertiary mt-1">{total} tests • {duration}</p>
-      </div>
-      {fail ? (
-        <span className="bg-error/20 text-error text-xs font-bold px-3 py-1 rounded-full">FAILED</span>
-      ) : (
-        <span className="bg-success/20 text-success text-xs font-bold px-3 py-1 rounded-full">PASSED</span>
-      )}
-    </motion.div>
   );
 }

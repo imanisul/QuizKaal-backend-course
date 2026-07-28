@@ -209,6 +209,8 @@ export default function RoadmapPage() {
                   >
                   <button
                     onClick={() => setExpandedPhase(expandedPhase === gi ? null : gi)}
+                    aria-label={isExpanded ? `Collapse ${group.phase}` : `Expand ${group.phase}`}
+                    aria-expanded={isExpanded}
                     className="w-full text-left flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 md:p-8 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
                   >
                     <div>
@@ -295,13 +297,23 @@ export default function RoadmapPage() {
       </motion.div>
 
       {/* Footer */}
-      <div className="mt-32 pb-12 text-center">
-        <Image src="/logo.png" alt="QuizKaal" width={52} height={52} className="rounded-xl mx-auto mb-6" />
-        <p className="text-textSecondary text-sm max-w-md mx-auto mb-2">
+      <div className="mt-32 pb-12 flex flex-col items-center">
+        <motion.div 
+          className="relative rounded-[16px] p-0.5 bg-gradient-to-br from-white/10 to-transparent shadow-[0_0_30px_rgba(255,255,255,0.03)] mb-6 mx-auto"
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.4 }}
+        >
+          <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 hover:opacity-100 transition-opacity duration-500" />
+          <Image src="/logo.png" alt="QuizKaal" width={56} height={56} className="rounded-[14px] relative z-10 linear-glass ring-1 ring-white/10" />
+        </motion.div>
+        <p className="text-textSecondary text-sm max-w-md mx-auto mb-2 text-center">
           The journey of a thousand lines begins with a single{" "}
           <code className="text-xs px-1.5 py-0.5 rounded-md bg-white/[0.06] font-mono text-primary">console.log()</code>
         </p>
-        <p className="text-textTertiary text-[11px] tracking-wide mt-6 uppercase font-bold">&copy; {new Date().getFullYear()} QuizKaal Learn. All rights reserved.</p>
+        <p className="text-textTertiary text-[11px] uppercase tracking-widest font-bold mt-6 text-center">
+          <span className="text-white">Quiz</span>
+          <span style={{ color: "#e53e3e" }}>Kaal</span> Learn · Backend Engineering
+        </p>
       </div>
     </main>
   );

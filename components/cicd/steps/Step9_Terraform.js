@@ -1,92 +1,65 @@
 "use client";
-import { Server, Cloud, Code2, Play } from "lucide-react";
+import { Server, Building2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import AnimatedTerminal from "../../ui/AnimatedTerminal";
+import PremiumAnalogyCard from "../../ui/PremiumAnalogyCard";
 
-export default function Step9_Terraform() {
-  const [deployed, setDeployed] = useState(false);
+export default function Step9_Terraform({ playbackSpeed = 1 }) {
+  const terminalLines = [
+    { type: "command", text: "terraform apply -auto-approve" },
+    { type: "output", text: "aws_eks_cluster.main: Refreshing state... [id=quizkaal-prod-eks]", delay: 300 },
+    { type: "output", text: "aws_db_instance.postgres: Refreshing state... [id=quizkaal-db-1]", delay: 500 },
+    { type: "output", text: "\nTerraform used the selected providers to generate the following execution plan.", delay: 800 },
+    { type: "output", text: "Resource actions are indicated with the following symbols:\n  ~ update in-place", className: "text-textSecondary", delay: 900 },
+    { type: "output", text: "\nTerraform will perform the following actions:", delay: 1000 },
+    { type: "output", text: "  ~ aws_eks_node_group.workers\n      scaling_config.0.desired_size: \"3\" -> \"4\"", className: "text-yellow-400 font-bold", delay: 1200 },
+    { type: "output", text: "\nPlan: 0 to add, 1 to change, 0 to destroy.", className: "font-bold", delay: 1500 },
+    { type: "output", text: "aws_eks_node_group.workers: Modifying... [id=quizkaal-workers]", delay: 1800 },
+    { type: "output", text: "aws_eks_node_group.workers: Modifications complete after 2m30s", delay: 2800 },
+    { type: "output", text: "\nApply complete! Resources: 0 added, 1 changed, 0 destroyed.", className: "text-success font-bold mt-2", delay: 3200 }
+  ];
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
-          <Server className="text-purple-500" size={24} />
+    <div className="flex flex-col h-full w-full">
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex items-center gap-4 mb-8"
+      >
+        <div className="p-4 bg-gradient-to-br from-purple-500/20 to-purple-500/5 rounded-2xl border border-purple-500/30 shadow-[0_0_30px_rgba(168,85,247,0.2)]">
+          <Server className="text-purple-400" size={28} />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-white">9. Infrastructure as Code (Terraform)</h2>
-          <p className="text-textSecondary text-sm">Provisioning the AWS/GCP servers that will run the Docker image.</p>
+          <h2 className="text-3xl font-black text-white tracking-tight">9. Infrastructure as Code (IaC)</h2>
+          <p className="text-textSecondary text-base mt-1">Automatically provisioning the AWS/GCP servers needed to run the code.</p>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1">
+      <div className="grid grid-cols-1 xl:grid-cols-[60%_40%] 2xl:grid-cols-[65%_35%] xl:gap-12 gap-8 flex-1 h-full min-h-[400px]">
         
-        {/* Terraform Code */}
-        <div className="bg-[#0a0b0f] border border-white/10 rounded-xl flex flex-col overflow-hidden relative">
-          <div className="bg-white/5 px-4 py-2 border-b border-white/10 flex items-center justify-between">
-             <span className="text-xs font-mono text-textSecondary flex items-center gap-2"><Code2 size={14}/> main.tf</span>
-          </div>
-          <div className="p-4 text-xs font-mono text-textSecondary leading-relaxed whitespace-pre overflow-y-auto">
-<span className="text-purple-400">provider</span> <span className="text-green-400">"aws"</span> {"{\n"}
-{"  "}region = <span className="text-green-400">"us-east-1"</span>{"\n"}
-{"}\n\n"}
-<span className="text-purple-400">resource</span> <span className="text-green-400">"aws_eks_cluster"</span> <span className="text-green-400">"quizkaal_cluster"</span> {"{\n"}
-{"  "}name     = <span className="text-green-400">"quizkaal-prod"</span>{"\n"}
-{"  "}role_arn = aws_iam_role.eks_role.arn{"\n\n"}
-{"  "}vpc_config {"{\n"}
-{"    "}subnet_ids = [aws_subnet.public_1.id, aws_subnet.public_2.id]{"\n"}
-{"  }\n"}
-{"}"}
-          </div>
-          {!deployed && (
-            <div className="absolute bottom-4 right-4">
-              <button 
-                onClick={() => setDeployed(true)}
-                className="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-              >
-                <Play size={14}/> terraform apply
-              </button>
-            </div>
-          )}
+        {/* Analogy */}
+        <div className="flex flex-col h-full justify-center">
+          <PremiumAnalogyCard 
+            icon={Building2}
+            title="Terraform"
+            analogyTitle="The Architect & Construction Crew"
+            description="Instead of manually clicking buttons in the AWS console to rent servers (which leads to human error), you write a blueprint. Terraform reads the blueprint and automatically builds the data center to match."
+            points={[
+              { keyword: "Plan", text: "Showing the blueprints. ('I am going to add 1 server')." },
+              { keyword: "Apply", text: "Actually pouring the concrete and building it in AWS." },
+              { keyword: "State", text: "Terraform's memory of what it has already built." }
+            ]}
+          />
         </div>
 
-        {/* Cloud Animation */}
-        <div className="bg-surface border border-white/10 rounded-xl p-6 flex flex-col justify-center relative overflow-hidden">
-           
-           {!deployed ? (
-             <div className="flex flex-col items-center justify-center h-full opacity-50">
-               <Cloud size={48} className="text-textTertiary mb-4" />
-               <p className="text-sm text-textTertiary">AWS Environment Empty.</p>
-               <p className="text-xs text-textTertiary mt-1">Run `terraform apply` to provision.</p>
-             </div>
-           ) : (
-             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center gap-4 w-full">
-               <h4 className="font-bold text-white text-sm">AWS VPC (us-east-1)</h4>
-               
-               <div className="w-full border border-purple-500/30 bg-purple-500/5 rounded-xl p-4 flex flex-col gap-4">
-                 
-                 <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="bg-[#0a0b0f] border border-white/10 p-3 rounded-lg flex items-center gap-3">
-                   <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-                   <span className="text-xs text-white font-mono">VPC & Subnets Created</span>
-                 </motion.div>
-
-                 <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.6 }} className="bg-[#0a0b0f] border border-white/10 p-3 rounded-lg flex items-center gap-3">
-                   <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-                   <span className="text-xs text-white font-mono">IAM Roles Assigned</span>
-                 </motion.div>
-
-                 <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 1 }} className="bg-purple-500/20 border border-purple-500/40 p-3 rounded-lg flex items-center gap-3">
-                   <div className="w-2 h-2 rounded-full bg-purple-400 animate-pulse shadow-[0_0_10px_#C084FC]" />
-                   <span className="text-xs text-purple-100 font-bold font-mono">EKS Cluster Provisioned</span>
-                 </motion.div>
-
-               </div>
-               
-               <p className="text-[10px] text-textSecondary text-center mt-2">
-                 Infrastructure is now treated exactly like application code. It is version controlled, reviewed, and automated.
-               </p>
-             </motion.div>
-           )}
-
+        {/* Animated Terminal */}
+        <div className="h-full">
+          <AnimatedTerminal 
+            title="Terraform CLI" 
+            branch="feature-login" 
+            lines={terminalLines} 
+            autoPlayDelay={0.5 / playbackSpeed} 
+          />
         </div>
 
       </div>

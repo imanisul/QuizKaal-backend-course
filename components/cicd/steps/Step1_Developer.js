@@ -1,74 +1,59 @@
 "use client";
-import { Laptop, GitBranch, ArrowRight, Terminal } from "lucide-react";
+import { Laptop, GitBranch } from "lucide-react";
 import { motion } from "framer-motion";
+import AnimatedTerminal from "../../ui/AnimatedTerminal";
+import PremiumAnalogyCard from "../../ui/PremiumAnalogyCard";
 
-export default function Step1_Developer() {
+export default function Step1_Developer({ playbackSpeed = 1 }) {
+  const terminalLines = [
+    { type: "command", text: "git add ." },
+    { type: "command", text: 'git commit -m "feat: added login page"' },
+    { type: "output", text: "[feature-login a1b2c3d] feat: added login page\n 3 files changed, 140 insertions(+)", delay: 100 },
+    { type: "command", text: "git push origin feature-login" },
+    { type: "output", text: "Enumerating objects: 11, done.\nCounting objects: 100% (11/11), done.\nWriting objects: 100% (6/6), 842 bytes, done.\nTo github.com:quizkaal/app.git\n * [new branch]      feature-login -> feature-login", delay: 800 }
+  ];
+
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
-          <Laptop className="text-blue-400" size={24} />
+    <div className="flex flex-col h-full w-full">
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex items-center gap-4 mb-8"
+      >
+        <div className="p-4 bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-2xl border border-blue-500/30 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
+          <Laptop className="text-blue-400" size={28} />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-white">1. The Developer</h2>
-          <p className="text-textSecondary text-sm">Where the journey begins: writing code and pushing to version control.</p>
+          <h2 className="text-3xl font-black text-white tracking-tight">1. The Developer</h2>
+          <p className="text-textSecondary text-base mt-1">Where the journey begins: writing code and pushing to version control.</p>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1">
+      <div className="grid grid-cols-1 xl:grid-cols-[60%_40%] 2xl:grid-cols-[65%_35%] xl:gap-12 gap-8 flex-1 h-full min-h-0">
         
-        {/* Real-life Analogy */}
-        <div className="bg-surface border border-white/10 rounded-xl p-6 flex flex-col justify-center">
-          <h3 className="font-bold text-white text-lg mb-2">Real-Life Analogy</h3>
-          <p className="text-sm text-textSecondary leading-relaxed mb-6">
-            Think of Git like writing a group project in Google Docs, but instead of auto-saving every keystroke, you manually create "save points" (<strong>commits</strong>).
-          </p>
-          <ul className="space-y-4">
-            <li className="flex items-start gap-3">
-              <span className="text-blue-400 font-bold w-16 shrink-0 font-mono text-sm">add</span>
-              <span className="text-sm text-textSecondary">Selecting the paragraphs you want to save.</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-blue-400 font-bold w-16 shrink-0 font-mono text-sm">commit</span>
-              <span className="text-sm text-textSecondary">Saving those paragraphs with a title (e.g., "Added Introduction").</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <span className="text-blue-400 font-bold w-16 shrink-0 font-mono text-sm">push</span>
-              <span className="text-sm text-textSecondary">Uploading your save points to the shared cloud server (GitHub) so your team can see them.</span>
-            </li>
-          </ul>
+        {/* Left Side: Real-life Analogy */}
+        <div className="flex flex-col h-full justify-center">
+          <PremiumAnalogyCard 
+            icon={GitBranch}
+            title="Git"
+            analogyTitle="Google Docs History"
+            description="Think of Git like writing a group project in Google Docs, but instead of auto-saving every keystroke, you manually create intentional save points."
+            points={[
+              { keyword: "add", text: "Selecting the paragraphs you want to save." },
+              { keyword: "commit", text: "Saving those paragraphs with a descriptive title." },
+              { keyword: "push", text: "Uploading your saves to the shared cloud server (GitHub)." }
+            ]}
+          />
         </div>
 
-        {/* Terminal Animation */}
-        <div className="bg-[#0a0b0f] border border-white/10 rounded-xl overflow-hidden flex flex-col">
-          <div className="bg-white/5 px-4 py-2 border-b border-white/10 flex items-center justify-between">
-            <span className="text-xs font-mono text-textSecondary flex items-center gap-2"><Terminal size={14}/> Terminal</span>
-            <span className="text-xs font-mono text-textTertiary flex items-center gap-1"><GitBranch size={12}/> feature-login</span>
-          </div>
-          <div className="p-5 text-sm font-mono leading-loose">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-              <span className="text-green-400">➜</span> <span className="text-blue-400">~/app</span> git add .
-            </motion.div>
-            
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}>
-              <span className="text-green-400">➜</span> <span className="text-blue-400">~/app</span> git commit -m <span className="text-yellow-200">"feat: added login page"</span>
-            </motion.div>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }} className="text-textTertiary text-xs mt-2 ml-4 mb-4">
-              [feature-login a1b2c3d] feat: added login page<br/>
-              3 files changed, 140 insertions(+)<br/>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3 }}>
-              <span className="text-green-400">➜</span> <span className="text-blue-400">~/app</span> git push origin feature-login
-            </motion.div>
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} transition={{ delay: 3.5 }} className="text-textTertiary text-xs mt-2 ml-4">
-              Enumerating objects: 11, done.<br/>
-              Counting objects: 100% (11/11), done.<br/>
-              Writing objects: 100% (6/6), 842 bytes, done.<br/>
-              To github.com:quizkaal/app.git<br/>
-              &nbsp;&nbsp;* [new branch]      feature-login -{`>`} feature-login
-            </motion.div>
-          </div>
+        {/* Right Side: Animated Terminal */}
+        <div className="h-full min-h-[350px]">
+          <AnimatedTerminal 
+            title="macOS Terminal" 
+            branch="feature-login" 
+            lines={terminalLines} 
+            autoPlayDelay={0.5 / playbackSpeed} 
+          />
         </div>
 
       </div>

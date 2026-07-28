@@ -3,6 +3,7 @@ import "./globals.css";
 import TopNav from "@/components/TopNav";
 import AuroraBackground from "@/components/ui/AuroraBackground";
 import CursorSpotlightWrapper from "@/components/CursorSpotlightWrapper";
+import SupportModal from "@/components/ui/SupportModal";
 import LenisProvider from "@/components/LenisProvider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -23,6 +24,7 @@ export default function RootLayout({ children }) {
           <AuroraBackground />
           <CursorSpotlightWrapper />
           <TopNav />
+          <SupportModal />
           <div className="relative z-[2]">{children}</div>
         </LenisProvider>
       </body>
