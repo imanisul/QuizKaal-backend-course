@@ -1,0 +1,59 @@
+---
+title: LangChain Core & LCEL
+description: Learn how to connect LLMs to data and tools using LangChain and the LangChain Expression Language (LCEL).
+phase: LangChain Ecosystem
+difficulty: intermediate
+---
+
+## What is LangChain?
+
+LangChain is a framework for developing applications powered by language models. It provides standard interfaces for connecting LLMs to other sources of data and computation.
+
+<Callout type="info" title="Why use LangChain?">
+LLMs in isolation are just text generators. LangChain allows them to become **reasoning engines** by giving them memory, tools, and access to external APIs.
+</Callout>
+
+## LangChain Expression Language (LCEL)
+
+LCEL is a declarative way to easily compose chains together. It uses the `|` (pipe) operator, similar to Unix pipes, to pass the output of one component directly into the next.
+
+```python
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+from langchain_core.output_parsers import StrOutputParser
+
+# 1. Create a prompt template
+prompt = ChatPromptTemplate.from_template("Tell me a joke about {topic}")
+
+# 2. Initialize the model
+model = ChatOpenAI(model="gpt-4")
+
+# 3. Create an output parser
+parser = StrOutputParser()
+
+# 4. Chain them together using LCEL!
+chain = prompt | model | parser
+
+# 5. Invoke the chain
+result = chain.invoke({"topic": "backend engineers"})
+print(result)
+```
+
+## Internal Architecture: The Runnable Interface
+
+At the core of LCEL is the `Runnable` interface. Every component (Prompt, Model, Parser, Retriever) implements this interface, which guarantees they have methods like:
+- `.invoke()`
+- `.stream()`
+- `.batch()`
+- `.ainvoke()` (async)
+
+<Quiz 
+  question="Which operator is used to chain components together in LCEL?"
+  options={[
+    "+ (Plus)",
+    "& (Ampersand)",
+    "| (Pipe)",
+    ">> (Right Shift)"
+  ]}
+  answer="| (Pipe)"
+/>

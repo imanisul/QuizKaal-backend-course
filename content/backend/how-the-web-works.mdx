@@ -1,0 +1,58 @@
+---
+title: How the Web Works
+description: A deep dive into DNS, TCP/IP, and basic routing. Understand the foundations of backend engineering.
+phase: Internet & Networking
+difficulty: beginner
+---
+
+## What is the Web?
+
+When you type `https://quizkaal.in` into your browser, a massively complex chain of events occurs in a matter of milliseconds. As a backend engineer, you need to understand every single link in this chain.
+
+<Callout type="info" title="The Client-Server Model">
+At its core, the web is just two computers talking to each other. Your browser is the **Client**, and the computer hosting the website is the **Server**.
+</Callout>
+
+## The Workflow: Step-by-Step
+
+1. **DNS Resolution:** Your browser asks a DNS server, *"What is the IP address for quizkaal.in?"*
+2. **TCP/IP Connection:** A handshake occurs between your computer and the server.
+3. **HTTP Request:** Your browser says, *"GET me the homepage!"*
+4. **Server Processing:** The backend (Node.js/Python/Go) processes the request, talks to a database, and generates HTML/JSON.
+5. **HTTP Response:** The server sends the data back.
+
+<Quiz 
+  question="Which protocol is responsible for finding the IP address of a domain name?"
+  options={[
+    "HTTP",
+    "DNS (Domain Name System)",
+    "TCP/IP",
+    "FTP"
+  ]}
+  answer="DNS (Domain Name System)"
+/>
+
+## Code Example
+
+Here is a simple example of how a Node.js server handles a request:
+
+```javascript
+import http from 'http';
+
+const server = http.createServer((req, res) => {
+  // We received an HTTP request!
+  console.log(`Received request for ${req.url}`);
+  
+  // Send back an HTTP response
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ message: "Hello from the backend!" }));
+});
+
+server.listen(3000, () => {
+  console.log("Server is listening on port 3000");
+});
+```
+
+<Callout type="warning" title="Common Mistake">
+Never trust the client! Just because the frontend sends data doesn't mean it's valid. Always validate data on the backend before touching your database.
+</Callout>
