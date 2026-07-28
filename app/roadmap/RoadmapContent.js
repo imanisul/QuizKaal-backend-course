@@ -264,10 +264,21 @@ export default function RoadmapContent() {
                               </div>
                             );
 
+                            const animatedRow = (
+                              <motion.div
+                                initial={{ opacity: 0, y: 15 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, margin: "-40px" }}
+                                transition={{ duration: 0.4, ease: "easeOut" }}
+                              >
+                                {Row}
+                              </motion.div>
+                            );
+
                             return locked ? (
-                              <div key={lesson.slug}>{Row}</div>
+                              <div key={lesson.slug} className="opacity-50 cursor-not-allowed pointer-events-none">{animatedRow}</div>
                             ) : (
-                              <Link key={lesson.slug} href={`/lessons/${lesson.slug}`} className="group block w-full" prefetch={false}>{Row}</Link>
+                              <Link key={lesson.slug} href={`/lessons/${lesson.slug}`} className="group block w-full" prefetch={false}>{animatedRow}</Link>
                             );
                           })}
                         </div>

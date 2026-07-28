@@ -2,6 +2,7 @@ import { Code } from "lucide-react";
 import HttpVisualizer from "@/components/lesson1/HttpVisualizer";
 import LifecycleTimeline from "@/components/lesson1/LifecycleTimeline";
 import MethodVisualizer from "@/components/lesson2/MethodVisualizer";
+import CopyButton from "@/components/ui/CopyButton";
 
 export const MdxComponents = {
   HttpVisualizer,
@@ -25,7 +26,25 @@ export const MdxComponents = {
     if (props.className?.includes('language-')) {
       return <code {...props} />;
     }
-    return <code className="bg-white/10 text-white px-1.5 py-0.5 rounded-md text-sm font-mono border border-white/10" {...props} />;
+    return <code className="bg-white/10 text-white px-1.5 py-0.5 rounded-md text-[13px] font-mono border border-white/10" {...props} />;
+  },
+  pre: (props) => {
+    // Extract raw text from children for the CopyButton
+    // rehype-pretty-code passes the raw code as raw property sometimes, but safely we can extract it from props.children
+    const extractText = (node) => {
+      if (typeof node === "string") return node;
+      if (Array.isArray(node)) return node.map(extractText).join("");
+      if (node?.props?.children) return extractText(node.props.children);
+      return "";
+    };
+    const rawText = extractText(props.children);
+
+    return (
+      <div className="relative group my-8">
+        <CopyButton text={rawText} />
+        <pre {...props} className={`${props.className || ''} p-4 rounded-xl overflow-x-auto text-[14px] bg-[#0d1117] border border-white/10`} />
+      </div>
+    );
   },
   Quiz: ({ question, options, answer }) => {
     let parsedOptions = [];
