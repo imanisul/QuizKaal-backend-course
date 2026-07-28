@@ -146,10 +146,10 @@ export default function RoadmapContent() {
       </div>
 
       {/* 3. SINGLE COLUMN TIMELINE */}
-      <div className="relative w-full max-w-4xl mx-auto pl-4 md:pl-0">
+      <div className="relative w-full max-w-4xl mx-auto pl-2 md:pl-0">
         
         {/* Continuous Vertical Line */}
-        <div className="absolute left-[20px] md:left-[39px] top-4 bottom-0 w-[2px] bg-gradient-to-b from-primary/40 via-white/10 to-transparent rounded-full" />
+        <div className="absolute left-[27px] md:left-[39px] top-4 bottom-0 w-[2px] bg-gradient-to-b from-primary/40 via-white/10 to-transparent rounded-full" />
 
         {roadmap.map((group, gi) => {
           const isStandalone = group.isStandalone;
@@ -159,15 +159,15 @@ export default function RoadmapContent() {
           const hasLive = isStandalone ? true : group.lessons.some((l) => l.status === "available");
 
           return (
-            <div key={group.phase} className="relative w-full mb-12 flex items-start gap-6 md:gap-10 group/phase">
+            <div key={group.phase} className="relative w-full mb-8 md:mb-12 flex items-start gap-4 md:gap-10 group/phase">
               
               {/* Timeline Node */}
-              <div className="relative z-20 shrink-0 mt-4">
+              <div className="relative z-20 shrink-0 mt-4 md:mt-4">
                 <div 
                   className={`w-10 h-10 md:w-20 md:h-20 rounded-full flex items-center justify-center border-[4px] border-[#030712] transition-colors duration-500 shadow-xl ${hasLive ? 'bg-primary' : 'bg-surface'}`}
                   style={{ boxShadow: hasLive ? '0 0 20px rgba(79,70,229,0.4)' : 'none' }}
                 >
-                  <RenderIcon iconName={group.emoji} size={24} className={hasLive ? 'text-white' : 'text-textTertiary'} />
+                  <RenderIcon iconName={group.emoji} size={20} className={`md:w-6 md:h-6 ${hasLive ? 'text-white' : 'text-textTertiary'}`} />
                 </div>
               </div>
 
@@ -211,7 +211,7 @@ export default function RoadmapContent() {
                     onClick={() => setExpandedPhase(expandedPhase === gi ? null : gi)}
                     aria-label={isExpanded ? `Collapse ${group.phase}` : `Expand ${group.phase}`}
                     aria-expanded={isExpanded}
-                    className="w-full text-left flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 md:p-8 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                    className="w-full text-left flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 md:p-8 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
                   >
                     <div>
                       <div className="text-[11px] font-bold tracking-widest uppercase text-primary mb-2 flex items-center gap-2">
@@ -220,7 +220,7 @@ export default function RoadmapContent() {
                           {filtered.length} Lessons
                         </span>
                       </div>
-                      <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white mb-2">{group.phase}</h2>
+                      <h2 className="text-xl md:text-3xl font-extrabold tracking-tight text-white mb-2">{group.phase}</h2>
                       {group.description && (
                         <p className="text-sm md:text-base text-textSecondary leading-relaxed">{group.description}</p>
                       )}
@@ -240,20 +240,20 @@ export default function RoadmapContent() {
                         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                         className="border-t border-white/5"
                       >
-                        <div className="p-3 md:p-6 flex flex-col gap-2">
+                        <div className="p-2 md:p-6 flex flex-col gap-2">
                           {filtered.map((lesson) => {
                             const locked = lesson.status !== "available";
                             const Row = (
-                              <div className={`flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 ${locked ? "opacity-50 bg-transparent" : "bg-white/[0.03] hover:bg-white/[0.06] hover:scale-[1.01] cursor-pointer shadow-lg"}`}>
-                                <div className={`flex items-center justify-center w-10 h-10 rounded-xl shrink-0 ${locked ? 'bg-white/5 text-textTertiary' : 'bg-primary/20 text-primary'}`}>
-                                  {locked ? <Lock size={16} /> : <CheckCircle2 size={18} />}
+                              <div className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-2xl transition-all duration-300 ${locked ? "opacity-50 bg-transparent" : "bg-white/[0.03] hover:bg-white/[0.06] hover:scale-[1.01] cursor-pointer shadow-lg"}`}>
+                                <div className={`flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-xl shrink-0 ${locked ? 'bg-white/5 text-textTertiary' : 'bg-primary/20 text-primary'}`}>
+                                  {locked ? <Lock size={14} className="md:w-4 md:h-4" /> : <CheckCircle2 size={16} className="md:w-[18px] md:h-[18px]" />}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <div className="font-bold text-base md:text-lg text-white mb-1 truncate flex items-center gap-3">
+                                  <div className="font-bold text-sm md:text-lg text-white mb-0.5 md:mb-1 truncate flex items-center gap-3">
                                     {lesson.title}
                                     {!locked && <span className="px-2 py-0.5 text-[10px] font-bold tracking-widest uppercase bg-success/20 text-success rounded-full">Live</span>}
                                   </div>
-                                  <div className="text-[13px] md:text-sm text-textSecondary truncate">{lesson.summary}</div>
+                                  <div className="text-[12px] md:text-sm text-textSecondary truncate">{lesson.summary}</div>
                                 </div>
                                 {!locked && (
                                   <div className="shrink-0 text-textTertiary hidden sm:flex items-center gap-2">

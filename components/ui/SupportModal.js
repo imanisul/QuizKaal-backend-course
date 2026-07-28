@@ -79,13 +79,13 @@ export default function SupportModal() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-lg bg-[#0a0c10] border border-white/10 rounded-[32px] stripe-shadow overflow-hidden flex flex-col"
+            className="relative w-full max-w-lg max-h-[90vh] bg-[#0a0c10] border border-white/10 rounded-[32px] stripe-shadow overflow-hidden flex flex-col"
           >
             {/* Background Effects */}
             <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-error/10 rounded-full blur-[80px] pointer-events-none -translate-y-1/2 translate-x-1/3" />
             <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-purple-500/10 rounded-full blur-[80px] pointer-events-none translate-y-1/3 -translate-x-1/3" />
 
-            <div className="p-8 flex flex-col relative z-10">
+            <div className="p-6 md:p-8 flex flex-col relative z-10 overflow-y-auto custom-scrollbar">
               <button 
                 onClick={() => handleDismiss(0)}
                 className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors"
