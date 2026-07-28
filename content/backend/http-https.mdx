@@ -1,16 +1,78 @@
 ---
 title: "HTTP & HTTPS Deep Dive"
-description: "Methods, status codes, headers, and TLS"
+description: "Master the foundation of the web: HTTP Methods, Status Codes, Headers, and how TLS/SSL secures your data."
 phase: "Internet & Networking"
 difficulty: "intermediate"
 ---
 
-## Module Overview
+## What is HTTP?
 
-Welcome to **HTTP & HTTPS Deep Dive**. This module covers methods, status codes, headers, and tls. 
+At its core, **HTTP (Hypertext Transfer Protocol)** is a language that clients (like your browser) and servers use to speak to each other. It's a text-based, stateless protocol. Every time you click a link, your browser sends an HTTP request, and the server sends an HTTP response.
 
-<Callout type="info" title="Content Coming Soon">
-This is a placeholder for the advanced deep-dive content. The interactive visualizations, code examples, and quizzes for this specific module are currently being authored and will be published shortly!
-</Callout>
+Because it is **stateless**, the server instantly forgets about you as soon as the response is sent. It doesn't remember your previous requests natively. (This is why we have to invent things like cookies and JWTs to keep you logged in).
 
-In the meantime, you can continue exploring the rest of the roadmap or review the previous lessons.
+### HTTP Methods: Verbs of the Web
+
+Think of HTTP methods as the action you want the server to perform.
+
+<MethodVisualizer />
+
+- **GET:** "Give me data." (Reading a post, viewing a profile). It should never change data on the server.
+- **POST:** "Create new data." (Submitting a form, creating a new user).
+- **PUT:** "Update data completely." (Replacing your entire profile object).
+- **PATCH:** "Update data partially." (Just updating your email address).
+- **DELETE:** "Delete data." (Removing a post).
+
+## Status Codes: The Server's Reply
+
+Every HTTP response comes with a status code—a 3-digit number summarizing what happened. 
+
+- **1xx (Informational):** "Hold on, I'm thinking." (Rarely seen directly by users).
+- **2xx (Success):** "Everything went perfectly."
+  - `200 OK`: Request succeeded.
+  - `201 Created`: Successfully created a new resource (usually after a POST).
+- **3xx (Redirection):** "Look over there instead."
+  - `301 Moved Permanently`: The URL changed forever.
+  - `302 Found`: Temporary redirect.
+- **4xx (Client Error):** "You messed up."
+  - `400 Bad Request`: You sent malformed data.
+  - `401 Unauthorized`: You need to log in first.
+  - `403 Forbidden`: You are logged in, but you don't have admin rights.
+  - `404 Not Found`: The URL doesn't exist.
+- **5xx (Server Error):** "I messed up."
+  - `500 Internal Server Error`: The server crashed or threw an exception.
+  - `502 Bad Gateway`: The proxy couldn't reach the backend server.
+  - `504 Gateway Timeout`: The backend server took too long to respond.
+
+## HTTP Headers: The Metadata
+
+Headers are key-value pairs hidden in the request and response that provide crucial context.
+
+```http
+GET /api/users/123 HTTP/1.1
+Host: api.quizkaal.in
+Authorization: Bearer eyJhbGciOiJIUzI1...
+Accept: application/json
+User-Agent: Mozilla/5.0
+```
+
+- **Authorization:** Proves who you are (e.g., passing a JWT token).
+- **Content-Type:** Tells the server what kind of data you are sending (`application/json`, `multipart/form-data`).
+- **User-Agent:** Tells the server what browser or device you are using.
+
+## What is HTTPS?
+
+HTTP sends data in plain text. If you type your password on an HTTP site, a hacker on the same Wi-Fi network can read it in plain English using a tool like Wireshark.
+
+**HTTPS (Hypertext Transfer Protocol Secure)** encrypts this data using TLS (Transport Layer Security, the modern version of SSL).
+
+1. **The Handshake:** The client and server agree on cryptographic algorithms and exchange digital certificates to prove the server's identity.
+2. **Encryption:** They generate a shared symmetric key. From that moment on, all HTTP data (URLs, headers, body, passwords) is encrypted into gibberish before leaving your device.
+
+If a hacker intercepts HTTPS traffic, they only see random characters. They have no idea what you sent, or even what specific URL path you visited on the server!
+
+<Quiz 
+  question="Which HTTP method is best used for partially updating an existing resource, rather than replacing it entirely?"
+  options={["PUT", "POST", "PATCH", "UPDATE"]}
+  answer="PATCH"
+/>
