@@ -309,22 +309,36 @@ export default function Home() {
 
       {/* ═══════════ FOOTER ═══════════ */}
       <div className="max-w-[1120px] mx-auto px-6 sm:px-8">
-        <div className="footer-section pb-12 flex flex-col items-center">
-          <motion.div 
-            className="relative rounded-[16px] p-0.5 bg-gradient-to-br from-white/10 to-transparent shadow-[0_0_30px_rgba(255,255,255,0.03)] mb-6"
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.4 }}
-          >
-            <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 hover:opacity-100 transition-opacity duration-500" />
-            <Image src="/logo.png" alt="QuizKaal Learn" width={56} height={56} className="rounded-[14px] relative z-10 linear-glass ring-1 ring-white/10" />
-          </motion.div>
-          <p className="text-textSecondary text-sm max-w-md mx-auto mb-2 font-medium">
-            Built for engineers who learn by building.
-          </p>
-          <p className="text-textTertiary text-[11px] uppercase tracking-widest font-bold">
-            <span className="text-white">Quiz</span>
-            <span style={{ color: "#e53e3e" }}>Kaal</span> Learn · Backend Engineering
-          </p>
+        <footer className="mt-32 pb-12 border-t border-white/[0.06] pt-12 text-center">
+        {/* QR Code Container */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="mb-10 flex flex-col items-center"
+        >
+          <div className="p-3 bg-white rounded-2xl shadow-xl border-4 border-white/10 ring-1 ring-primary/30 transform hover:scale-105 transition-transform duration-300">
+            <Image src="/qrcode.png" alt="QuizKaal Learn App QR Code" width={140} height={140} className="rounded-xl" />
+          </div>
+          <div className="mt-4 text-[11px] font-bold tracking-widest uppercase text-primary">Scan to Learn on Mobile</div>
+        </motion.div>
+
+        <motion.div 
+          className="relative rounded-[16px] p-0.5 bg-gradient-to-br from-white/10 to-transparent shadow-[0_0_30px_rgba(255,255,255,0.03)] mb-6 mx-auto inline-block"
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.4 }}
+        >
+          <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 hover:opacity-100 transition-opacity duration-500" />
+          <Image src="/logo.png" alt="QuizKaal Learn" width={48} height={48} className="rounded-[14px] relative z-10 linear-glass ring-1 ring-white/10" />
+        </motion.div>
+        <p className="text-textSecondary text-sm max-w-md mx-auto mb-2 font-medium">
+          Built for engineers who learn by building.
+        </p>
+        <p className="text-textTertiary text-[11px] uppercase tracking-widest font-bold mt-4">
+          <span className="text-white">QuizKaal</span>
+          <span className="text-primary ml-1">Learn</span> · 2026
+        </p>
+      </footer>
         </div>
       </div>
     </main>

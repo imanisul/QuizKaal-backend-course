@@ -53,29 +53,30 @@ export default function RoadmapContent() {
   const totalFiltered = roadmap.reduce((acc, g) => acc + filterLessons(g.lessons).length, 0);
 
   return (
-    <main className="max-w-[1000px] mx-auto px-6 sm:px-8 pt-16 pb-32 relative">
+  return (
+    <main className="max-w-[1000px] mx-auto px-4 sm:px-8 pt-12 pb-24 relative overflow-hidden">
       {/* 1. HERO & STATS INTEGRATED */}
-      <section className="relative pt-20 pb-16 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-12 border-b border-white/[0.06] mb-12">
+      <section className="relative pt-12 pb-12 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/[0.06] mb-8">
         {/* Ambient Glows */}
-        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] opacity-50 pointer-events-none mix-blend-screen" />
+        <div className="absolute top-0 left-0 w-[400px] md:w-[600px] h-[400px] md:h-[600px] bg-primary/10 rounded-full blur-[120px] opacity-50 pointer-events-none mix-blend-screen" />
         
-        <div className="relative z-10 max-w-2xl">
+        <div className="relative z-10 max-w-2xl w-full">
           <motion.div 
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8"
+            className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6"
           >
             <span className="flex h-2 w-2 rounded-full bg-success animate-pulse" />
-            <span className="text-xs font-bold uppercase tracking-widest text-textTertiary">Course Roadmap</span>
+            <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-textTertiary">Course Roadmap</span>
           </motion.div>
 
-          <h1 className="text-[clamp(3rem,6vw,4.5rem)] font-black tracking-tighter leading-[1.05] mb-6 text-white drop-shadow-2xl">
+          <h1 className="text-[clamp(2rem,6vw,4.5rem)] font-black tracking-tighter leading-[1.1] mb-4 text-white drop-shadow-2xl">
             Master Backend <br className="hidden md:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary animate-gradient-shift drop-shadow-[0_0_15px_rgba(79,70,229,0.3)]">
               Engineering
             </span>
           </h1>
 
-          <p className="text-lg text-textSecondary max-w-xl leading-relaxed font-medium">
+          <p className="text-base md:text-lg text-textSecondary max-w-xl leading-relaxed font-medium mx-auto md:mx-0">
             Stop guessing how the web works. Build, scale, and secure real systems. Follow this chronological path from HTTP to distributed architecture.
           </p>
         </div>
@@ -83,34 +84,34 @@ export default function RoadmapContent() {
         {/* Stats Block (Integrated) */}
         <motion.div 
           initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
-          className="relative z-10 flex gap-8 md:gap-12 pb-2"
+          className="relative z-10 flex justify-center md:justify-start gap-8 md:gap-12 pb-2 w-full md:w-auto mt-4 md:mt-0"
         >
           <div>
-            <div className="text-4xl font-black text-white"><AnimatedCounter target={available} /></div>
-            <div className="text-xs font-bold uppercase tracking-widest text-textTertiary mt-2">Live Lessons</div>
+            <div className="text-3xl md:text-4xl font-black text-white"><AnimatedCounter target={available} /></div>
+            <div className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-textTertiary mt-1 md:mt-2">Live Lessons</div>
           </div>
           <div>
-            <div className="text-4xl font-black text-white"><AnimatedCounter target={total} /></div>
-            <div className="text-xs font-bold uppercase tracking-widest text-textTertiary mt-2">Total Lessons</div>
+            <div className="text-3xl md:text-4xl font-black text-white"><AnimatedCounter target={total} /></div>
+            <div className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-textTertiary mt-1 md:mt-2">Total Lessons</div>
           </div>
         </motion.div>
       </section>
 
       {/* 2. PROGRESS BAR & FILTERS */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16 relative z-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 relative z-10">
         
         {/* Modern Segmented Filters */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
           <span className="text-[11px] font-bold tracking-widest uppercase text-textTertiary mr-2 hidden md:block">Filter:</span>
           <LayoutGroup>
-            <div className="flex flex-wrap items-center gap-1 bg-black/40 p-1.5 rounded-xl border border-white/10 shadow-inner">
+            <div className="flex flex-nowrap md:flex-wrap items-center gap-1 bg-black/40 p-1.5 rounded-xl border border-white/10 shadow-inner min-w-max">
               {filterOptions.map((opt) => {
                 const isActive = filter === opt.key;
                 return (
                   <button
                     key={opt.key}
                     onClick={() => setFilter(opt.key)}
-                    className={`relative px-4 py-2 text-[13px] font-semibold transition-colors duration-300 rounded-lg ${isActive ? "text-white" : "text-textSecondary hover:text-white"}`}
+                    className={`relative px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-[13px] font-semibold transition-colors duration-300 rounded-lg whitespace-nowrap ${isActive ? "text-white" : "text-textSecondary hover:text-white"}`}
                   >
                     {isActive && (
                       <motion.div
@@ -159,50 +160,50 @@ export default function RoadmapContent() {
           const hasLive = isStandalone ? true : group.lessons.some((l) => l.status === "available");
 
           return (
-            <div key={group.phase} className="relative w-full mb-8 md:mb-12 flex items-start gap-4 md:gap-10 group/phase">
+            <div key={group.phase} className="relative w-full mb-6 md:mb-12 flex items-start gap-3 md:gap-10 group/phase">
               
               {/* Timeline Node */}
-              <div className="relative z-20 shrink-0 mt-4 md:mt-4">
+              <div className="relative z-20 shrink-0 mt-3 md:mt-4">
                 <div 
-                  className={`w-10 h-10 md:w-20 md:h-20 rounded-full flex items-center justify-center border-[4px] border-[#030712] transition-colors duration-500 shadow-xl ${hasLive ? 'bg-primary' : 'bg-surface'}`}
+                  className={`w-10 h-10 md:w-20 md:h-20 rounded-full flex items-center justify-center border-[3px] md:border-[4px] border-[#030712] transition-colors duration-500 shadow-xl ${hasLive ? 'bg-primary' : 'bg-surface'}`}
                   style={{ boxShadow: hasLive ? '0 0 20px rgba(79,70,229,0.4)' : 'none' }}
                 >
-                  <RenderIcon iconName={group.emoji} size={20} className={`md:w-6 md:h-6 ${hasLive ? 'text-white' : 'text-textTertiary'}`} />
+                  <RenderIcon iconName={group.emoji} size={18} className={`md:w-6 md:h-6 ${hasLive ? 'text-white' : 'text-textTertiary'}`} />
                 </div>
               </div>
 
               {/* Minimalist Phase Card */}
-              <div className="flex-1 mt-2">
+              <div className="flex-1 mt-1 md:mt-2 w-[calc(100%-3rem)] md:w-auto">
                 {isStandalone ? (
                   <Link href={group.href} className="block group/link">
                     <motion.div
-                      className="bg-primary/10 border border-primary/30 hover:border-primary/50 transition-colors duration-500 rounded-3xl overflow-hidden shadow-2xl relative"
+                      className="bg-primary/10 border border-primary/30 hover:border-primary/50 transition-colors duration-500 rounded-[1.5rem] overflow-hidden shadow-2xl relative"
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, margin: "-100px" }}
                     >
-                      <div className="w-full text-left flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 md:p-8">
+                      <div className="w-full text-left flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-5 md:p-8">
                         <div>
-                          <div className="text-[11px] font-bold tracking-widest uppercase text-primary mb-2 flex items-center gap-2">
+                          <div className="text-[10px] md:text-[11px] font-bold tracking-widest uppercase text-primary mb-1 md:mb-2 flex items-center gap-2">
                             Phase {gi + 1}
-                            <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary animate-pulse">
+                            <span className="font-mono text-[9px] md:text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary animate-pulse whitespace-nowrap">
                               Premium Course
                             </span>
                           </div>
-                          <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white mb-2">{group.phase}</h2>
+                          <h2 className="text-lg md:text-3xl font-extrabold tracking-tight text-white mb-1.5 md:mb-2">{group.phase}</h2>
                           {group.description && (
-                            <p className="text-sm md:text-base text-textSecondary leading-relaxed">{group.description}</p>
+                            <p className="text-xs md:text-base text-textSecondary leading-relaxed">{group.description}</p>
                           )}
                         </div>
-                        <div className="p-2 rounded-full bg-primary/20 text-primary transition-transform duration-500 shrink-0 group-hover/link:translate-x-1 group-hover/link:-translate-y-1">
-                          <ArrowRight size={24} />
+                        <div className="p-2 rounded-full bg-primary/20 text-primary transition-transform duration-500 shrink-0 self-end sm:self-auto group-hover/link:translate-x-1 group-hover/link:-translate-y-1">
+                          <ArrowRight size={20} className="md:w-6 md:h-6" />
                         </div>
                       </div>
                     </motion.div>
                   </Link>
                 ) : (
                   <motion.div
-                    className="bg-[#0A0A0A] border border-white/5 hover:border-white/10 transition-colors duration-500 rounded-3xl overflow-hidden shadow-2xl relative"
+                    className="bg-[#0A0A0A] border border-white/5 hover:border-white/10 transition-colors duration-500 rounded-[1.5rem] overflow-hidden shadow-2xl relative"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-100px" }}
@@ -211,22 +212,22 @@ export default function RoadmapContent() {
                     onClick={() => setExpandedPhase(expandedPhase === gi ? null : gi)}
                     aria-label={isExpanded ? `Collapse ${group.phase}` : `Expand ${group.phase}`}
                     aria-expanded={isExpanded}
-                    className="w-full text-left flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 md:p-8 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                    className="w-full text-left flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 md:p-8 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
                   >
-                    <div>
-                      <div className="text-[11px] font-bold tracking-widest uppercase text-primary mb-2 flex items-center gap-2">
+                    <div className="w-full">
+                      <div className="text-[10px] md:text-[11px] font-bold tracking-widest uppercase text-primary mb-1 md:mb-2 flex items-center gap-2">
                         Phase {gi + 1}
-                        <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-textSecondary">
+                        <span className="font-mono text-[9px] md:text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-textSecondary whitespace-nowrap">
                           {filtered.length} Lessons
                         </span>
                       </div>
-                      <h2 className="text-xl md:text-3xl font-extrabold tracking-tight text-white mb-2">{group.phase}</h2>
+                      <h2 className="text-lg md:text-3xl font-extrabold tracking-tight text-white mb-1.5 md:mb-2 leading-tight">{group.phase}</h2>
                       {group.description && (
-                        <p className="text-sm md:text-base text-textSecondary leading-relaxed">{group.description}</p>
+                         <p className="text-xs md:text-base text-textSecondary leading-relaxed line-clamp-2 md:line-clamp-none">{group.description}</p>
                       )}
                     </div>
                     
-                    <div className={`p-2 rounded-full bg-white/5 text-textTertiary transition-transform duration-500 shrink-0 ${isExpanded ? "rotate-180" : ""}`}>
+                    <div className={`hidden sm:flex p-2 rounded-full bg-white/5 text-textTertiary transition-transform duration-500 shrink-0 ${isExpanded ? "rotate-180" : ""}`}>
                       <ChevronDown size={20} />
                     </div>
                   </button>
@@ -244,16 +245,16 @@ export default function RoadmapContent() {
                           {filtered.map((lesson) => {
                             const locked = lesson.status !== "available";
                             const Row = (
-                              <div className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-2xl transition-all duration-300 ${locked ? "opacity-50 bg-transparent" : "bg-white/[0.03] hover:bg-white/[0.06] hover:scale-[1.01] cursor-pointer shadow-lg"}`}>
-                                <div className={`flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-xl shrink-0 ${locked ? 'bg-white/5 text-textTertiary' : 'bg-primary/20 text-primary'}`}>
-                                  {locked ? <Lock size={14} className="md:w-4 md:h-4" /> : <CheckCircle2 size={16} className="md:w-[18px] md:h-[18px]" />}
+                              <div className={`flex items-center gap-3 p-2 md:p-4 rounded-xl md:rounded-2xl transition-all duration-300 ${locked ? "opacity-50 bg-transparent" : "bg-white/[0.03] hover:bg-white/[0.06] hover:scale-[1.01] cursor-pointer shadow-lg"}`}>
+                                <div className={`flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl shrink-0 ${locked ? 'bg-white/5 text-textTertiary' : 'bg-primary/20 text-primary'}`}>
+                                  {locked ? <Lock size={12} className="md:w-4 md:h-4" /> : <CheckCircle2 size={14} className="md:w-[18px] md:h-[18px]" />}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <div className="font-bold text-sm md:text-lg text-white mb-0.5 md:mb-1 truncate flex items-center gap-3">
-                                    {lesson.title}
-                                    {!locked && <span className="px-2 py-0.5 text-[10px] font-bold tracking-widest uppercase bg-success/20 text-success rounded-full">Live</span>}
+                                  <div className="font-bold text-xs md:text-lg text-white mb-0.5 md:mb-1 truncate flex items-center gap-2 md:gap-3">
+                                    <span className="truncate">{lesson.title}</span>
+                                    {!locked && <span className="px-1.5 py-[1px] md:px-2 md:py-0.5 text-[8px] md:text-[10px] font-bold tracking-widest uppercase bg-success/20 text-success rounded-full shrink-0">Live</span>}
                                   </div>
-                                  <div className="text-[12px] md:text-sm text-textSecondary truncate">{lesson.summary}</div>
+                                  <div className="text-[10px] md:text-sm text-textSecondary truncate">{lesson.summary}</div>
                                 </div>
                                 {!locked && (
                                   <div className="shrink-0 text-textTertiary hidden sm:flex items-center gap-2">
@@ -284,35 +285,50 @@ export default function RoadmapContent() {
 
       {/* 4. SKILLS SECTION */}
       <motion.div
-        className="mt-20 pt-20 border-t border-white/[0.06]"
+        className="mt-12 md:mt-20 pt-12 md:pt-20 border-t border-white/[0.06]"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
       >
-        <div className="flex items-center gap-3 mb-10 justify-center">
-          <Trophy size={20} className="text-warning" />
-          <h3 className="text-sm font-bold uppercase tracking-widest text-textTertiary">Skills you'll master</h3>
+        <div className="flex items-center gap-2 md:gap-3 mb-8 md:mb-10 justify-center">
+          <Trophy size={18} className="text-warning md:w-5 md:h-5" />
+          <h3 className="text-xs md:text-sm font-bold uppercase tracking-widest text-textTertiary">Skills you'll master</h3>
         </div>
         <SkillGrid />
       </motion.div>
 
-      {/* Footer */}
-      <div className="mt-32 pb-12 flex flex-col items-center">
+      {/* Footer & QR Code */}
+      <div className="mt-20 md:mt-32 pb-8 flex flex-col items-center">
+        
+        {/* QR Code Container */}
         <motion.div 
-          className="relative rounded-[16px] p-0.5 bg-gradient-to-br from-white/10 to-transparent shadow-[0_0_30px_rgba(255,255,255,0.03)] mb-6 mx-auto"
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="mb-10 flex flex-col items-center"
+        >
+          <div className="p-3 bg-white rounded-2xl shadow-xl border-4 border-white/10 ring-1 ring-primary/30 transform hover:scale-105 transition-transform duration-300">
+            <Image src="/qrcode.png" alt="QuizKaal Learn App QR Code" width={140} height={140} className="rounded-xl" />
+          </div>
+          <div className="mt-4 text-[11px] font-bold tracking-widest uppercase text-primary">Scan to Learn on Mobile</div>
+        </motion.div>
+
+        <motion.div 
+          className="relative rounded-[16px] p-0.5 bg-gradient-to-br from-white/10 to-transparent shadow-[0_0_30px_rgba(255,255,255,0.03)] mb-5 mx-auto"
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.4 }}
         >
           <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 hover:opacity-100 transition-opacity duration-500" />
-          <Image src="/logo.png" alt="QuizKaal Learn" width={56} height={56} className="rounded-[14px] relative z-10 linear-glass ring-1 ring-white/10" />
+          <Image src="/logo.png" alt="QuizKaal Learn" width={48} height={48} className="rounded-[14px] relative z-10 linear-glass ring-1 ring-white/10 md:w-14 md:h-14" />
         </motion.div>
-        <p className="text-textSecondary text-sm max-w-md mx-auto mb-2 text-center">
+        
+        <p className="text-textSecondary text-[13px] md:text-sm max-w-[280px] md:max-w-md mx-auto mb-2 text-center leading-relaxed">
           The journey of a thousand lines begins with a single{" "}
-          <code className="text-xs px-1.5 py-0.5 rounded-md bg-white/[0.06] font-mono text-primary">console.log()</code>
+          <code className="text-[10px] md:text-xs px-1.5 py-0.5 rounded-md bg-white/[0.06] font-mono text-primary">console.log()</code>
         </p>
-        <p className="text-textTertiary text-[11px] uppercase tracking-widest font-bold mt-6 text-center">
-          <span className="text-white">Quiz</span>
-          <span style={{ color: "#e53e3e" }}>Kaal</span> Learn · Backend Engineering
+        <p className="text-textTertiary text-[10px] md:text-[11px] uppercase tracking-widest font-bold mt-4 md:mt-6 text-center">
+          <span className="text-white">QuizKaal</span>
+          <span className="text-primary ml-1">Learn</span> · Backend Engineering
         </p>
       </div>
     </main>
