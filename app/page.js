@@ -334,9 +334,16 @@ export default function Home() {
         <p className="text-textSecondary text-sm max-w-md mx-auto mb-2 font-medium">
           Built for engineers who learn by building.
         </p>
+        
+        <div className="text-textTertiary text-xs mt-6 mb-4 space-y-2">
+          <p>
+            For any design issues or bug reports, please contact: <a href="mailto:support@quizkaal.in" className="text-primary hover:underline transition-all">support@quizkaal.in</a>
+          </p>
+        </div>
+
         <p className="text-textTertiary text-[11px] uppercase tracking-widest font-bold mt-4">
-          <span className="text-white">QuizKaal</span>
-          <span className="text-primary ml-1">Learn</span> · 2026
+          &copy; 2026 Copyright <span className="text-white ml-1">QuizKaal</span>
+          <span className="text-primary ml-1">Learn</span> India. All Rights Reserved.
         </p>
       </footer>
       </div>

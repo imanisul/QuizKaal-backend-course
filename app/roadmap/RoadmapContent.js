@@ -336,9 +336,17 @@ export default function RoadmapContent() {
           The journey of a thousand lines begins with a single{" "}
           <code className="text-[10px] md:text-xs px-1.5 py-0.5 rounded-md bg-white/[0.06] font-mono text-primary">console.log()</code>
         </p>
+
+        <div className="text-textTertiary text-xs mt-6 mb-2 space-y-2 text-center">
+          <p>
+            For any design issues or bug reports, please contact: <br className="md:hidden" />
+            <a href="mailto:support@quizkaal.in" className="text-primary hover:underline transition-all">support@quizkaal.in</a>
+          </p>
+        </div>
+
         <p className="text-textTertiary text-[10px] md:text-[11px] uppercase tracking-widest font-bold mt-4 md:mt-6 text-center">
-          <span className="text-white">QuizKaal</span>
-          <span className="text-primary ml-1">Learn</span> · Backend Engineering
+          &copy; 2026 Copyright <span className="text-white ml-1">QuizKaal</span>
+          <span className="text-primary ml-1">Learn</span> India. All Rights Reserved.
         </p>
       </div>
     </main>
