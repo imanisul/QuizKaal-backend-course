@@ -11,21 +11,21 @@ const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", displ
 
 export const metadata = {
   metadataBase: new URL("https://quizkaal.in"),
-  title: "QuizKaal Learn — Backend Engineering from Fundamentals to Production",
+  title: "QuizKaal — Backend Engineering from Fundamentals to Production",
   description: "QuizKaal Learn: An immersive, interactive backend engineering course. Master HTTP, auth, databases, caching, scaling, and more. Build it, watch it run.",
   keywords: ["QuizKaal", "backend engineering", "learn backend", "HTTP", "REST API", "databases", "Node.js", "CI/CD", "DevOps"],
   icons: { icon: "/logo.png" },
   openGraph: {
-    title: "QuizKaal Learn — Backend Engineering from Fundamentals to Production",
-    description: "An immersive, interactive backend engineering course. Master HTTP, auth, databases, caching, scaling, and more. Build it, watch it run.",
+    title: "QuizKaal — Backend Engineering from Fundamentals to Production",
+    description: "An immersive, interactive backend engineering course.",
     url: "https://quizkaal.in",
-    siteName: "QuizKaal Learn",
+    siteName: "QuizKaal",
     images: [
       {
-        url: "/logo.png",
-        width: 800,
-        height: 600,
-        alt: "QuizKaal Learn Backend Course Logo",
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "QuizKaal Backend Course Logo",
       },
     ],
     locale: "en_US",
@@ -33,9 +33,9 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "QuizKaal Learn — Backend Engineering",
-    description: "Master backend engineering from scratch to production with interactive, visual lessons.",
-    images: ["/logo.png"],
+    title: "QuizKaal — Backend Engineering",
+    description: "Master backend systems with interactive visualizers and real code.",
+    images: ["/og-image.jpg"],
   },
   verification: {
     google: "8J4P9t283cluCF9q1jsjgE-zgATbfDdXXE2KN4wBMVU",

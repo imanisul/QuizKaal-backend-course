@@ -1,8 +1,8 @@
 import CICDContent from "./CICDContent";
 
 export const metadata = {
-  title: "CI/CD Pipeline - QuizKaal Backend Engineering",
-  description: "Learn how continuous integration and continuous deployment work in a real-world backend architecture.",
+  title: "QuizKaal | CI/CD Pipeline",
+  description: "Learn how to build a continuous integration and deployment pipeline.",
 };
 
 export default function CICDPage() {

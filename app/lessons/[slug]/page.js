@@ -18,7 +18,7 @@ export function generateStaticParams() {
 export function generateMetadata({ params }) {
   const lesson = getLessonBySlug(params.slug);
   if (!lesson) return {};
-  return { title: `${lesson.frontmatter?.title || 'Lesson'} — QuizKaal Learn`, description: lesson.frontmatter?.description };
+  return { title: `QuizKaal | ${lesson.frontmatter?.title || 'Lesson'}`, description: lesson.frontmatter?.description };
 }
 
 export default async function LessonPage({ params }) {

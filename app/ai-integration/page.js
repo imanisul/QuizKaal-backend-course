@@ -4,8 +4,8 @@ import { getAdjacentLessons } from "@/data/roadmap";
 import CourseNavigation from "@/components/lesson/CourseNavigation";
 
 export const metadata = {
-  title: "AI Integration in Backend - QuizKaal Learn",
-  description: "Learn how to integrate AI, LLMs, Vector Databases, and RAG into your backend applications.",
+  title: "QuizKaal | AI Integration in Backend",
+  description: "Learn how to integrate AI models, LangChain, and RAG into your backend systems.",
 };
 
 export default function AIIntegrationPage() {

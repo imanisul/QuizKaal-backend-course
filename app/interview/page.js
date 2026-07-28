@@ -1,7 +1,7 @@
 import InterviewContent from "./InterviewContent";
 
 export const metadata = {
-  title: "Backend Interview Questions - QuizKaal Learn",
+  title: "QuizKaal | Backend Interview Questions",
   description: "Crack the backend engineering interview with curated Q&A covering HTTP, databases, scaling, and more.",
 };
 
