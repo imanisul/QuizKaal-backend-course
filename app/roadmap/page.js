@@ -10,6 +10,11 @@ import AnimatedCounter from "@/components/ui/AnimatedCounter";
 import RenderIcon from "@/components/ui/IconMap";
 import SkillGrid from "@/components/ui/SkillGrid";
 
+export const metadata = {
+  title: "Backend Roadmap - QuizKaal Learn",
+  description: "A complete, chronological roadmap to mastering backend engineering from HTTP to distributed systems.",
+};
+
 export default function RoadmapPage() {
   const [filter, setFilter] = useState("all");
   const [expandedPhase, setExpandedPhase] = useState(null);

@@ -7,6 +7,11 @@ import RenderIcon from "@/components/ui/IconMap";
 import { roadmap } from "@/data/roadmap";
 import { interviewQuestions } from "@/data/interviewQuestions";
 
+export const metadata = {
+  title: "Backend Interview Questions - QuizKaal Learn",
+  description: "Crack the backend engineering interview with curated Q&A covering HTTP, databases, scaling, and more.",
+};
+
 export default function InterviewPage() {
   return (
     <div className="min-h-screen relative overflow-hidden">

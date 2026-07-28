@@ -4,8 +4,8 @@ import { getAdjacentLessons } from "@/data/roadmap";
 import CourseNavigation from "@/components/lesson/CourseNavigation";
 
 export const metadata = {
-  title: "AI Integration in Full-Stack Apps | QuizKaal Learn",
-  description: "Learn how to build AI-Native Backends, integrate RAG, LangGraph, and Agentic workflows into production apps.",
+  title: "AI Integration in Backend - QuizKaal Learn",
+  description: "Learn how to integrate AI, LLMs, Vector Databases, and RAG into your backend applications.",
 };
 
 export default function AIIntegrationPage() {
