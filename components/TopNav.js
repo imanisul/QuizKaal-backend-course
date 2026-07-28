@@ -46,7 +46,7 @@ export default function TopNav() {
               <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-[14px] opacity-0 group-hover:opacity-100 transition-all duration-500" />
               <Image 
                 src="/logo.png" 
-                alt="QuizKaal" 
+                alt="QuizKaal Learn" 
                 width={48} 
                 height={48} 
                 className="rounded-[12px] relative z-10 linear-glass ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500" 
@@ -54,11 +54,11 @@ export default function TopNav() {
             </motion.div>
             <div className="flex flex-col leading-tight ml-1">
               <span className="text-[18px] font-extrabold tracking-tight group-hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.5)] transition-all duration-300">
-                <span className="text-white">Quiz</span>
-                <span style={{ color: "#e53e3e" }}>Kaal</span>
+                <span className="text-white">QuizKaal</span>
+                <span className="text-primary ml-1">Learn</span>
               </span>
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-textTertiary hidden sm:block group-hover:text-white/70 transition-colors">
-                Learn Backend
+                Backend & AI Engineering
               </span>
             </div>
           </Link>

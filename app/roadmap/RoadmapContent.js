@@ -304,7 +304,7 @@ export default function RoadmapContent() {
           transition={{ duration: 0.4 }}
         >
           <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 hover:opacity-100 transition-opacity duration-500" />
-          <Image src="/logo.png" alt="QuizKaal" width={56} height={56} className="rounded-[14px] relative z-10 linear-glass ring-1 ring-white/10" />
+          <Image src="/logo.png" alt="QuizKaal Learn" width={56} height={56} className="rounded-[14px] relative z-10 linear-glass ring-1 ring-white/10" />
         </motion.div>
         <p className="text-textSecondary text-sm max-w-md mx-auto mb-2 text-center">
           The journey of a thousand lines begins with a single{" "}

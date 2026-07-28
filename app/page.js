@@ -76,19 +76,25 @@ export default function Home() {
           </motion.div>
           
           <h1 className="text-[clamp(2.5rem,8vw,5rem)] font-black tracking-tighter leading-[1.05] mb-6 drop-shadow-2xl flex flex-wrap justify-center gap-x-4 gap-y-2">
-            {["QuizKaal", "Backend", "Systems", "from", "Zero", "to", "Production"].map((word, i) => (
-              <motion.span
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                className={
-                  word === "Production"
-                    ? "text-gradient-animated drop-shadow-[0_0_15px_rgba(79,70,229,0.3)]"
-                    : word === "QuizKaal" 
-                      ? "text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent" 
-                      : "text-white"
-                }
+            {["QuizKaal Learn:", "Backend", "Systems", "from", "Zero", "to", "Production"].map((word, i) => (
+              <motion.span 
+                key={i} 
+                initial={{ opacity: 0, y: 30, rotateX: 30 }}
+                animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                transition={{ 
+                  duration: 0.8, 
+                  delay: i * 0.1,
+                  type: "spring",
+                  stiffness: 150,
+                  damping: 15
+                }}
+                className={`inline-block ${
+                  word === "Backend" || word === "Production"
+                  ? "text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary drop-shadow-[0_0_15px_rgba(79,70,229,0.3)]" 
+                  : word === "QuizKaal Learn:" 
+                  ? "text-white"
+                  : "text-white"
+                }`}
               >
                 {word}
               </motion.span>
@@ -310,7 +316,7 @@ export default function Home() {
             transition={{ duration: 0.4 }}
           >
             <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 hover:opacity-100 transition-opacity duration-500" />
-            <Image src="/logo.png" alt="QuizKaal" width={56} height={56} className="rounded-[14px] relative z-10 linear-glass ring-1 ring-white/10" />
+            <Image src="/logo.png" alt="QuizKaal Learn" width={56} height={56} className="rounded-[14px] relative z-10 linear-glass ring-1 ring-white/10" />
           </motion.div>
           <p className="text-textSecondary text-sm max-w-md mx-auto mb-2 font-medium">
             Built for engineers who learn by building.
