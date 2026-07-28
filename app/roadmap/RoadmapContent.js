@@ -268,7 +268,7 @@ export default function RoadmapContent() {
                             return locked ? (
                               <div key={lesson.slug}>{Row}</div>
                             ) : (
-                              <Link key={lesson.slug} href={`/lessons/${lesson.slug}`} className="group" prefetch={false}>{Row}</Link>
+                              <Link key={lesson.slug} href={`/lessons/${lesson.slug}`} className="group block w-full" prefetch={false}>{Row}</Link>
                             );
                           })}
                         </div>

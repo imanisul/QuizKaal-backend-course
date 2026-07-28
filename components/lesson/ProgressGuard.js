@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Lock } from "lucide-react";
 import { isLessonUnlocked } from "@/utils/progress";
+import { motion } from "framer-motion";
 
 export default function ProgressGuard({ lessonSlug, children }) {
   const [unlocked, setUnlocked] = useState(false);
@@ -30,12 +31,21 @@ export default function ProgressGuard({ lessonSlug, children }) {
         <p className="text-textSecondary max-w-md mb-8 leading-relaxed">
           You haven't unlocked this lesson yet. Please complete the previous lessons to unlock this content.
         </p>
-        <Link href="/" className="px-6 py-3 bg-white text-black font-bold rounded-xl hover:bg-white/90 transition-colors">
+        <Link href="/roadmap" className="px-6 py-3 bg-white text-black font-bold rounded-xl hover:bg-white/90 transition-colors">
           Return to Roadmap
         </Link>
       </div>
     );
   }
 
-  return <>{children}</>;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      className="w-full"
+    >
+      {children}
+    </motion.div>
+  );
 }
