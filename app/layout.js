@@ -37,6 +37,9 @@ export const metadata = {
     description: "Master backend engineering from scratch to production with interactive, visual lessons.",
     images: ["/logo.png"],
   },
+  verification: {
+    google: "8J4P9t283cluCF9q1jsjgE-zgATbfDdXXE2KN4wBMVU",
+  },
 };
 
 export default function RootLayout({ children }) {
