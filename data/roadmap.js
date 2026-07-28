@@ -75,7 +75,8 @@ export const roadmap = [
     description: "Architect distributed systems capable of handling millions of users.",
     gradient: "linear-gradient(135deg, #64748b, #94a3b8)",
     lessons: [
-      { id: 18, slug: "microservices", emoji: "Grid", title: "Monolith to Microservices", summary: "Service discovery, API gateways", difficulty: "expert", time: "55 min", tags: ["Architecture", "Microservices"] },
+      { id: 175, slug: "monolithic-architecture", emoji: "Building", title: "Monolithic Architecture", summary: "Single codebase, deployment, and vertical scaling", difficulty: "intermediate", time: "40 min", tags: ["Architecture", "Monolith"] },
+      { id: 18, slug: "microservices", emoji: "Grid", title: "Microservices Architecture", summary: "Service discovery, API gateways, decoupling", difficulty: "expert", time: "55 min", tags: ["Architecture", "Microservices"] },
       { id: 19, slug: "load-balancing-scaling", emoji: "Maximize", title: "Load Balancing & Scaling", summary: "Horizontal scaling, reverse proxies", difficulty: "advanced", time: "40 min", tags: ["Scaling", "Nginx"] },
       { id: 20, slug: "docker", emoji: "Box", title: "Docker Mastery", summary: "Containers, Images, Compose, and Architecture", difficulty: "expert", time: "120 min", tags: ["Docker", "DevOps"] },
       { id: 201, slug: "kubernetes", emoji: "Grid", title: "Kubernetes (K8s)", summary: "Orchestration, Pods, Deployments", difficulty: "expert", time: "90 min", tags: ["K8s", "DevOps"] },

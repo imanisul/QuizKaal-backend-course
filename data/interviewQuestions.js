@@ -131,6 +131,12 @@ export const interviewQuestions = {
   ],
 
   // PHASE 7
+  "monolithic-architecture": [
+    { q: "What is a Monolithic Architecture?", a: "A software design where all business logic, UI, and data access layers are combined into a single, indivisible deployment unit (a single codebase)." },
+    { q: "What is Vertical Scaling vs Horizontal Scaling in a Monolith?", a: "Vertical scaling (Scaling Up) means adding more CPU/RAM to the single server running the monolith. Horizontal scaling (Scaling Out) means cloning the entire monolith across multiple servers behind a load balancer." },
+    { q: "What are the main drawbacks of a Monolithic Architecture?", a: "As the codebase grows, it becomes harder to understand, build times increase drastically, deployments are risky (a bug in one module crashes the whole app), and you cannot scale components independently." },
+    { q: "When should a startup choose a Monolith over Microservices?", a: "Almost always at the beginning. Monoliths are faster to develop, easier to debug, and simpler to deploy. Microservices introduce massive operational complexity that startups don't need until they hit scale." }
+  ],
   "microservices": [
     { q: "What is an API Gateway?", a: "A single entry point for a microservices architecture. It handles routing, authentication, rate limiting, and composition, hiding the internal service structure from clients." },
     { q: "What is Distributed Tracing?", a: "Passing a unique Trace ID across all microservices involved in a single user request, allowing you to visualize the path and pinpoint latency bottlenecks." },

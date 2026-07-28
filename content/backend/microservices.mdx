@@ -1,16 +1,183 @@
 ---
-title: "Monolith to Microservices"
-description: "Service discovery, API gateways"
+title: "Microservices Architecture"
+description: "Master Microservices. Learn why massive companies break monoliths into tiny, independent services, how they communicate, and how they scale."
 phase: "System Design"
 difficulty: "expert"
 ---
 
-## Module Overview
+## 1. Simple Explanation
 
-Welcome to **Monolith to Microservices**. This module covers service discovery, api gateways. 
+**Microservices Architecture** is a software design pattern that takes a massive, single application (a Monolith) and breaks it down into dozens or hundreds of tiny, independent applications. Each tiny application (a "microservice") is responsible for exactly one job (like Payments, or Users, or Email), and they talk to each other over a network.
 
-<Callout type="info" title="Content Coming Soon">
-This is a placeholder for the advanced deep-dive content. The interactive visualizations, code examples, and quizzes for this specific module are currently being authored and will be published shortly!
-</Callout>
+## 2. Why this technology exists
 
-In the meantime, you can continue exploring the rest of the roadmap or review the previous lessons.
+When companies like Amazon and Netflix grew to thousands of engineers, their monolithic codebases became a nightmare. If the 'Recommendation' team wanted to deploy an update, they had to wait for the 'Billing' team to finish their code, then deploy the entire 50-gigabyte application together. Microservices were created so teams could work, build, and deploy independently without blocking each other.
+
+## 3. What problem it solves
+
+Microservices solve **Organizational Scaling** and **Fault Isolation**.
+- **Organizational Scaling:** The Payments team can write their service in Go, deploy it 10 times a day, and use PostgreSQL. The AI team can write their service in Python, deploy once a week, and use MongoDB. Total independence.
+- **Fault Isolation:** If the AI Recommendation service crashes, the rest of the application (like Checkout and Video Streaming) keeps working flawlessly.
+
+## 4. Real-life analogy
+
+Think of a **Hospital**.
+- **A Monolith:** A tiny rural clinic with one doctor. That doctor handles check-in, X-rays, surgery, and billing. If the doctor gets sick, the entire clinic shuts down.
+- **Microservices:** A massive modern hospital. You have a Check-in desk (Service A), an X-ray department (Service B), and Surgeons (Service C). They are separate teams in separate rooms. If the X-ray machine breaks, the surgeons can still operate, and the check-in desk can still process patients. They communicate by sending patient charts (Network Requests) to each other.
+
+---
+
+## 5. Internal working
+
+<ArchitectureDiagram 
+  title="Microservices Architecture Layout"
+  nodes={[
+    { id: "gateway", name: "API Gateway", icon: "🌐", type: "Entrypoint", description: "The single front door. It receives all client requests, authenticates them, and routes them to the correct internal microservice." },
+    { id: "auth", name: "Auth Service", icon: "🔐", type: "Microservice", description: "A completely independent Node.js app that only handles logins and JWTs. Has its own separate database." },
+    { id: "orders", name: "Order Service", icon: "🛒", type: "Microservice", description: "A separate Go app handling orders. Cannot be accessed directly by the outside world." },
+    { id: "payments", name: "Payment Service", icon: "💳", type: "Microservice", description: "A Java app processing Stripe. Communicates with Orders via a message broker." }
+  ]}
+/>
+
+---
+
+## 6. Animated Workflow
+
+<AnimatedWorkflow 
+  title="A Distributed Request Flow"
+  steps={[
+    { title: "Client Request", icon: "📱", description: "User clicks 'Buy' on their phone." },
+    { title: "API Gateway", icon: "🌐", description: "Gateway receives the request. It asks the Auth Service to validate the JWT." },
+    { title: "Auth Service", icon: "🔐", description: "Auth Service replies 'Valid'. Gateway forwards request to Order Service." },
+    { title: "Order Service", icon: "🛒", description: "Order Service creates the order in its DB, then calls Payment Service via REST API." },
+    { title: "Payment Service", icon: "💳", description: "Payment is processed. An event is published to RabbitMQ: 'Payment_Success'." },
+    { title: "Notification Service", icon: "📩", description: "Notification Service hears the event from RabbitMQ and emails the user." }
+  ]}
+/>
+
+---
+
+## 7. Architecture Diagram: Monolith vs Microservices
+
+<ArchitectureDiagram 
+  title="Scaling Differences"
+  nodes={[
+    { id: "mono_scale", name: "Monolith Scaling", icon: "🏢", type: "Wasteful", description: "If only the Payments feature has high traffic, you must clone the entire massive Monolith to a new server to handle it. Wastes CPU/RAM." },
+    { id: "micro_scale", name: "Microservice Scaling", icon: "🧩", type: "Efficient", description: "You can deploy 50 instances of the Payment Service, but only 2 instances of the Auth Service. You only pay for the exact resources you need." }
+  ]}
+/>
+
+---
+
+## 8. Request Lifecycle
+
+<RequestLifecycle 
+  title="Synchronous vs Asynchronous Communication"
+  steps={[
+    { title: "Synchronous (REST/gRPC)", description: "Order Service sends an HTTP request to Payment Service and WAITS for a response. If Payment Service is down, Order Service fails.", code: "const res = await axios.post('http://payment-srv/charge');" },
+    { title: "Asynchronous (Kafka/RabbitMQ)", description: "Order Service publishes a message 'Order_Created' to a queue and immediately returns success to the user." },
+    { title: "Event Driven", description: "Payment Service picks up the message from the queue 2 seconds later and processes it independently." }
+  ]}
+/>
+
+---
+
+## 9. Code Implementation
+
+Here is an example of an Express **API Gateway** routing traffic to internal microservices.
+
+```javascript
+import express from 'express';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+import verifyAuthToken from './middlewares/auth.js';
+
+const app = express();
+
+// 1. All requests to /api/users go to the User Microservice running on Port 4001
+app.use('/api/users', createProxyMiddleware({ 
+  target: 'http://user-service:4001', 
+  changeOrigin: true 
+}));
+
+// 2. All requests to /api/payments must be authenticated first!
+app.use('/api/payments', verifyAuthToken, createProxyMiddleware({ 
+  target: 'http://payment-service:4002', 
+  changeOrigin: true 
+}));
+
+app.listen(3000, () => console.log('🌐 API Gateway running on port 3000'));
+```
+
+---
+
+## 10. Real-world production example
+
+<RealWorldCaseStudy 
+  company="Netflix"
+  role="The Microservices Pioneer"
+  challenge="In 2008, Netflix was a monolithic Java application. A single typo in a database connection caused the entire Netflix platform to go down for 3 days. They realized they could no longer scale."
+  solution="Over 7 years, they broke their monolith into over 1,000 independent microservices. They built an API Gateway (Zuul) and heavy observability tools to track requests as they bounced between hundreds of services."
+  results={["Total fault isolation (if 'Ratings' goes down, video streaming still works)", "Thousands of deployments per day", "Massive global scale"]}
+/>
+
+---
+
+## 11. Best practices
+
+1. **Database per Service:** The golden rule of Microservices. The Order service should have its own database, and the User service should have its own. They should NEVER share a database. If Orders needs User data, it must ask the User service via an API.
+2. **Use an API Gateway:** Clients (iOS/Web) should never talk to microservices directly. They talk to a single Gateway, which routes the traffic internally.
+3. **Prefer Asynchronous Communication:** Use Event Brokers (Kafka, RabbitMQ) instead of direct REST calls. It makes the system incredibly resilient to failures.
+
+## 12. Common mistakes
+
+- **The Distributed Monolith:** Breaking the code into microservices, but they are all so tightly coupled via synchronous REST calls that if one goes down, they all crash. You have the complexity of microservices with none of the benefits.
+- **Ignoring Observability:** When a request fails, how do you know which of the 50 microservices caused the error? If you don't implement Distributed Tracing (like Jaeger/OpenTelemetry) from day one, debugging is impossible.
+
+## 13. Performance considerations
+
+- **Network Latency:** In a monolith, calling `getUser()` takes 1 nanosecond in memory. In a microservice, calling `getUser()` is an HTTP request over a network, taking 50 milliseconds. Microservices are inherently *slower* than monoliths on a per-request basis.
+
+## 14. Security considerations
+
+- **Zero Trust Network:** Just because two microservices are on the same internal VPC doesn't mean they should trust each other. Services should authenticate each other using mTLS (Mutual TLS).
+- **Centralized Auth:** The API Gateway should handle JWT validation and authentication, stripping the token and passing the raw User ID to the downstream internal services.
+
+## 15. Scaling strategies
+
+Microservices are built for scale. Because they are independent, they must be containerized (Docker) and orchestrated by **Kubernetes**. Kubernetes can monitor CPU usage and automatically scale up the Payment Service to 10 instances while leaving the User Service at 1 instance.
+
+---
+
+## 16. Interview questions
+
+1. **"What is the 'Database per Service' pattern and why is it critical?"**
+   *Answer:* Every microservice must own its data exclusively. If multiple services share a database, they become tightly coupled. A schema change by the User team would instantly break the Payment team's code.
+2. **"Explain the Saga Pattern."**
+   *Answer:* Because microservices don't share a database, you cannot use ACID transactions across them. The Saga pattern manages distributed transactions by emitting events. If Step 3 in a flow fails, it emits a failure event, and Steps 1 and 2 listen for it to run "compensating transactions" (rollbacks).
+3. **"What role does an API Gateway play?"**
+   *Answer:* It acts as a reverse proxy, providing a single entry point for clients. It handles cross-cutting concerns like SSL termination, rate limiting, authentication, and request routing to internal services.
+
+---
+
+## 17. Quiz
+
+<Quiz 
+  question="If Microservice A needs data from Microservice B, but Microservice B is currently crashed, what is the best way to ensure Microservice A doesn't also crash while waiting for a response?"
+  options={[
+    "Write a SQL query directly to Microservice B's database instead.",
+    "Use asynchronous communication via a Message Broker (like RabbitMQ) so A doesn't have to wait for B.",
+    "Put both services back into a Monolith.",
+    "Increase the timeout on the REST API call to 5 minutes."
+  ]}
+  answer="Use asynchronous communication via a Message Broker (like RabbitMQ) so A doesn't have to wait for B."
+/>
+
+---
+
+## 18. Hands-on assignment
+
+1. Create a `gateway-service` (Express on port 3000).
+2. Create a `user-service` (Express on port 4001).
+3. Create a `product-service` (Express on port 4002).
+4. Use `http-proxy-middleware` in the gateway to route `/api/users` to port 4001 and `/api/products` to port 4002.
+5. Hit the gateway from your browser and watch it successfully route the traffic!
