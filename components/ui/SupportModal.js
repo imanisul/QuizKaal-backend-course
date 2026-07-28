@@ -105,11 +105,15 @@ export default function SupportModal() {
               </div>
 
               <div className="flex flex-col md:flex-row gap-6 mb-8">
-                {/* QR Code Placeholder */}
+                {/* QR Code */}
                 <div className="shrink-0 flex flex-col items-center gap-3">
-                  <div className="w-[140px] h-[140px] bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center relative overflow-hidden group">
-                    <QrCode size={40} className="text-white/20 group-hover:scale-110 transition-transform duration-500" />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                  <div className="w-[140px] h-[140px] bg-white border-[6px] border-white/10 rounded-2xl flex items-center justify-center relative overflow-hidden group shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                    <img 
+                      src="/donate-qr.png" 
+                      alt="Donation QR Code" 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-xl"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/50 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                   </div>
                   <span className="text-[10px] font-bold uppercase tracking-widest text-textTertiary">Scan to Support</span>
                 </div>
