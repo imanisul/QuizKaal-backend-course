@@ -1,14 +1,182 @@
 ---
 title: "Corrective RAG (CRAG) & Self-RAG"
-description: "Trending: Self-reflection, evaluating retrieval, and web fallbacks"
+description: "Give your AI the ability to reflect on its own mistakes. Learn how to implement self-correction and web search fallbacks to achieve zero hallucinations."
 phase: "Advanced RAG Architectures"
 difficulty: "expert"
 ---
 
-## Module Overview
+## 1. Simple Explanation
 
-Welcome to **Corrective RAG (CRAG) & Self-RAG**. This module covers trending: self-reflection, evaluating retrieval, and web fallbacks. 
+In standard RAG, the system retrieves a document and blindly trusts it. If the retrieved document is irrelevant, or if the Vector DB failed to find the answer, the LLM will hallucinate or output garbage.
+**CRAG (Corrective RAG)** adds a quality check. Before answering, an AI "Evaluator" reads the retrieved documents and grades them (Relevant or Irrelevant). If irrelevant, it rejects the internal documents and performs a live Web Search to find the answer.
+**Self-RAG** takes this further. The AI generates an answer, then *reads its own answer*, critiques it for hallucinations, and if it finds a mistake, it literally rewrites the answer before showing it to the user.
 
-<AIVisualizer />
+## 2. Why this technology exists
 
-In the meantime, you can continue exploring the rest of the roadmap or review the previous lessons.
+As AI agents moved from experimental demos to production customer-support roles, companies realized that standard RAG was too fragile. If a user asked "Who won the game last night?", the internal database (which was embedded 3 months ago) wouldn't have the answer, and the AI would confidently lie.
+Researchers from Google and Meta developed CRAG and Self-RAG to give AI the human-like ability of **Self-Reflection**—the ability to say, *"Wait, my sources are bad, let me Google this,"* or *"Wait, I just contradicted myself, let me re-write this."*
+
+## 3. What problem it solves
+
+- **Irrelevant Retrieval:** Drops hallucination rates by refusing to generate answers based on bad context.
+- **Knowledge Gaps:** Seamlessly falls back to external APIs (Tavily, Google, Wikipedia) when internal data fails.
+- **Self-Correction:** Ensures the final output actually answers the user's prompt without going off-topic.
+
+## 4. Real-life analogy
+
+**Standard RAG is like a confident, arrogant student.**
+They look at their notes, write an essay, and turn it in immediately without proofreading. If their notes were wrong, they fail.
+
+**Self-RAG is like a meticulous, straight-A student.**
+They look at their notes. They grade their notes ("These notes suck"). They go to the library to get better notes (Web Search). They write a rough draft. They proofread their own draft ("Wait, paragraph two contradicts paragraph one"). They rewrite it. Only when it is perfect do they hand it in to the teacher (the User).
+
+---
+
+## 5. Internal working
+
+<AnimatedWorkflow 
+  title="The CRAG Flow (Corrective RAG)"
+  steps={[
+    { title: "Retrieve", description: "Search Vector DB for user query.", icon: "🔍" },
+    { title: "Evaluate", description: "LLM grades the chunks: 'Relevant' or 'Irrelevant'.", icon: "⚖️" },
+    { title: "Fallback", description: "If Irrelevant, trigger Tavily Web Search.", icon: "🌐" },
+    { title: "Generate", description: "Generate answer using the best available context.", icon: "🤖" },
+    { title: "Self-Grade", description: "Does the answer contain hallucinations? If yes, retry.", icon: "🔄" }
+  ]}
+/>
+
+---
+
+## 6. Architecture & Data Flow
+
+<AnimatedWorkflow 
+  title="Self-RAG Reflection Tokens"
+  steps={[
+    { title: "Retrieval", description: "Retrieves Document A.", icon: "📄" },
+    { title: "Critique Token", description: "Model outputs special token: [Relevant]", icon: "✅" },
+    { title: "Generation", description: "Model writes the first sentence.", icon: "✍️" },
+    { title: "Support Token", description: "Model outputs token: [Fully_Supported_By_Doc]", icon: "✅" },
+    { title: "Utility Token", description: "Model outputs token: [Helpful_To_User]", icon: "🌟" }
+  ]}
+/>
+
+## 7. Step-by-step process explanation
+
+Implementing CRAG usually requires an orchestration framework like **LangGraph**, because it is not a straight line; it is a cyclic graph (it loops).
+1. **Retrieve:** Standard Vector Search.
+2. **Grade Documents (The Router):** An LLM prompt asks: *"Does Document A contain the answer to Question X? Output YES or NO."*
+3. **Branching Logic:**
+   - If YES: Proceed to Generation.
+   - If NO: Discard Document A. Trigger a Web Search Tool.
+4. **Generate:** The LLM writes the answer.
+5. **Grade Hallucinations:** Another LLM prompt asks: *"Is the generated answer strictly supported by the provided facts? Output YES or NO."*
+   - If NO: Loop back to Generation and tell the LLM to try again.
+6. **Grade Answer:** *"Does the answer actually resolve the user's original query?"*
+   - If YES: Return to user.
+
+## 8. Code examples
+
+*Note: CRAG requires complex state management. LangGraph is the industry standard for this.*
+
+**LangGraph Document Grader Node (Pseudo-code):**
+```javascript
+import { ChatOpenAI } from "@langchain/openai";
+
+// An LLM specifically instructed to be a strict grader
+const graderModel = new ChatOpenAI({ temperature: 0, modelName: "gpt-4" }).withStructuredOutput(
+  z.object({
+    isRelevant: z.boolean().describe("True if the document contains facts to answer the question"),
+  })
+);
+
+async function gradeDocumentsNode(state) {
+  const { question, documents } = state;
+  const validDocs = [];
+  let webSearchRequired = false;
+
+  for (const doc of documents) {
+    const result = await graderModel.invoke(
+      `Question: ${question}\n\nDocument: ${doc.pageContent}`
+    );
+    
+    if (result.isRelevant) {
+      validDocs.push(doc);
+    } else {
+      webSearchRequired = true;
+    }
+  }
+
+  // Pass the updated state to the next node in the LangGraph!
+  return { documents: validDocs, webSearchRequired };
+}
+```
+
+## 9. Common Use Cases
+
+- **Medical & Legal Chatbots:** Scenarios where a hallucination is unacceptable and could result in lawsuits. The system must self-correct or refuse to answer.
+- **Financial Analysts:** When asking about a company's revenue, the system checks internal PDFs. If the PDF is from 2022, it triggers a live web search to fetch the 2024 data.
+
+## 10. Best practices
+
+- **Use smaller, cheaper models for grading:** If you use GPT-4 to grade every single chunk, your API costs will explode. Use a fast, cheap model (like Llama-3-8B or GPT-4o-mini) trained specifically to output True/False for the grading steps.
+- **Set a max loop limit:** If the model hallucinates, and rewrites it, and hallucinates again, your system might get stuck in an infinite loop! Always set a `max_retries = 3` limit. If it fails 3 times, gracefully tell the user "I cannot reliably answer this question."
+
+## 11. Common mistakes
+
+- **Latency:** Standard RAG takes ~2 seconds. CRAG might take ~10 seconds because it involves 4 or 5 sequential LLM calls (Retrieve -> Grade -> Search -> Generate -> Grade). You must stream the reasoning steps to the frontend UI (e.g., "Evaluating documents...", "Searching the web...") so the user doesn't think the app crashed.
+- **Overly Strict Grading:** If your grader prompt is too strict, it will reject perfectly good documents and aggressively trigger unnecessary web searches, slowing the system down.
+
+## 12. Performance tips
+
+- **Concurrent Grading:** If you retrieve 5 chunks, do not grade them one by one in a `for` loop. Fire off 5 asynchronous LLM calls simultaneously using `Promise.all()` to grade all documents in parallel.
+
+## 13. Security considerations
+
+- **Web Search Poisoning:** If your system falls back to a Web Search, it might pull data from a malicious website designed specifically to prompt-inject AI bots. Ensure your web search tool restricts its search space to trusted domains (like Wikipedia, Reuters, or official docs) using tools like Tavily.
+
+## 14. Scalability & Deployment
+
+- CRAG introduces **State**. Standard RAG is stateless (one request, one response). Because CRAG loops, it needs to remember what it did in step 1 while it is executing step 4. LangGraph automatically manages this state, and allows you to persist it to a database (like Postgres) so you can pause, resume, and debug complex agent workflows.
+
+## 15. Interview questions
+
+**Q: In Corrective RAG (CRAG), what happens if the internal Vector Database returns irrelevant documents?**
+A: A Grader LLM evaluates the documents, identifies them as irrelevant, discards them, and dynamically triggers an external Web Search to find the correct information before generating the final answer.
+
+**Q: What is the main downside of implementing Self-RAG in production?**
+A: High latency and increased API costs. Because Self-RAG requires the LLM to generate an answer, grade it, and potentially rewrite it multiple times, a single user query might result in 3 to 5 separate LLM API calls, taking several seconds to complete.
+
+## 16. MCQs
+
+1. Which of the following is the primary goal of the "Self-Correction" loop in Self-RAG?
+   - A) To compress the text chunks to save memory.
+   - B) To ensure the generated answer does not contain hallucinations and is fully supported by the retrieved facts.
+   - C) To translate the answer into different languages.
+   - D) To speed up the generation process.
+   **Answer: B**
+
+2. If an AI system needs to manage cyclic loops, conditional branching, and persistent state for RAG, which framework is most appropriate?
+   - A) Express.js
+   - B) PyTorch
+   - C) LangGraph
+   - D) Pinecone
+   **Answer: C**
+
+## 17. Assignments
+
+**Design the Graph:**
+1. Grab a piece of paper. Draw a flowchart for a CRAG system.
+2. Start Node: `User Query`.
+3. Next Node: `Vector Retrieval`.
+4. Next Node: `Grader (Yes/No)`.
+5. If No: Draw an arrow to `Web Search Tool`, then to `Generator`.
+6. If Yes: Draw an arrow directly to `Generator`.
+7. You have just designed the architecture for an advanced AI Agent!
+
+## 18. Summary
+
+As we demand more reliability from AI, simple Retrieval is no longer enough. By forcing the AI to slow down, grade its own sources, utilize external tools when necessary, and critique its own work, CRAG and Self-RAG represent the vital shift from simple chatbots to robust, autonomous, reliable AI systems.
+
+## 19. Next lesson progression
+
+We've mastered text retrieval, but what about images? Documents aren't just text; they contain charts, graphs, and photos. Next, we explore the cutting edge of AI perception: **Multimodal RAG**.

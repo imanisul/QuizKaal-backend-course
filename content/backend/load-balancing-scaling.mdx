@@ -1,14 +1,160 @@
 ---
 title: "Load Balancing & Scaling"
-description: "Horizontal scaling, reverse proxies"
+description: "Discover how top tech companies scale their infrastructure horizontally using Load Balancers, Reverse Proxies, and auto-scaling groups."
 phase: "System Design"
 difficulty: "advanced"
 ---
 
-## Module Overview
+## 1. Simple Explanation
 
-Welcome to **Load Balancing & Scaling**. This module covers horizontal scaling, reverse proxies. 
+When a website is small, one server can handle all the traffic. But what happens if 1 million people visit at once? The server crashes.
+**Scaling** is the process of adding more power to handle the traffic. 
+A **Load Balancer** is a traffic cop that stands in front of your servers. Instead of users talking directly to Server A, they talk to the Load Balancer, which then seamlessly distributes the traffic across Server A, Server B, Server C, and Server D so no single server gets overwhelmed.
+
+## 2. Why this technology exists
+
+In the past, the only way to scale was to buy a physically larger, more expensive computer (Vertical Scaling). Eventually, you hit a physical limit; you simply cannot buy a computer big enough to run Google.
+Engineers realized it was infinitely cheaper and more reliable to buy 1,000 small, cheap computers and network them together (Horizontal Scaling). However, you need a single entry point so users don't have to guess which of the 1,000 IP addresses to connect to. The Load Balancer was born.
+
+## 3. What problem it solves
+
+- **High Availability:** If Server B catches fire and crashes, the Load Balancer instantly stops sending traffic to it and routes everyone to the surviving servers. Users don't even notice the crash.
+- **Traffic Spikes:** During a Superbowl ad or Black Friday, you can spin up 50 new servers, attach them to the Load Balancer, handle the massive traffic, and then shut them down when it's over.
+- **SSL Termination:** The Load Balancer can handle the heavy cryptographic math of HTTPS, forwarding raw, unencrypted HTTP to the backend servers to save them CPU cycles.
+
+## 4. Real-life analogy
+
+**A Load Balancer is like a Bank Teller Line.**
+Imagine a bank with 4 Tellers (Servers). If customers just walked up to whichever teller they wanted, one teller might end up with a massive line of 20 people while the other 3 tellers are standing around doing nothing.
+To fix this, the bank creates a single serpentine line with a Manager at the front (The Load Balancer). As soon as any teller becomes free, the Manager points the next customer in line to that specific teller. Everyone gets served efficiently!
+
+---
+
+## 5. Internal working
 
 <ArchitectureVisualizer />
 
-In the meantime, you can continue exploring the rest of the roadmap or review the previous lessons.
+---
+
+## 6. Architecture & Data Flow
+
+<AnimatedWorkflow 
+  title="Reverse Proxy / Load Balancer Flow"
+  steps={[
+    { title: "User Request", description: "Browser requests https://api.example.com", icon: "🌐" },
+    { title: "DNS Resolution", description: "Domain points to the Load Balancer's Public IP.", icon: "🔍" },
+    { title: "Load Balancer", description: "Receives request, decrypts SSL, runs Round Robin algo.", icon: "⚖️" },
+    { title: "Backend Server", description: "Request is routed via private network to Node.js Server #3.", icon: "🖥️" },
+    { title: "Response", description: "Response flows back through the Load Balancer to the user.", icon: "✅" }
+  ]}
+/>
+
+## 7. Step-by-step process explanation
+
+1. **Health Checks:** Every few seconds, the Load Balancer pings all backend servers (e.g., `GET /health`). If a server doesn't respond with `200 OK`, it is temporarily removed from the pool.
+2. **Algorithm Decision:** When a user request arrives, the Load Balancer picks a server based on an algorithm:
+   - **Round Robin:** (Server 1, then 2, then 3, then back to 1).
+   - **Least Connections:** Sends traffic to the server currently handling the fewest active requests.
+   - **IP Hash:** Hashes the user's IP so they always get routed to the same server (Sticky Sessions).
+3. **Forwarding:** The LB forwards the request, modifying headers (like adding `X-Forwarded-For` so the backend knows the user's real IP).
+4. **Returning:** The backend processes the request and sends the data back to the LB, which sends it to the user.
+
+## 8. Code examples
+
+**Nginx Configuration as a Load Balancer:**
+Nginx is the world's most popular open-source web server and reverse proxy.
+
+```nginx
+# Define the pool of backend servers
+upstream my_nodejs_cluster {
+    server 10.0.0.1:3000;
+    server 10.0.0.2:3000;
+    server 10.0.0.3:3000;
+}
+
+# The main Load Balancer server
+server {
+    listen 80;
+    server_name api.mywebsite.com;
+
+    location / {
+        # Forward traffic to the upstream cluster
+        proxy_pass http://my_nodejs_cluster;
+        
+        # Pass the original user's IP address to the backend
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+    }
+}
+```
+
+## 9. Common Use Cases
+
+- **AWS Application Load Balancer (ALB):** Used to route HTTP/HTTPS traffic to autoscaling groups of EC2 instances or Docker containers in AWS.
+- **API Gateways:** An advanced form of a load balancer that also handles authentication, rate limiting, and routes different URLs to completely different microservices (e.g., `/users` to the User Service, `/orders` to the Order Service).
+- **Global Server Load Balancing (GSLB):** Using Cloudflare or Route53 to route a user in Tokyo to a server in Japan, while routing a user in New York to a server in the US.
+
+## 10. Best practices
+
+- **Stateless Backend:** To effectively load balance, your backend servers MUST be stateless. Do not store session data in Server A's RAM, because the user's next request might go to Server B! Store sessions in a centralized Redis cache.
+- **SSL Termination:** Put your SSL certificate on the Load Balancer, not on the individual backend servers. It drastically simplifies certificate management and reduces CPU load on the backends.
+
+## 11. Common mistakes
+
+- **Single Point of Failure (SPOF):** Having 10 backend servers but only 1 Load Balancer. If the Load Balancer goes down, the entire system is dead. In production, you must have redundant load balancers (usually managed for you by cloud providers like AWS).
+- **Ignoring Health Checks:** If you configure a load balancer without health checks, it will cheerfully continue routing 33% of your users to a server that crashed 10 minutes ago, resulting in a horrible user experience.
+
+## 12. Performance tips
+
+- **Use Layer 4 (TCP) Load Balancing when possible:** A Layer 7 (HTTP) load balancer inspects the actual HTTP headers and URLs. A Layer 4 load balancer just looks at the raw IP address and Port and forwards the binary data. Layer 4 is exponentially faster and uses less CPU, perfect for massive raw traffic.
+
+## 13. Security considerations
+
+- **WAF (Web Application Firewall):** Modern load balancers allow you to attach a WAF. The WAF inspects every incoming packet for SQL Injection or XSS patterns and drops malicious requests before they ever reach your application code.
+- **DDoS Protection:** Because the Load Balancer is the only server exposed to the public internet (the backends are in a private subnet), it acts as a massive shield against Distributed Denial of Service attacks.
+
+## 14. Scalability & Deployment
+
+- **Auto-Scaling:** Cloud providers allow you to tie the Load Balancer to a CPU metric. If the average CPU across all backend servers hits 80%, the cloud automatically provisions 3 new servers and adds their IPs to the Load Balancer pool. This is the holy grail of modern cloud infrastructure.
+
+## 15. Interview questions
+
+**Q: What is a Reverse Proxy?**
+A: A regular proxy sits in front of *clients* (like a school firewall hiding students from the internet). A Reverse Proxy sits in front of *servers* (hiding your backend architecture from the internet). All load balancers act as reverse proxies.
+
+**Q: What is the `X-Forwarded-For` header?**
+A: Because the backend server is technically receiving the TCP connection directly from the Load Balancer, `req.ip` in Node.js will just show the Load Balancer's internal IP. The Load Balancer injects the `X-Forwarded-For` header containing the original user's true public IP so the backend can read it for logging and rate limiting.
+
+## 16. MCQs
+
+1. Why must backend applications be "stateless" when placed behind a standard Round-Robin load balancer?
+   - A) Because the load balancer encrypts the state.
+   - B) Because subsequent requests from the same user might be routed to completely different servers.
+   - C) Because stateful applications cannot use HTTPS.
+   - D) Because stateless apps don't require databases.
+   **Answer: B**
+
+2. What is "SSL Termination"?
+   - A) Revoking a compromised security certificate.
+   - B) The process of the Load Balancer decrypting HTTPS traffic and forwarding it as plain HTTP to the backend.
+   - C) When a user closes their browser window.
+   - D) Forcing users to use HTTP instead of HTTPS.
+   **Answer: B**
+
+## 17. Assignments
+
+**Local Nginx Cluster:**
+1. Install Docker on your machine.
+2. Create a simple Node.js Express app that just returns `res.send("Hello from Server " + process.pid)`.
+3. Use a `docker-compose.yml` file to spin up 3 instances of this Node app, and 1 instance of `nginx`.
+4. Configure the `nginx.conf` to load balance across the 3 Node instances.
+5. Hit `localhost:80` in your browser and refresh repeatedly. Watch the Server PID change as Nginx routes your traffic!
+
+## 18. Summary
+
+Mastering Load Balancing marks the transition from building apps that work for 100 users, to designing architectures that can handle 100 million. By placing a traffic cop in front of a fleet of stateless, auto-scaling backend servers, you achieve the ultimate goals of System Design: massive throughput and fault-tolerant high availability.
+
+## 19. Next lesson progression
+
+While we can spin up servers manually and configure Nginx, doing this for thousands of microservices is impossible for a human. We need an automated orchestrator. Next, we dive into the industry standard for container orchestration: **Kubernetes**.

@@ -1,10 +1,183 @@
 ---
-title: "Kubernetes (K8s) Architecture"
-description: "Master container orchestration. Learn how to deploy, scale, and manage massive containerized applications using Kubernetes."
+title: "Kubernetes (K8s)"
+description: "Master the industry standard for container orchestration. Learn how Kubernetes automates deployment, scaling, and management of massive microservice architectures."
 phase: "System Design"
 difficulty: "expert"
 ---
 
-<BackendFlowVisualizer />
+## 1. Simple Explanation
 
-Kubernetes is the industry standard for container orchestration.
+If Docker is like a standardized shipping container, **Kubernetes (K8s)** is the massive automated port facility. 
+You don't just want one container running on one laptop. You want 50 containers of your API, 20 containers of your frontend, and 3 containers of Redis running across 10 huge servers. If a server catches fire, you want the system to automatically move the surviving containers to a healthy server immediately. Kubernetes is the operating system for your cluster that automates all of this.
+
+## 2. Why this technology exists
+
+As companies moved from massive Monoliths to hundreds of independent Microservices (all packaged in Docker), a new nightmare emerged: Operations. 
+How do you deploy 100 different services? How do you know if Service #43 crashed in the middle of the night? How do you route traffic between them securely? Google faced this exact problem managing billions of containers a week. They built an internal tool called Borg, and later open-sourced it as Kubernetes. Today, it is the undisputed standard for cloud infrastructure.
+
+## 3. What problem it solves
+
+- **Automated Rollouts/Rollbacks:** Deploy V2 of your app. If K8s detects it's crashing, it instantly rolls everyone back to V1 automatically without human intervention.
+- **Self-Healing:** If a container runs out of memory and crashes, K8s kills it and spins up a fresh replacement in milliseconds.
+- **Service Discovery:** Microservices can just talk to `http://auth-service`, and K8s internal DNS figures out which internal IP addresses currently belong to the Auth containers.
+- **Auto-Scaling:** Automatically spins up more containers when CPU usage spikes during a Superbowl ad.
+
+## 4. Real-life analogy
+
+**Kubernetes is the Conductor of a massive Orchestra.**
+The orchestra has 100 musicians (Docker Containers).
+If you just told them all to "play", it would be chaos. The Conductor (Kubernetes Master Node) has the sheet music (The YAML Config File). The Conductor makes sure the violins start at the right time, tells the trumpets to play louder if they are too quiet (Scaling), and if a flute player faints (Container Crash), the Conductor immediately waves a backup flute player onto the stage to take their place (Self-Healing). 
+
+---
+
+## 5. Internal working
+
+<ArchitectureVisualizer />
+
+---
+
+## 6. Architecture & Data Flow
+
+<AnimatedWorkflow 
+  title="Kubernetes Core Concepts"
+  steps={[
+    { title: "Node", description: "A physical or virtual machine in your cluster (the servers).", icon: "🖥️" },
+    { title: "Pod", description: "The smallest unit. A wrapper around one or more Docker containers.", icon: "📦" },
+    { title: "Deployment", description: "The blueprint. Tells K8s 'I want exactly 5 Pods of my Node app running at all times'.", icon: "📜" },
+    { title: "Service", description: "The internal Load Balancer. Provides a stable IP address for the Pods.", icon: "⚖️" },
+    { title: "Ingress", description: "The gateway that routes external internet traffic into the cluster.", icon: "🌐" }
+  ]}
+/>
+
+## 7. Step-by-step process explanation
+
+**How a Deployment works:**
+1. You write a YAML file describing the desired state: *"I want a Deployment of `my-node-api:v2` with 3 replicas."*
+2. You feed this file to the Kubernetes API (`kubectl apply -f app.yaml`).
+3. The K8s Master Node (Control Plane) reads the file and notices the current state (0 replicas) doesn't match the desired state (3 replicas).
+4. The Master Node's Scheduler finds Worker Nodes with enough CPU/RAM and commands them to pull the Docker image and start the Pods.
+5. If one of the Worker Nodes loses power and dies, the Master Node notices immediately. The current state is now 2 replicas.
+6. The Master Node automatically schedules a new Pod on a surviving Worker Node to get back to the desired 3 replicas.
+
+## 8. Code examples
+
+**A Basic Kubernetes Deployment YAML:**
+This file tells Kubernetes exactly how to run your application.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api
+spec:
+  replicas: 3 # Always keep 3 containers running
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: nodejs-app
+        image: mycompany/backend-api:v1.0.0
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+```
+
+**A Basic Kubernetes Service YAML:**
+This creates a stable internal IP address so other microservices can talk to the 3 replicas created above.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend # Matches the label in the Deployment above!
+  ports:
+    - protocol: TCP
+      port: 80       # Port the Service listens on
+      targetPort: 3000 # Port the Node app listens on
+  type: ClusterIP
+```
+
+## 9. Common Use Cases
+
+- **Microservice Architectures:** Companies running dozens or hundreds of microservices.
+- **High-Availability Environments:** E-commerce platforms that cannot afford a single minute of downtime.
+- **Machine Learning Pipelines:** Spinning up massive, temporary clusters of GPU instances to train a model, and then tearing them down.
+
+## 10. Best practices
+
+- **Declarative Infrastructure:** Never manually edit a running Pod via the command line. Always change the YAML file and apply it. Your YAML files should be stored in Git (GitOps).
+- **Resource Limits:** Always set `requests` and `limits` for CPU and Memory on your containers. If a container has a memory leak and no limits, it will consume the entire Node's RAM and crash every other container on that server!
+- **Liveness & Readiness Probes:** Configure health checks. The `Liveness` probe tells K8s to reboot the container if it's dead. The `Readiness` probe tells K8s not to send traffic to the container until it has finished booting up and connecting to the database.
+
+## 11. Common mistakes
+
+- **Using K8s for everything:** Kubernetes is insanely complex. If you have a simple CRUD monolithic app, using K8s is vast overkill. Use a PaaS like Render, Heroku, or AWS App Runner instead.
+- **Storing State in Pods:** Pods are ephemeral; they can be deleted and recreated on a different server at any millisecond. Never save uploaded files or SQLite databases inside a Pod. Always use external managed databases (like AWS RDS) or Cloud Storage (like S3).
+
+## 12. Performance tips
+
+- **Horizontal Pod Autoscaler (HPA):** Don't pay for 100 Pods at 3:00 AM when nobody is using your app. Configure HPA to monitor CPU usage. If CPU hits 80%, K8s spins up more Pods. If it drops to 10%, K8s deletes them, saving you massive amounts of cloud computing costs.
+
+## 13. Security considerations
+
+- **RBAC (Role-Based Access Control):** Strictly limit what users and service accounts can do in the cluster. A frontend developer shouldn't have permissions to delete production database Pods.
+- **Secrets Management:** Never put database passwords or API keys in plain text YAML files. Use K8s `Secrets` or an external vault like HashiCorp Vault.
+
+## 14. Scalability & Deployment
+
+Kubernetes is the ultimate deployment platform.
+- **Rolling Updates:** When deploying V2, K8s spins up one V2 pod. Once it's healthy, it kills one V1 pod. It repeats this until all pods are V2. This means exactly **Zero Downtime Deployments**.
+- **Multi-Cloud:** Because K8s is an open standard, a cluster configuration running on AWS EKS can be moved to Google Cloud GKE or Microsoft Azure AKS with very minimal changes. You aren't locked in.
+
+## 15. Interview questions
+
+**Q: What is the difference between a Pod and a Container?**
+A: A Container (like Docker) is the actual isolated process running your code. A Pod is the Kubernetes wrapper around the container. A Pod usually contains one container, but can contain multiple tightly-coupled containers (like a main app container and a sidecar logging container) that share the same IP address and local storage.
+
+**Q: If a Node dies, how does Kubernetes know?**
+A: The `kubelet` agent running on the Node constantly sends heartbeats to the Master Control Plane. If the heartbeats stop, the Master marks the Node as dead and reschedules all of its Pods onto healthy Nodes.
+
+## 16. MCQs
+
+1. Which Kubernetes component exposes your Pods to the public internet?
+   - A) Deployment
+   - B) Ingress
+   - C) ConfigMap
+   - D) PersistentVolume
+   **Answer: B**
+
+2. Why should you never store permanent user data inside a Kubernetes Pod?
+   - A) Because Pods are encrypted by default.
+   - B) Because Kubernetes doesn't support databases.
+   - C) Because Pods are ephemeral and can be destroyed/recreated on a different server at any time, wiping their local disk.
+   - D) Because it violates the HTTP protocol.
+   **Answer: C**
+
+## 17. Assignments
+
+**Minikube Exploration:**
+1. Install `minikube` on your local machine (it runs a single-node K8s cluster on your laptop).
+2. Install the `kubectl` CLI tool.
+3. Copy the `Deployment` YAML example from this lesson into a file named `deploy.yaml`.
+4. Run `kubectl apply -f deploy.yaml`.
+5. Run `kubectl get pods` and watch your 3 containers spin up!
+6. Manually delete one of the pods using `kubectl delete pod <pod-name>`. Quickly run `kubectl get pods` again and watch Kubernetes instantly spin up a replacement to maintain the desired 3 replicas.
+
+## 18. Summary
+
+Kubernetes has a notoriously steep learning curve, but it is the powerhouse behind almost every major tech company today. By abstracting away the physical servers and providing an automated, self-healing orchestration layer, K8s allows massive engineering teams to deploy thousands of microservices with confidence, zero downtime, and infinite scalability.
+
+## 19. Next lesson progression
+
+Congratulations! You have completed the System Design and Architecture phase. You now possess the knowledge to build, secure, and scale massive distributed systems. From here, you can dive into the cutting edge of technology: **AI Foundations & LangChain**.

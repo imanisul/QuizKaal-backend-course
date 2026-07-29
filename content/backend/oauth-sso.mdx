@@ -1,14 +1,171 @@
 ---
 title: "OAuth & SSO"
-description: "Delegated authorization flows"
+description: "Learn how delegated authorization works, and how Single Sign-On (SSO) allows users to log in with Google, GitHub, or Apple."
 phase: "Authentication & Security"
 difficulty: "advanced"
 ---
 
-## Module Overview
+## 1. Simple Explanation
 
-Welcome to **OAuth & SSO**. This module covers delegated authorization flows. 
+**OAuth (Open Authorization)** is a standard protocol that allows a user to grant a third-party website access to their information on another website, *without giving them the password*.
+**SSO (Single Sign-On)** is a specific use case of OAuth/OIDC where a user logs in once to a central authority (like Google) and is automatically logged into dozens of other independent applications.
+
+## 2. Why this technology exists
+
+Imagine playing a new mobile game that wants to find your friends. In the old days, the game would ask: *"Please type your Facebook email and password here."* This was a massive security nightmare! You were giving a random game full control over your Facebook account.
+OAuth was invented so the game never sees your password. Instead, you log in on Facebook's official site, and Facebook gives the game a temporary, restricted "Key" (Token) that only allows it to read your friend list.
+
+## 3. What problem it solves
+
+- **Password Security:** Users don't have to create or memorize a new password for every single app they use.
+- **Delegated Access:** You can give an app read-only access to your Google Calendar without giving it access to your Gmail.
+- **Revocation:** If an app turns out to be malicious, you can go to Google and revoke its access key immediately.
+
+## 4. Real-life analogy
+
+**OAuth is like giving a Valet Key to a parking attendant.**
+You have a master key to your car that opens the doors, starts the engine, and opens the glovebox. You don't want to give the parking attendant your master key because they might steal what's in your glovebox.
+Instead, you give them a special "Valet Key". This key only allows them to start the engine and drive the car 1 mile. They cannot open the glovebox, and the key expires after 2 hours.
+- **You** = The User
+- **Car** = Your Google Account Data
+- **Valet Key** = OAuth Access Token
+- **Attendant** = The Third-Party App
+
+---
+
+## 5. Internal working
 
 <AuthVisualizer />
 
-In the meantime, you can continue exploring the rest of the roadmap or review the previous lessons.
+---
+
+## 6. Architecture & Data Flow
+
+<AnimatedWorkflow 
+  title="OAuth 2.0 Authorization Code Flow"
+  steps={[
+    { title: "Click Login", description: "User clicks 'Log in with Google' on the Client App.", icon: "🖱️" },
+    { title: "Redirect", description: "App redirects user to Google's official login page.", icon: "↪️" },
+    { title: "Consent", description: "User logs in and clicks 'Allow Access'.", icon: "✅" },
+    { title: "Auth Code", description: "Google redirects back to App with a temporary 'Authorization Code'.", icon: "🎫" },
+    { title: "Token Exchange", description: "App's Server trades the Code for an Access Token.", icon: "🔄" },
+    { title: "Fetch Data", description: "App uses the Access Token to get user data from Google API.", icon: "📥" }
+  ]}
+/>
+
+## 7. Step-by-step process explanation
+
+1. **The Request:** The user wants to log into `MyCoolApp.com`. They click "Login with GitHub".
+2. **The Redirect:** `MyCoolApp.com` redirects the browser to `github.com/login/oauth/authorize?client_id=123`.
+3. **Authentication:** The user logs into GitHub (GitHub verifies their identity).
+4. **Consent:** GitHub asks the user: *"MyCoolApp wants your email address. Allow?"* The user clicks Yes.
+5. **The Callback:** GitHub redirects the browser back to `MyCoolApp.com/callback?code=XYZ890`.
+6. **The Exchange (Backend):** The `MyCoolApp` backend server takes the code `XYZ890` and makes a secure, server-to-server HTTP request to GitHub, saying: *"Here is the code XYZ890, and here is my super secret client password. Give me the token."*
+7. **The Access Token:** GitHub verifies the code and secret, and responds with an `access_token` (and sometimes a `refresh_token`).
+8. **The API Call:** `MyCoolApp` uses the `access_token` to fetch the user's email from GitHub and creates a session for them.
+
+## 8. Code examples
+
+**Node.js (Express) - Handling the OAuth Callback:**
+```javascript
+const axios = require('axios');
+
+app.get('/auth/github/callback', async (req, res) => {
+  const code = req.query.code; // The code from the URL
+  
+  try {
+    // 1. Trade the code for an access token
+    const tokenResponse = await axios.post('https://github.com/login/oauth/access_token', {
+      client_id: process.env.GITHUB_CLIENT_ID,
+      client_secret: process.env.GITHUB_CLIENT_SECRET,
+      code: code
+    }, { headers: { accept: 'application/json' } });
+    
+    const accessToken = tokenResponse.data.access_token;
+    
+    // 2. Use the token to get the user's data
+    const userResponse = await axios.get('https://api.github.com/user', {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    
+    // 3. Log the user in (create session or JWT)
+    const userData = userResponse.data;
+    req.session.userId = userData.id;
+    res.redirect('/dashboard');
+    
+  } catch (error) {
+    res.status(500).send("OAuth Failed");
+  }
+});
+```
+
+## 9. Common Use Cases
+
+- **Social Login:** Allowing users to sign up for your app instantly using Google, Facebook, or Twitter.
+- **Enterprise SSO:** Employees log into Okta or Microsoft Entra once, and get access to Slack, Jira, and Zoom automatically.
+- **Third-Party Integrations:** Connecting a CRM tool (like Salesforce) to a user's Gmail account to read and send emails on their behalf.
+
+## 10. Best practices
+
+- **Always use the Authorization Code Flow:** Never use the "Implicit Flow" (which returns the token directly in the URL). The Authorization Code flow ensures the token is only handled by the backend server, never the browser.
+- **Use the `state` parameter:** Always pass a random, unguessable string in the `state` parameter during the initial redirect. Verify it on the callback to prevent CSRF attacks.
+- **Request minimum scopes:** Only ask for the permissions you absolutely need. If you only need their email, don't ask for permission to edit their Google Drive files.
+
+## 11. Common mistakes
+
+- **Leaking the Client Secret:** Putting the `client_secret` in frontend React/Vue code. This must ONLY live on your backend server.
+- **Not validating the token issuer:** If you are implementing SSO, you must cryptographically verify that the token was actually signed by Google, not a malicious actor.
+- **Storing Access Tokens forever:** OAuth tokens expire. If you need offline access, you must store the `refresh_token` securely and write logic to automatically get a new access token when it expires.
+
+## 12. Performance tips
+
+- If you are receiving an Access Token from a provider and making API calls on every request, cache the user's data locally in your database or Redis to avoid hitting the provider's API rate limits.
+
+## 13. Security considerations
+
+- **OIDC (OpenID Connect):** OAuth 2.0 is technically *only* for authorization (access). OIDC is a layer built on top of OAuth 2.0 specifically for Authentication (identity). When you implement "Sign In With Google", you are actually using OIDC, which returns an ID Token (a JWT) alongside the Access Token.
+- **Open Redirect Vulnerabilities:** Ensure your OAuth callback URL strictly validates where it redirects the user after a successful login, so attackers can't hijack the flow.
+
+## 14. Scalability & Deployment
+
+- Implementing SSO drastically reduces the scalability burden on your own database. Instead of hashing and verifying thousands of passwords per second, you offload the heavy cryptographic lifting and security burden to massive providers like Google or AWS Cognito.
+
+## 15. Interview questions
+
+**Q: What is the difference between OAuth 2.0 and OpenID Connect (OIDC)?**
+A: OAuth 2.0 is an *authorization* protocol (delegating access to resources). OIDC is an *authentication* protocol built on top of OAuth (verifying who the user is). OAuth returns an Access Token; OIDC returns an ID Token (a JWT containing user info).
+
+**Q: Why do we exchange an Authorization Code for a Token on the backend, rather than getting the Token directly in the frontend?**
+A: If the token is returned directly to the browser (Implicit Flow), it can be intercepted via browser history, XSS, or referrer headers. By using an Authorization Code, the sensitive Access Token is only transmitted directly between the two secure backend servers over TLS.
+
+## 16. MCQs
+
+1. Which parameter is crucial for preventing CSRF attacks during an OAuth flow?
+   - A) client_id
+   - B) redirect_uri
+   - C) scope
+   - D) state
+   **Answer: D**
+
+2. Where should the `client_secret` be stored?
+   - A) In LocalStorage
+   - B) In the React application bundle
+   - C) In a secure environment variable on the backend server
+   - D) In an HttpOnly Cookie
+   **Answer: C**
+
+## 17. Assignments
+
+**Implement GitHub OAuth:**
+1. Go to your GitHub account settings and create a new "OAuth App". Set the callback URL to `http://localhost:3000/callback`.
+2. Write a simple Express server that redirects to `https://github.com/login/oauth/authorize`.
+3. Create the `/callback` route that receives the `code`, exchanges it for an Access Token using `axios`, and fetches your GitHub profile data.
+4. Console log your GitHub username!
+
+## 18. Summary
+
+OAuth and SSO have completely transformed the modern internet. By delegating authentication to central, highly-secure providers, users enjoy a seamless login experience across the web, and developers avoid the massive security liability of storing raw passwords. Understanding the Authorization Code flow is a non-negotiable skill for modern backend developers.
+
+## 19. Next lesson progression
+
+Now that we know how to authenticate users and third-party apps, we must learn how to protect our APIs from malicious attacks and excessive traffic. Let's move on to **API Security & Rate Limiting**.

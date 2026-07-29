@@ -1,14 +1,177 @@
 ---
 title: "Streams & Buffers"
-description: "Handling large data efficiently"
+description: "Master memory management in Node.js. Learn how to process gigabytes of data seamlessly using streams and buffers without crashing your server."
 phase: "Node.js Internals"
 difficulty: "advanced"
 ---
 
-## Module Overview
+## 1. Simple Explanation
 
-Welcome to **Streams & Buffers**. This module covers handling large data efficiently. 
+A **Buffer** is a temporary holding spot for raw binary data in your computer's RAM.
+A **Stream** is a way of moving data from one place to another continuously, piece by piece, rather than waiting for the entire payload to load into memory all at once.
+Instead of downloading a massive 5GB movie into your RAM before you can start watching it, you use a Stream to download it in small 64KB Buffers, watching each piece as it arrives and immediately discarding it to make room for the next piece.
 
-<BackendFlowVisualizer />
+## 2. Why this technology exists
 
-In the meantime, you can continue exploring the rest of the roadmap or review the previous lessons.
+If a Node.js server has 512MB of RAM, and a user tries to download a 2GB video file, what happens? If you try to read the entire file into memory using `fs.readFileSync()`, the server will crash with an `Out Of Memory (OOM)` error.
+Streams were implemented into Node.js (and UNIX systems historically) to solve this exact problem, allowing computers to process theoretically infinite amounts of data using a finite, tiny amount of memory.
+
+## 3. What problem it solves
+
+- **Memory Efficiency:** You don't need to load large files into RAM. You process them in chunks.
+- **Time Efficiency:** You can start processing data immediately as the first chunk arrives, rather than waiting for the entire dataset to finish downloading.
+- **Piping:** You can easily connect the output of a Read Stream directly into the input of a Write Stream (e.g., reading a file and immediately sending it to an HTTP response).
+
+## 4. Real-life analogy
+
+**Streaming is like filling a swimming pool using a bucket chain.**
+Imagine you need to move 1,000 gallons of water from a lake to a pool.
+- **Without Streams (Buffered approach):** You build a massive 1,000-gallon tank (RAM), wait 5 hours for it to fill up at the lake, put it on a truck, drive it to the pool, and dump it all at once. It takes huge resources.
+- **With Streams:** You get a team of people with small 1-gallon buckets (Buffers). As soon as the first person fills a bucket, they pass it down the line. Water starts pouring into the pool immediately, and you never needed to hold more than a few gallons at a time!
+
+---
+
+## 5. Internal working
+
+<AnimatedWorkflow 
+  title="Stream Processing Flow"
+  steps={[
+    { title: "Source", description: "A large 2GB File on the hard drive.", icon: "💾" },
+    { title: "Read Stream", description: "Reads data in small 64KB Buffers.", icon: "📖" },
+    { title: "Transform Stream", description: "(Optional) Modifies the data on the fly (e.g., zipping it).", icon: "⚙️" },
+    { title: "Write Stream", description: "Writes the chunks to the destination (e.g., HTTP Response).", icon: "✍️" }
+  ]}
+/>
+
+---
+
+## 6. Architecture & Data Flow
+
+<AnimatedWorkflow 
+  title="Pipe() Data Flow"
+  steps={[
+    { title: "Client Requests Video", description: "GET /video", icon: "🌐" },
+    { title: "Node Creates ReadStream", description: "fs.createReadStream('./movie.mp4')", icon: "🎬" },
+    { title: "Pipe to Response", description: "readStream.pipe(res)", icon: "🚰" },
+    { title: "Client Receives Chunks", description: "Video starts playing instantly in browser.", icon: "📺" }
+  ]}
+/>
+
+## 7. Step-by-step process explanation
+
+1. **Instantiation:** You create a ReadStream from a file or network request.
+2. **Data Event:** As soon as the stream reads a chunk (usually 64KB), it emits a `data` event.
+3. **Processing:** Your application listens to the `data` event, receives the Buffer, and processes it.
+4. **Writing:** You pass that Buffer to a WriteStream.
+5. **Backpressure:** If the WriteStream is slower than the ReadStream (e.g., slow internet connection), the WriteStream tells the ReadStream to pause until it catches up. `pipe()` handles this automatically!
+6. **End Event:** When the source is empty, an `end` event is emitted.
+
+## 8. Code examples
+
+**The BAD Way (Crashes on large files):**
+```javascript
+const fs = require('fs');
+const http = require('http');
+
+http.createServer((req, res) => {
+  // Reads entire file into RAM first!
+  fs.readFile('./massive-file.mp4', (err, data) => {
+    if (err) throw err;
+    res.end(data);
+  });
+}).listen(3000);
+```
+
+**The GOOD Way (Using Streams):**
+```javascript
+const fs = require('fs');
+const http = require('http');
+
+http.createServer((req, res) => {
+  // Only holds 64KB in RAM at a time!
+  const readStream = fs.createReadStream('./massive-file.mp4');
+  
+  // Pipe automatically pipes the read chunks into the HTTP response stream
+  // and handles backpressure automatically.
+  readStream.pipe(res);
+  
+  readStream.on('error', (err) => {
+    res.statusCode = 500;
+    res.end('File not found');
+  });
+}).listen(3000);
+```
+
+## 9. Common Use Cases
+
+- **Video/Audio Streaming:** Netflix and Spotify serve content using streams so you can watch before it finishes downloading.
+- **Handling Large Uploads:** Parsing massive CSV files line-by-line as they upload, rather than saving them fully to disk first.
+- **Proxying:** Routing an HTTP request from a client to another server and piping the response back.
+- **Zipping Files:** Compressing gigabytes of logs on the fly using `zlib` transform streams.
+
+## 10. Best practices
+
+- **Always use `pipe()` or `pipeline()`:** While you can manually listen to `.on('data')` and call `writeStream.write()`, you will likely mess up **Backpressure**. `pipe()` handles it for you. Node 10+ introduced `stream.pipeline` which also handles error propagation perfectly.
+- **Error Handling:** If a ReadStream errors out, it doesn't automatically close the WriteStream. You must handle errors manually or use `stream.pipeline()`.
+
+## 11. Common mistakes
+
+- **Forgetting that `req` and `res` are streams:** In Express/Node, `req` is a ReadStream and `res` is a WriteStream. You can pipe data directly into `res`!
+- **Stringifying Buffers blindly:** If you convert a stream of Buffers into a String using `.toString()`, you might split a multi-byte Unicode character exactly in half across two chunks, resulting in garbled text. Use the `StringDecoder` module instead.
+
+## 12. Performance tips
+
+- **Adjust `highWaterMark`:** This is the size of the internal buffer (default is 64KB for files). If you are processing very large files and have RAM to spare, increasing the `highWaterMark` can reduce I/O calls and speed up the process.
+
+## 13. Security considerations
+
+- **Zip Bombs:** If you are accepting a stream of a compressed file from a user and piping it through an unzip Transform stream, an attacker could send a 10KB "Zip Bomb" that unzips into 50 Petabytes of dummy data, crashing your server. Always implement size limits when streaming incoming data.
+
+## 14. Scalability & Deployment
+
+- Streams are the absolute key to scaling Node.js applications horizontally. Because they keep memory usage incredibly low and stable, you can reliably predict how many requests a single container can handle, allowing Kubernetes to auto-scale your pods predictably.
+
+## 15. Interview questions
+
+**Q: What is Backpressure in Node.js streams?**
+A: Backpressure happens when data is being read (ReadStream) faster than it can be processed or written (WriteStream). The WriteStream's internal buffer fills up. A well-designed system will signal the ReadStream to "pause" until the WriteStream catches up, preventing memory overflow.
+
+**Q: What are the 4 types of streams in Node.js?**
+A: 
+1. **Readable:** Can be read from (e.g., `fs.createReadStream`, `req`).
+2. **Writable:** Can be written to (e.g., `fs.createWriteStream`, `res`).
+3. **Duplex:** Can be both read and written to (e.g., a TCP socket).
+4. **Transform:** A Duplex stream that modifies data as it is written and read (e.g., `zlib.createGzip()`).
+
+## 16. MCQs
+
+1. Why should you avoid using `fs.readFileSync` for large files in a web server?
+   - A) It is slower than Streams.
+   - B) It reads the entire file into RAM, which can cause an Out Of Memory crash.
+   - C) It is deprecated in Node.js.
+   - D) It corrupts video files.
+   **Answer: B**
+
+2. Which built-in function automatically handles Backpressure when connecting streams?
+   - A) `.on('data')`
+   - B) `.concat()`
+   - C) `.pipe()`
+   - D) `.connect()`
+   **Answer: C**
+
+## 17. Assignments
+
+**Stream a Video:**
+1. Find a large `.mp4` file on your computer and place it in a new Node project folder.
+2. Write a standard Node `http.createServer`.
+3. Use `fs.createReadStream` and `.pipe(res)` to serve the video.
+4. Open your browser and navigate to `localhost:3000`. You should see the video playing!
+5. Open your OS Activity Monitor/Task Manager and watch the RAM usage. Notice how it stays incredibly low even if the video is 1GB!
+
+## 18. Summary
+
+Understanding Streams and Buffers elevates you from a beginner Node developer to an advanced one. By mastering the flow of data through pipelines, you can build systems that process massive workloads efficiently, keeping memory usage flat and server performance high.
+
+## 19. Next lesson progression
+
+Streams allow us to avoid RAM bottlenecks. But what if our bottleneck isn't memory, but raw CPU computing power? Node is single-threaded! To solve this, we must learn how to utilize multiple CPU cores using **Cluster & Worker Threads**.

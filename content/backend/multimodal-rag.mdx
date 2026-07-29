@@ -1,14 +1,169 @@
 ---
 title: "Multimodal RAG"
-description: "Retrieving and reasoning over images and PDFs"
+description: "Process text, images, and charts simultaneously. Learn how to extract data from complex PDFs and embed images for visual semantic search."
 phase: "Advanced RAG Architectures"
 difficulty: "expert"
 ---
 
-## Module Overview
+## 1. Simple Explanation
 
-Welcome to **Multimodal RAG**. This module covers retrieving and reasoning over images and pdfs. 
+Standard AI models (like the original ChatGPT) were blind. They only understood text. If you uploaded a company financial report, the AI could read the paragraphs, but it completely ignored the massive pie chart on page 4 because it couldn't "see" it.
+**Multimodal Models** (like GPT-4o or Claude 3.5 Sonnet) have "eyes". They can look at an image and understand it mathematically. 
+**Multimodal RAG** allows you to take a complex PDF, extract both the text paragraphs AND the images/charts, convert them all into vectors, and allow a user to ask questions like, *"According to the chart on page 4, what were our Q3 profits?"* The system retrieves the image of the chart, sends it to the AI, and the AI answers correctly.
+
+## 2. Why this technology exists
+
+In the real world, enterprise data is not neatly formatted plain text. It exists in messy PDFs, PowerPoint presentations, architectural blueprints, and scanned receipts. 
+Early RAG systems used OCR (Optical Character Recognition) to try and scrape text out of images, but OCR fundamentally destroys context (a bar chart turned into raw text is incomprehensible). Multimodal RAG exists to preserve the original visual context of the data.
+
+## 3. What problem it solves
+
+- **Complex Document Parsing:** Accurately answering questions based on graphs, flowcharts, tables, and diagrams.
+- **Visual Search:** Allowing users to search a database by uploading an image (e.g., "Find me spare parts that look like this broken gear").
+- **Accessibility:** Automatically generating rich, contextual descriptions for thousands of legacy images.
+
+## 4. Real-life analogy
+
+**Standard RAG is like listening to an Audiobook.**
+You get all the text perfectly. But if the narrator says, "As you can see in Figure 3...", you have no idea what they are talking about because you can't see the book.
+
+**Multimodal RAG is like reading a Graphic Novel.**
+You can read the text bubbles, but you also process the visual art simultaneously. When asked "Why is the character angry?", you don't just use the text; you look at the drawing of their scowling face to synthesize a complete answer.
+
+---
+
+## 5. Internal working
 
 <AIVisualizer />
 
-In the meantime, you can continue exploring the rest of the roadmap or review the previous lessons.
+---
+
+## 6. Architecture & Data Flow
+
+<AnimatedWorkflow 
+  title="Multimodal Ingestion & Retrieval"
+  steps={[
+    { title: "Parse PDF", description: "Split PDF into Text Chunks AND Image files (charts/graphs).", icon: "📄" },
+    { title: "Generate Summaries", description: "Multimodal LLM looks at each Image and writes a detailed text summary of it.", icon: "👁️" },
+    { title: "Embed", description: "Embed the Text Chunks AND the Image Summaries into the Vector DB.", icon: "🔢" },
+    { title: "Retrieve", description: "User asks about 'Q3 Profits'. Vector DB finds the Image Summary.", icon: "🔍" },
+    { title: "Generate", description: "System passes the *actual raw Image* and the query to GPT-4o for the final answer.", icon: "🖼️" }
+  ]}
+/>
+
+## 7. Step-by-step process explanation
+
+There are a few ways to do Multimodal RAG. The most robust method is **Image Summarization**:
+1. **Extraction:** A tool (like `Unstructured.io`) reads a PDF. It separates the text into strings and saves the charts/diagrams as `.jpg` images.
+2. **Summarization:** You send every `.jpg` to a Multimodal LLM (like GPT-4o) with the prompt: *"Describe this image in excruciating detail, including all numbers, axis labels, and trends."*
+3. **Embedding:** You embed the resulting text summary and store it in Pinecone, maintaining a pointer to the original `.jpg` file in Amazon S3.
+4. **Search:** The user asks a question. The Vector DB searches the *text summaries* and finds a match.
+5. **Generation:** You retrieve the original `.jpg` from S3 and send it to GPT-4o alongside the user's question. The AI looks at the raw image and answers.
+
+## 8. Code examples
+
+**Generating an Image Summary with GPT-4o (Node.js):**
+```javascript
+import OpenAI from "openai";
+import fs from "fs";
+
+const openai = new OpenAI();
+
+// Convert local image to Base64
+const imageAsBase64 = fs.readFileSync("./q3-profit-chart.jpg", "base64");
+
+async function summarizeImage() {
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o",
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "text", text: "You are an expert data analyst. Describe this chart in high detail." },
+          {
+            type: "image_url",
+            image_url: {
+              url: `data:image/jpeg;base64,${imageAsBase64}`,
+            },
+          },
+        ],
+      },
+    ],
+  });
+
+  const summary = response.choices[0].message.content;
+  console.log(summary);
+  // Output: "This is a bar chart showing Q3 profits. North America is at $5M, Europe at $3M..."
+  
+  // Next step: Embed this summary and save it to Vector DB!
+}
+```
+
+## 9. Common Use Cases
+
+- **Financial Auditing:** Ingesting 10-K reports heavily reliant on financial tables and graphs.
+- **Medical Diagnostics:** Searching a database of MRI scans for similar visual anomalies.
+- **Retail/E-Commerce:** "Snap to Shop" features where a user takes a photo of a jacket and the AI finds visually similar jackets in the catalog.
+
+## 10. Best practices
+
+- **Multi-Vector Architecture:** Don't just embed the image summary. Embed the image summary, the raw text surrounding the image in the PDF, and the image title. Store all of them in the Vector DB pointing to the same underlying Image ID. This massively increases the chance of retrieval.
+- **CLIP Embeddings:** Instead of summarizing images into text, you can use specialized models (like OpenAI's CLIP) that can embed an Image directly into a Vector (Math), without converting it to text first! This allows pure image-to-image math search.
+
+## 11. Common mistakes
+
+- **Using standard OCR for Tables:** Standard OCR reads tables left-to-right, completely destroying the column/row structure. If you feed ruined OCR text into an LLM, it will hallucinate. You must use layout-aware parsers or multimodal vision models to understand tables.
+- **Ignoring Image Resolution:** Multimodal LLMs charge you based on the resolution of the image you send. Sending a 4K image of a simple pie chart will drain your API budget rapidly. Downscale images before sending them to the API.
+
+## 12. Performance tips
+
+- **Use specialized parsers:** Tools like `Unstructured`, `LlamaParse`, or `Marker` are specifically designed to rip apart messy PDFs and extract images, tables, and text into clean Markdown formats optimized for RAG. Don't try to build a PDF parser from scratch!
+
+## 13. Security considerations
+
+- **PII in Images:** It's easy to write a regex to scrub Social Security Numbers from text. It is very difficult to scrub an SSN that is handwritten on a scanned image of a driver's license. If you are blindly summarizing images and storing the results, you might accidentally ingest highly sensitive PII into your Vector DB.
+
+## 14. Scalability & Deployment
+
+- Multimodal RAG requires massive storage compared to text RAG. You will need an Object Storage bucket (like AWS S3 or Cloudflare R2) to host the thousands of extracted `.jpg` files, because you cannot efficiently store binary image data directly inside a Vector Database.
+
+## 15. Interview questions
+
+**Q: Why is it often better to summarize an image into text before embedding it, rather than embedding the raw image directly?**
+A: Because users usually search using Text queries (e.g., "What were Q3 profits?"). Comparing a Text Vector to a Text Vector (the summary) is highly accurate. Comparing a Text Vector directly to an Image Vector (using models like CLIP) can sometimes lose semantic nuance, especially for charts with specific numbers.
+
+**Q: How does a Multimodal LLM "see" an image?**
+A: It breaks the image down into a grid of small "patches". Each patch is converted into an embedding vector, and these vectors are fed into the Transformer architecture just like words in a sentence, allowing the model to use Self-Attention to understand how different parts of the image relate to each other.
+
+## 16. MCQs
+
+1. What is the primary reason standard Text RAG fails on corporate presentations (e.g., PowerPoint files)?
+   - A) Because the text is encrypted.
+   - B) Because corporate data relies heavily on charts, graphs, and visual layouts that standard text parsers destroy or ignore.
+   - C) Because PowerPoints are too large to fit in RAM.
+   - D) Because standard RAG only works on HTML.
+   **Answer: B**
+
+2. In the Image Summarization technique for Multimodal RAG, what is actually stored in the Vector Database?
+   - A) The raw `.jpg` file.
+   - B) The base64 encoded string of the image.
+   - C) The vector embedding of the text summary describing the image.
+   - D) The HTML layout of the PDF.
+   **Answer: C**
+
+## 17. Assignments
+
+**Vision API Test:**
+1. Find a complex graph or chart on Google Images (e.g., "Global population growth chart"). Save it.
+2. Go to ChatGPT (or Claude).
+3. Upload the image.
+4. Prompt: *"Extract all the data points from this chart and format them into a markdown table. Then, write a 2-sentence summary of the trend."*
+5. Watch in awe as the AI acts as a perfect data-entry clerk, doing in seconds what used to require complex manual OCR workflows.
+
+## 18. Summary
+
+The world is not just text. By upgrading your RAG pipelines to be Multimodal, you unlock the ability to process the massive trove of dark data trapped in PDFs, charts, and images, creating AI systems that finally perceive the world the way humans do.
+
+## 19. Next lesson progression
+
+We have pushed RAG to its absolute limits. Now, what happens when we give the AI the ability to not just read data, but actually take actions in the real world? Welcome to the final frontier: **Agentic AI**.

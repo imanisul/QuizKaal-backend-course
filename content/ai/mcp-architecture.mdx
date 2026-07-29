@@ -1,16 +1,180 @@
 ---
 title: "MCP Architecture"
-description: "Servers, Clients, Resources, Tools"
+description: "Model Context Protocol. Learn how the industry is standardizing the way AI models connect to enterprise databases, tools, and local file systems."
 phase: "Model Context Protocol"
 difficulty: "advanced"
 ---
 
-## Module Overview
+## 1. Simple Explanation
 
-Welcome to **MCP Architecture**. This module covers servers, clients, resources, tools. 
+In the past, if you wanted your AI Agent to talk to Slack, Google Drive, and your PostgreSQL database, you had to write custom API integration code for all three. If you switched from OpenAI to Claude, you had to rewrite it all over again.
+**Model Context Protocol (MCP)** is an open standard (created by Anthropic) that solves this. It is like a "USB-C cable for AI". 
+You run an "MCP Server" on your database. Now, *any* AI model that supports the MCP standard (an "MCP Client") can instantly plug into that server, securely read the data, and execute tools without you writing any custom integration code.
 
-<Callout type="info" title="Content Coming Soon">
-This is a placeholder for the advanced deep-dive content. The interactive visualizations, code examples, and quizzes for this specific module are currently being authored and will be published shortly!
-</Callout>
+## 2. Why this technology exists
 
-In the meantime, you can continue exploring the rest of the roadmap or review the previous lessons.
+As AI Agents exploded in popularity, a massive fragmentation problem occurred. Every AI company built their own proprietary way of doing "Function Calling" and "Data Retrieval." Developers were exhausted trying to maintain 15 different API SDKs.
+Anthropic released MCP to unify the industry. Just like the HTTP protocol standardized how web browsers talk to web servers, MCP aims to standardize how AI models talk to data sources and tools.
+
+## 3. What problem it solves
+
+- **Integration Fatigue:** Developers write one MCP Server for their data, and it instantly works with Claude Desktop, Cursor, LangChain, and any future AI tools.
+- **Local Data Access:** An AI in the cloud can securely access files on your local laptop or private corporate network via a local MCP Server.
+- **Unified Tooling:** Defines a standard format for exposing Tools (actions), Resources (data), and Prompts (templates) to the AI.
+
+## 4. Real-life analogy
+
+**Without MCP, it's like traveling the world with electronics.**
+You go to the UK, your plug doesn't fit. You go to Europe, your plug doesn't fit. You have to carry 5 different expensive, heavy adapters just to charge your phone.
+
+**With MCP, it's like USB-C.**
+Every device, every charger, everywhere in the world uses the exact same port. You plug it in, and it instantly negotiates power and data. The AI (your phone) doesn't need to know the complex wiring of the wall outlet (the Database); the USB-C standard (MCP) handles it all flawlessly.
+
+---
+
+## 5. Internal working
+
+<AnimatedWorkflow 
+  title="The MCP Client/Server Model"
+  steps={[
+    { title: "Host Application", description: "Cursor IDE (The MCP Client) is running on your laptop.", icon: "💻" },
+    { title: "MCP Server", description: "You start a Postgres MCP Server on your local machine.", icon: "🐘" },
+    { title: "Connection", description: "Client connects to Server via stdio or SSE (Server-Sent Events).", icon: "🔌" },
+    { title: "Discovery", description: "Client asks: 'What can you do?'. Server replies: 'I have a `query_db` tool'.", icon: "🔍" },
+    { title: "Execution", description: "AI decides to use the `query_db` tool. Server executes it securely.", icon: "⚙️" }
+  ]}
+/>
+
+---
+
+## 6. Architecture & Data Flow
+
+<AnimatedWorkflow 
+  title="The Three Pillars of MCP"
+  steps={[
+    { title: "Resources", description: "Data the AI can READ (e.g., API docs, log files, DB schemas).", icon: "📄" },
+    { title: "Tools", description: "Actions the AI can TAKE (e.g., run_query, create_ticket, restart_server).", icon: "🛠️" },
+    { title: "Prompts", description: "Templates the AI can USE (e.g., 'Code Review Prompt').", icon: "📝" }
+  ]}
+/>
+
+## 7. Step-by-step process explanation
+
+1. **The Server:** You download or write an MCP Server (e.g., the official `mcp-server-postgres`). You run it, passing it your database credentials.
+2. **The Client:** You configure your MCP Client (like the Claude Desktop App) by giving it the command to start the server (e.g., `npx @modelcontextprotocol/server-postgres`).
+3. **The Handshake:** When you open Claude, it automatically launches the server process in the background. They perform a JSON-RPC handshake over standard input/output (`stdio`).
+4. **The Interaction:** You tell Claude: "Find the user with email test@test.com".
+5. **The Protocol:** Claude realizes it needs the database. It sends a standardized MCP JSON-RPC message to the Server asking to execute the `query_db` tool.
+6. **The Result:** The Server runs the SQL, returns the result via MCP, and Claude writes the final answer.
+
+## 8. Code examples
+
+**Building a custom MCP Server (TypeScript):**
+```typescript
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+
+// 1. Initialize the Server
+const server = new McpServer({
+  name: "Weather-MCP",
+  version: "1.0.0",
+});
+
+// 2. Define a Tool
+server.tool(
+  "get_weather",
+  "Get the weather for a location",
+  { city: z.string() }, // Zod schema for arguments
+  async ({ city }) => {
+    // Execute real backend logic here
+    const temp = city === "London" ? "15°C" : "25°C";
+    return {
+      content: [{ type: "text", text: `The weather in ${city} is ${temp}` }],
+    };
+  }
+);
+
+// 3. Connect via Standard I/O (so local AI clients can talk to it)
+const transport = new StdioServerTransport();
+await server.connect(transport);
+console.log("MCP Server running!");
+```
+
+## 9. Common Use Cases
+
+- **IDE Integrations:** Giving AI coding assistants (Cursor, Windsurf) access to read your private Figma designs or internal company Jira tickets to help write better code.
+- **Local RAG:** Running an AI entirely on your laptop that can read your local PDF folders via a FileSystem MCP server, guaranteeing zero data leakage to the cloud.
+- **Enterprise Data Access:** Allowing non-technical managers to chat with a massive Snowflake data warehouse via an official Snowflake MCP server.
+
+## 10. Best practices
+
+- **Transports:** Use `stdio` (Standard Input/Output) for local communication (Client and Server on the same laptop). Use `SSE` (Server-Sent Events) for remote communication (Client on laptop, Server in the AWS cloud).
+- **Security:** The MCP Server runs on your machine and has access to your data. ALWAYS review the source code of an open-source MCP Server before running it, because the AI might trick it into executing malicious commands.
+
+## 11. Common mistakes
+
+- **Giving Tools Too Much Power:** If you install a GitHub MCP Server and give the AI a `git_push` or `delete_repo` tool without Human-In-The-Loop approval, the AI might accidentally wipe your entire production codebase while trying to "fix a bug".
+- **Confusing Resources with Tools:** `Resources` are for static data the AI should read to gain context (like reading a schema). `Tools` are for dynamic actions or parameterized queries (like `getUser(id: 5)`).
+
+## 12. Performance tips
+
+- **Pagination:** If an AI uses a Tool to query a database and the result is 50,000 rows, returning that all at once will crash the MCP Client (and burn massive tokens). MCP Tools must implement strict limits and pagination.
+
+## 13. Security considerations
+
+- **The Airgap Advantage:** MCP is a massive win for enterprise security. You do not need to punch a hole in your corporate firewall so OpenAI can reach your database. Instead, the MCP Server runs *inside* your firewall. The client (which might be an employee's laptop) connects to the MCP Server, and the AI just orchestrates the logic. The data never leaves the allowed perimeter.
+
+## 14. Scalability & Deployment
+
+- The ecosystem is growing rapidly. There are already official, production-ready MCP servers for Postgres, SQLite, GitHub, Google Drive, Slack, Brave Search, and Puppeteer. In the near future, virtually every SaaS product will offer an MCP Server alongside their standard REST API.
+
+## 15. Interview questions
+
+**Q: What problem does the Model Context Protocol (MCP) solve in the AI industry?**
+A: It solves the fragmentation of tool calling and data retrieval. By providing an open, standardized JSON-RPC protocol, developers can write an integration once, and it will work with any MCP-compliant AI client, acting like a universal "USB-C" port for AI data access.
+
+**Q: In the context of MCP, what is the difference between a Client and a Server?**
+A: The Client is the host application interacting with the user and the AI model (e.g., Claude Desktop or a custom LangGraph agent). The Server is the lightweight program connected directly to the data source or tool (e.g., a Postgres database) that exposes that data securely to the Client.
+
+## 16. MCQs
+
+1. Which transport mechanism is most commonly used for an MCP Client and Server running on the exact same local computer?
+   - A) Server-Sent Events (SSE)
+   - B) Standard I/O (stdio)
+   - C) WebSockets
+   - D) gRPC
+   **Answer: B**
+
+2. What are the three core primitives exposed by an MCP Server?
+   - A) Nodes, Edges, Graphs
+   - B) Vectors, Embeddings, Chunks
+   - C) Resources, Tools, Prompts
+   - D) Models, Tokens, Parameters
+   **Answer: C**
+
+## 17. Assignments
+
+**Run your first MCP Server:**
+1. Download the Claude Desktop App.
+2. Open its configuration file (`claude_desktop_config.json`).
+3. Add the official SQLite MCP server:
+```json
+{
+  "mcpServers": {
+    "sqlite": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sqlite", "/path/to/database.db"]
+    }
+  }
+}
+```
+4. Restart Claude. You will see a new "plug" icon. You can now chat in plain English with your local SQLite database!
+
+## 18. Summary
+
+The Model Context Protocol represents the maturation of the AI industry. By standardizing how AIs perceive and interact with the digital world, MCP drastically lowers the barrier to building complex, real-world Agentic systems.
+
+## 19. Next lesson progression
+
+Congratulations! You have completed the **Agentic AI & LangGraph** module, and the entire QuizKaal Backend Curriculum! You are now equipped to build the future of software. Check out the **Production Projects** phase to apply everything you've learned to massive, real-world applications.
