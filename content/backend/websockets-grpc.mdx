@@ -1,14 +1,133 @@
 ---
 title: "WebSockets & gRPC"
-description: "Real-time communication and RPC"
+description: "Move beyond HTTP. Learn how to stream data in real-time with WebSockets and achieve ultra-low latency with gRPC."
 phase: "Internet & Networking"
 difficulty: "advanced"
 ---
 
-## Module Overview
+## 1. Introduction
 
-Welcome to **WebSockets & gRPC**. This module covers real-time communication and rpc. 
+HTTP is fundamentally a **Request-Response** protocol. The client asks, and the server answers. But what if the server wants to tell the client something *without* being asked? For decades, developers used ugly hacks like "Long Polling" (asking the server every 1 second: "Any new messages?"). WebSockets and gRPC completely revolutionize this by keeping the connection alive.
+
+## 2. Why this concept exists
+
+Modern applications demand real-time experiences. When you play a multiplayer game, or use a chat app like WhatsApp or Discord, you need to see a message the exact millisecond the other person sends it. You cannot afford the latency of establishing a brand new HTTP connection every single second just to check for updates.
+
+## 3. Problems it solves
+
+- **High Latency:** Creating a new TCP connection (3-way handshake) and an SSL handshake for every single HTTP request takes hundreds of milliseconds. WebSockets do this *once* and keep the tunnel open forever.
+- **Header Overhead:** HTTP sends massive headers (Cookies, User-Agents) with every single request, wasting bandwidth. WebSockets send raw binary frames with almost zero overhead.
+- **Bi-directional Communication:** The server can push data to the client whenever it wants.
+
+## 4. Real-life example
+
+- **HTTP:** Like sending a letter. You mail it, wait a few days, and receive a reply in your mailbox.
+- **WebSocket:** Like a phone call. You dial the number once (the handshake), and then both people can talk and listen simultaneously until someone hangs up.
+
+## 5. Interactive visualization
+
+Observe the difference in network architecture when comparing HTTP Polling to a continuous WebSocket connection.
 
 <ArchitectureVisualizer />
 
-In the meantime, you can continue exploring the rest of the roadmap or review the previous lessons.
+## 6. Step-by-step animated workflow
+
+In the architecture visualizer, pay attention to the persistent tunnel.
+
+## 7. Deep explanation of every animation step
+
+1. **The Upgrade Request:** The browser sends a standard HTTP GET request, but includes a special header: `Connection: Upgrade` and `Upgrade: websocket`.
+2. **The Server Accepts:** The server replies with a `101 Switching Protocols` status code.
+3. **The Tunnel is Open:** The HTTP protocol is abandoned. The TCP connection is kept open. Both client and server can now freely stream raw data back and forth through this tunnel instantly.
+
+## 8. Architecture diagrams
+
+While WebSockets are great for Client-to-Server communication (like a Browser to a Node.js server), **gRPC** is the king of Server-to-Server communication.
+
+If Microservice A needs to talk to Microservice B, using REST/JSON is slow because JSON must be serialized/parsed. gRPC uses **Protocol Buffers (Protobuf)**, which transmits data in pure binary, making it up to 10x faster than REST.
+
+## 9. Production use cases
+
+- **WebSockets:** Live sports scoreboards, stock trading dashboards (Robinhood), collaborative editing (Google Docs), multiplayer browser games.
+- **gRPC:** Internal microservice communication at Netflix, Uber, and Google. When the Auth Service needs to talk to the Billing Service, they use gRPC.
+
+## 10. Code implementation
+
+Here is how you create a simple WebSocket server in Node.js using the `ws` library:
+
+```javascript
+import { WebSocketServer } from 'ws';
+
+// Start a WebSocket server on port 8080
+const wss = new WebSocketServer({ port: 8080 });
+
+wss.on('connection', function connection(ws) {
+  console.log("New client connected!");
+  
+  // Listen for messages from the client
+  ws.on('message', function message(data) {
+    console.log('received: %s', data);
+    
+    // Echo the message back to the client instantly
+    ws.send(`Server received: ${data}`);
+  });
+
+  // Push a message to the client without them asking
+  ws.send('Welcome to the real-time server!');
+});
+```
+
+## 11. Best practices
+
+- **Heartbeats (Ping/Pong):** Because the connection stays open forever, firewalls or routers might silently drop it. Always implement a "Ping" every 30 seconds to keep the connection alive and detect dropped clients.
+- **Reconnection Logic:** The internet is unstable. If a user drives through a tunnel, their mobile connection will drop. The client must be programmed to automatically attempt to reconnect to the WebSocket server using exponential backoff.
+
+## 12. Common mistakes
+
+- **Memory Leaks:** If a client disconnects, you must remove them from your active connections array. If you don't, your server will eventually run out of RAM and crash.
+- **Using WebSockets for everything:** Don't use WebSockets to load a static blog post. HTTP is heavily optimized and cached by CDNs for document retrieval. Only use WebSockets for highly dynamic, real-time data.
+
+## 13. Performance optimization
+
+- **Horizontal Scaling is Hard:** Scaling REST is easy; just put a Load Balancer in front of 10 servers. Scaling WebSockets is hard because connections are *stateful* and permanent. If User A connects to Server 1, and User B connects to Server 2, how do they chat? You must use a central Pub/Sub message broker (like **Redis**) to route messages between the servers.
+
+## 14. Security considerations
+
+- **WSS instead of WS:** Just like HTTP has HTTPS, WebSockets have `wss://`. Never use `ws://` in production, or the real-time data will be sent in plain text.
+- **Cross-Site WebSocket Hijacking (CSWSH):** WebSockets do not strictly enforce CORS. You must explicitly verify the `Origin` header during the initial upgrade handshake to ensure a malicious website isn't silently connecting to your server.
+
+## 15. Interview questions
+
+1. **"What is the difference between WebSockets and Server-Sent Events (SSE)?"**
+   *Answer:* WebSockets are bi-directional (client and server can both send data). SSE is strictly uni-directional (only the server can push data to the client, like a live news feed).
+2. **"Why is gRPC faster than REST?"**
+   *Answer:* gRPC uses HTTP/2 (allowing multiplexing) and Protocol Buffers (a binary format that is much smaller and faster to parse than text-based JSON).
+
+## 16. Quiz
+
+<Quiz 
+  question="Which HTTP status code is used by a server to indicate that it agrees to upgrade the connection to a WebSocket?"
+  options={[
+    "200 OK",
+    "101 Switching Protocols",
+    "301 Moved Permanently",
+    "426 Upgrade Required"
+  ]}
+  answer="101 Switching Protocols"
+/>
+
+## 17. Assignment
+
+1. Open your browser console on this page.
+2. Type: `const ws = new WebSocket('wss://echo.websocket.events');`
+3. Type: `ws.onmessage = (e) => console.log(e.data);`
+4. Type: `ws.send('Hello real-time world!');`
+5. Watch the server instantly echo your message back!
+
+## 18. Summary
+
+When HTTP request/response cycles are too slow, we turn to persistent connections. WebSockets are the industry standard for pushing real-time updates to web browsers, while gRPC and Protocol Buffers are the gold standard for lightning-fast internal communication between backend microservices.
+
+## 19. Unlock the next lesson
+
+You have completed the entire Networking & Internet phase! It is now time to learn how to structure your codebase. Click "Next" to dive into Backend Architecture patterns like MVC, Monoliths, and Microservices!

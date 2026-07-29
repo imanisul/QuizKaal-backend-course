@@ -1,14 +1,159 @@
 ---
-title: "GraphQL Mastery"
-description: "Queries, mutations, and resolvers"
+title: "GraphQL"
+description: "Solve over-fetching and under-fetching. Learn how to query exactly the data you need from a single endpoint."
 phase: "API Design & Architecture"
 difficulty: "intermediate"
 ---
 
-## Module Overview
+## 1. Introduction
 
-Welcome to **GraphQL Mastery**. This module covers queries, mutations, and resolvers. 
+GraphQL is a query language for your APIs, developed by Facebook. Unlike REST, which exposes multiple endpoints for different resources, GraphQL exposes a **single endpoint**. The client sends a query specifying exactly what data it wants, and the server returns exactly that data—nothing more, nothing less.
 
-<RestApiVisualizer />
+## 2. Why this concept exists
 
-In the meantime, you can continue exploring the rest of the roadmap or review the previous lessons.
+Facebook invented GraphQL in 2012 when they were rebuilding their mobile app. Mobile networks are often slow, and the app needed a massive amount of highly nested data (User -> Posts -> Comments -> Likes -> Users who liked). Fetching this via REST required dozens of slow HTTP requests. They needed a way to get all of this complex data in a single, fast request.
+
+## 3. Problems it solves
+
+- **Over-fetching:** REST often returns too much data. If you only need a user's name, `GET /users/1` still downloads their bio, email, address, and profile picture. GraphQL stops this.
+- **Under-fetching (N+1 Problem):** If a REST API doesn't return enough data, the client has to make multiple round trips. First `GET /users/1`, then `GET /users/1/posts`, then `GET /posts/5/comments`. GraphQL solves this by fetching nested relationships in one go.
+- **Versioning:** GraphQL APIs don't need `/v1` or `/v2`. You just add new fields to the schema. Old clients keep querying the old fields, and new clients query the new ones.
+
+## 4. Real-life example
+
+Think of REST as ordering a set meal at a restaurant. You ask for Meal #1, and you get a burger, fries, and a drink, even if you just wanted the burger (Over-fetching).
+
+Think of GraphQL as a buffet. You take a plate and pick exactly 2 slices of pizza, 1 salad, and no drink. You get exactly what you asked for.
+
+## 5. Interactive visualization
+
+Compare how a REST client and a GraphQL client fetch the exact same data from a server.
+
+<ArchitectureVisualizer />
+
+## 6. Step-by-step animated workflow
+
+In the visualizer, notice the difference in network round-trips:
+
+## 7. Deep explanation of every animation step
+
+1. **REST Flow:** The client requests the user object. It waits. It then reads the user's `postIds`. It then fires 5 more requests to fetch the 5 posts. This is slow.
+2. **GraphQL Flow:** The client sends one massive string: `query { user(id: 1) { name, posts { title, comments { text } } } }`. 
+3. **Server Resolution:** The GraphQL server parses the string, runs multiple database queries in parallel on the backend, stitches the data into a single JSON object, and sends it back across the network in one piece.
+
+## 8. Architecture diagrams
+
+The core of GraphQL is the **Schema**. The schema is a strongly typed contract between the frontend and backend.
+
+```graphql
+type User {
+  id: ID!
+  name: String!
+  posts: [Post!]!
+}
+
+type Post {
+  id: ID!
+  title: String!
+}
+
+type Query {
+  getUser(id: ID!): User
+}
+```
+
+## 9. Production use cases
+
+- **Mobile Applications:** Because mobile devices have high latency and limited bandwidth, companies like Facebook, Airbnb, and Shopify use GraphQL to minimize network payload size and round-trips.
+- **Complex Dashboards:** When a UI needs data from 10 different microservices, a GraphQL API Gateway can stitch all those microservices together and provide a unified querying interface to the frontend.
+
+## 10. Code implementation
+
+Here is a simple Apollo GraphQL Server in Node.js:
+
+```javascript
+import { ApolloServer } from '@apollo/server';
+import { startStandaloneServer } from '@apollo/server/standalone';
+
+// 1. Define the Schema (Type Definitions)
+const typeDefs = `#graphql
+  type Book {
+    title: String
+    author: String
+  }
+  type Query {
+    books: [Book]
+  }
+`;
+
+// 2. Define the Data Source
+const books = [
+  { title: 'The Awakening', author: 'Kate Chopin' },
+  { title: 'City of Glass', author: 'Paul Auster' },
+];
+
+// 3. Define Resolvers (How to fetch the data)
+const resolvers = {
+  Query: {
+    books: () => books,
+  },
+};
+
+// 4. Start the Server
+const server = new ApolloServer({ typeDefs, resolvers });
+const { url } = await startStandaloneServer(server, { listen: { port: 4000 } });
+
+console.log(`🚀 GraphQL Server ready at ${url}`);
+```
+
+## 11. Best practices
+
+- **Use DataLoader:** If a query asks for a User and their 10 Posts, and each Post has an Author, a naive GraphQL server will query the database 11 times (The N+1 problem on the server). DataLoader batches these into a single `SELECT * FROM users WHERE id IN (1, 2, 3)` query.
+- **Disable Introspection in Production:** Introspection allows anyone to download your entire API schema. Turn it off in production so hackers can't easily map out your database structure.
+
+## 12. Common mistakes
+
+- **Massive Nested Queries:** A malicious user could send a deeply nested query: `user -> posts -> author -> posts -> author` indefinitely until your server crashes (Denial of Service).
+- **Ignoring Caching:** REST is easy to cache because every URL is unique. GraphQL only has one URL (`POST /graphql`). You must implement complex client-side caching (like Apollo Client) to compensate.
+
+## 13. Performance optimization
+
+- **Query Depth Limiting:** Implement a package like `graphql-depth-limit` to reject any query that is nested deeper than 5 levels, protecting your server from crashing.
+- **Persisted Queries:** Send a hash of the query instead of the full query string to save network bandwidth on large queries.
+
+## 14. Security considerations
+
+- **Rate Limiting is Hard:** In REST, you limit by URL hits. In GraphQL, one request could ask for 1 row of data, or 10,000 rows. You must rate-limit based on **Query Complexity** (assigning a point value to each requested field).
+
+## 15. Interview questions
+
+1. **"What is the difference between REST and GraphQL?"**
+   *Answer:* REST uses multiple endpoints and standard HTTP methods; the server defines the response structure. GraphQL uses a single endpoint; the client dictates exactly what data structure it wants back.
+2. **"How do you modify data in GraphQL?"**
+   *Answer:* Instead of a `Query`, you use a `Mutation`.
+
+## 16. Quiz
+
+<Quiz 
+  question="Which of the following is a major disadvantage of using GraphQL compared to REST?"
+  options={[
+    "It causes severe over-fetching of data.",
+    "It requires multiple network requests to fetch nested relationships.",
+    "It makes HTTP-level caching at the CDN level much more difficult.",
+    "It is strictly tied to SQL databases and cannot be used with NoSQL."
+  ]}
+  answer="It makes HTTP-level caching at the CDN level much more difficult."
+/>
+
+## 17. Assignment
+
+1. Go to the public SpaceX GraphQL API: `https://spacex-production.up.railway.app/`
+2. Write a query to fetch the `name` and `active` status of all rockets. (Hint: Use the Apollo Explorer UI).
+
+## 18. Summary
+
+GraphQL shifts the power from the server to the client. By allowing the client to explicitly ask for exactly what it needs, applications become significantly faster on slow networks. However, this power comes at the cost of increased complexity on the backend (handling N+1 problems, complex rate limiting, and caching).
+
+## 19. Unlock the next lesson
+
+You've learned how to request data cleanly. But what if you need data *pushed* to you in real-time? Click "Next" to dive into WebSockets and gRPC!

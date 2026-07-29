@@ -5,6 +5,149 @@ phase: "API Design & Architecture"
 difficulty: "beginner"
 ---
 
+## 1. Introduction
+
+REST (Representational State Transfer) is an architectural style for building web APIs. It dictates how clients and servers should communicate using standard HTTP methods and URL structures. A "RESTful" API treats everything as a resource (like a User, a Post, or a Comment).
+
+## 2. Why this concept exists
+
+Before REST, APIs were chaotic. Developers used arbitrary URLs like `/deleteUser`, `/createNewPost`, or `/updateEmail`. This made learning a new API incredibly difficult. Roy Fielding introduced REST in 2000 to standardize API design so that any developer could guess how an API works just by looking at the URL.
+
+## 3. Problems it solves
+
+- **Standardization:** Developers don't need a massive manual to guess that `GET /users/1` fetches a user.
+- **Scalability:** Because REST is stateless, servers don't need to retain session memory, allowing them to scale infinitely.
+- **Separation of Concerns:** The frontend (React) and backend (Node.js) are completely decoupled. They only agree on the JSON data contract.
+
+## 4. Real-life example
+
+Think of a library:
+- To get a book: You ask for it by its specific ID (`GET /books/123`).
+- To add a new book: You hand the librarian a new book (`POST /books`).
+- To replace a damaged book: You give them a brand new copy of the same book (`PUT /books/123`).
+- To throw a book away: You tell them to remove it from the catalog (`DELETE /books/123`).
+
+## 5. Interactive visualization
+
+Play with the REST API Lab below to see how standard HTTP methods manipulate the visual database in real-time.
+
 <RestApiVisualizer />
 
+## 6. Step-by-step animated workflow
+
+In the interactive lab, you can see the payload moving from the client to the server. Below is the internal flow of that request once it hits the backend.
+
 <BackendFlowVisualizer />
+
+## 7. Deep explanation of every animation step
+
+1. **Client (Frontend):** The React app triggers a `fetch()` call to a specific REST URL endpoint.
+2. **API Gateway / Router:** The backend server matches the URL pattern (e.g., `/api/users/:id`).
+3. **Controller:** The request is handed to the specific function designed to handle that resource and method.
+4. **Database:** The server converts the REST intent into a SQL query (`SELECT`, `INSERT`, `UPDATE`, `DELETE`).
+5. **Response:** The server formats the database result into standard JSON and sends it back with the correct HTTP Status Code.
+
+## 8. Architecture diagrams
+
+In a RESTful architecture, URLs should only contain **Nouns** (resources), never **Verbs** (actions). The HTTP method itself is the verb.
+
+- ❌ BAD: `POST /api/createUser`
+- ✅ GOOD: `POST /api/users`
+
+- ❌ BAD: `GET /api/getUserById?id=5`
+- ✅ GOOD: `GET /api/users/5`
+
+## 9. Production use cases
+
+- **Stripe API:** To charge a customer, you make a `POST /v1/charges` request. To list all charges, you make a `GET /v1/charges` request.
+- **GitHub API:** To fetch a repository's issues, you make a `GET /repos/{owner}/{repo}/issues` request.
+
+## 10. Code implementation
+
+Here is a standard Express.js implementation of a RESTful resource:
+
+```javascript
+import express from 'express';
+const router = express.Router();
+
+// 1. GET ALL
+router.get('/users', (req, res) => {
+  res.json({ users: [] }); // Returns an array
+});
+
+// 2. GET ONE
+router.get('/users/:id', (req, res) => {
+  res.json({ id: req.params.id, name: "Alice" }); // Returns a single object
+});
+
+// 3. CREATE
+router.post('/users', (req, res) => {
+  res.status(201).json({ message: "Created", data: req.body });
+});
+
+// 4. UPDATE
+router.put('/users/:id', (req, res) => {
+  res.json({ message: "Replaced", id: req.params.id });
+});
+
+// 5. DELETE
+router.delete('/users/:id', (req, res) => {
+  res.status(204).send(); // 204 No Content
+});
+
+export default router;
+```
+
+## 11. Best practices
+
+- **Plural Nouns:** Always use plural nouns for collections (e.g., `/users`, not `/user`).
+- **Nesting Resources:** If a resource belongs to another, nest it logically: `GET /users/123/posts` (Gets all posts belonging to User 123).
+- **Versioning:** Always version your APIs so you don't break older mobile apps when you change the data structure: `/api/v1/users`.
+
+## 12. Common mistakes
+
+- **Returning 200 OK for everything:** If a resource is not found, return `404 Not Found`. If a validation fails, return `400 Bad Request`. Don't return `200 OK` with an `{ error: true }` JSON body!
+- **Deep Nesting:** Avoid nesting more than two levels deep. `GET /authors/1/books/2/chapters/3/pages/4` is a nightmare to maintain. Just use `GET /pages/4`.
+
+## 13. Performance optimization
+
+- **Pagination:** Never return 10,000 rows in a `GET /users` request. Use query parameters for pagination: `GET /users?limit=50&page=2`.
+- **Filtering & Sorting:** Allow the client to shrink the payload: `GET /users?role=admin&sort=createdAt,desc`.
+
+## 14. Security considerations
+
+- **Broken Object Level Authorization (BOLA):** Just because a user calls `DELETE /users/5` doesn't mean they are allowed to! You must check if the logged-in user actually has permission to delete User 5 in the controller.
+- **Rate Limiting:** Protect your endpoints so attackers can't brute-force your database.
+
+## 15. Interview questions
+
+1. **"What makes an API RESTful?"**
+   *Answer:* It must be client-server separated, stateless, cacheable, use standard HTTP methods appropriately, and rely on a uniform interface (URL structure based on resources, not actions).
+2. **"What is HATEOAS?"**
+   *Answer:* Hypermedia As The Engine Of Application State. It means your API responses should include links to other related actions. E.g., returning a User object alongside a `links` array pointing to their `/profile` and `/settings` endpoints.
+
+## 16. Quiz
+
+<Quiz 
+  question="Which of the following is the correct RESTful URL design for fetching a specific post (ID: 5) written by a specific user (ID: 10)?"
+  options={[
+    "GET /users/10/posts/5",
+    "GET /getPost?userId=10&postId=5",
+    "POST /api/users/10/fetchPost/5",
+    "GET /posts/5/users/10"
+  ]}
+  answer="GET /users/10/posts/5"
+/>
+
+## 17. Assignment
+
+1. Write down on a piece of paper the 5 RESTful endpoints required to build a "Todo List" application.
+2. Define the exact HTTP Method and URL path for: Listing all todos, fetching one todo, creating a todo, updating a todo, and deleting a todo.
+
+## 18. Summary
+
+REST APIs rely on a strict, standardized contract. You use Nouns for your URLs (`/products`) and HTTP Verbs (`GET`, `POST`, `PUT`, `DELETE`) for your actions. By following these conventions, your APIs become predictable, scalable, and easy for other developers to integrate with.
+
+## 19. Unlock the next lesson
+
+Now that you've mastered REST, let's look at its modern alternative created by Facebook: GraphQL. Click "Next" to continue!
