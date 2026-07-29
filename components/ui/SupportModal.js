@@ -11,11 +11,12 @@ export default function SupportModal() {
   useEffect(() => {
     // Check local storage to see if we should show it
     const lastDismissed = localStorage.getItem("supportModalDismissed");
+    const dismissDays = localStorage.getItem("supportModalDismissDays") || "30";
     if (lastDismissed) {
       const dismissedDate = new Date(parseInt(lastDismissed, 10));
       const daysSinceDismissed = (new Date() - dismissedDate) / (1000 * 60 * 60 * 24);
-      if (daysSinceDismissed < 30) {
-        return; // Don't show if dismissed within 30 days
+      if (daysSinceDismissed < parseInt(dismissDays, 10)) {
+        return; // Don't show if dismissed within specified days
       }
     }
 
@@ -41,13 +42,13 @@ export default function SupportModal() {
     };
     window.addEventListener("scroll", scrollHandler);
 
-    // Trigger 2: Time on site (2 minutes)
+    // Trigger 2: Time on site (1 minute)
     timer = setTimeout(() => {
       if (checkTrigger()) {
         setIsOpen(true);
         window.removeEventListener("scroll", scrollHandler);
       }
-    }, 120000);
+    }, 60000);
 
     return () => {
       window.removeEventListener("scroll", scrollHandler);
@@ -55,10 +56,11 @@ export default function SupportModal() {
     };
   }, []);
 
-  const handleDismiss = (days = 0) => {
+  const handleDismiss = (days = 1) => {
     setIsOpen(false);
     if (days > 0) {
       localStorage.setItem("supportModalDismissed", Date.now().toString());
+      localStorage.setItem("supportModalDismissDays", days.toString());
     }
   };
 
@@ -71,7 +73,7 @@ export default function SupportModal() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => handleDismiss(0)} // Temporary dismiss
+            onClick={() => handleDismiss(1)} // Temporary dismiss for 1 day
           />
           
           <motion.div 
@@ -87,7 +89,7 @@ export default function SupportModal() {
 
             <div className="p-6 md:p-8 flex flex-col relative z-10 overflow-y-auto custom-scrollbar">
               <button 
-                onClick={() => handleDismiss(0)}
+                onClick={() => handleDismiss(1)}
                 className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors"
                 aria-label="Close modal"
               >
@@ -145,13 +147,13 @@ export default function SupportModal() {
 
               <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/5">
                 <button 
-                  onClick={() => handleDismiss(30)}
+                  onClick={() => handleDismiss(7)}
                   className="text-sm font-medium text-textTertiary hover:text-white transition-colors"
                 >
-                  Don't show again for 30 days
+                  Don't show again for 7 days
                 </button>
                 <button 
-                  onClick={() => handleDismiss(0)}
+                  onClick={() => handleDismiss(1)}
                   className="px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-sm font-bold transition-all duration-300"
                 >
                   Maybe later
