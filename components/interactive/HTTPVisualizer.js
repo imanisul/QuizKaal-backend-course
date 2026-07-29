@@ -107,16 +107,57 @@ export default function HTTPVisualizer() {
         <div className="col-span-2 bg-[#111] rounded-xl border border-white/5 p-8 relative flex items-center justify-center min-h-[400px] overflow-hidden">
            <AnimatePresence mode="wait">
              {currentStep === 0 && (
-               <motion.div key="init" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 1.2, opacity: 0 }} className="text-center">
-                 <div className="w-24 h-24 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-4 border border-white/20">
-                   <Globe size={48} className="text-primary" />
+               <motion.div key="init" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ scale: 1.2, opacity: 0 }} className="w-full flex flex-col items-center">
+                 <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mb-6 border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                   <Globe size={32} className="text-primary" />
                  </div>
-                 <div className="text-sm font-mono text-primary bg-primary/10 px-3 py-1 rounded inline-block">POST /api/login HTTP/1.1</div>
-                 <div className="mt-4 text-xs text-textSecondary text-left bg-black/50 p-4 rounded border border-white/10">
-                   <div>Host: quizkaal.in</div>
-                   <div>Authorization: Bearer token...</div>
-                   <div>Content-Type: application/json</div>
-                   <div className="mt-2 text-white">{"{ \"email\": \"user@example.com\" }"}</div>
+                 
+                 <div className="text-xs text-left bg-[#0d1117] p-6 rounded-xl border border-white/10 w-full max-w-sm shadow-2xl relative overflow-hidden">
+                   {/* Animated Background Scanline */}
+                   <motion.div 
+                     className="absolute top-0 left-0 w-full h-1 bg-primary/50 shadow-[0_0_10px_#4f46e5]"
+                     animate={{ top: ["0%", "100%", "0%"] }}
+                     transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                   />
+                   
+                   <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="font-mono text-primary font-bold mb-3 pb-2 border-b border-white/10 flex gap-2">
+                     <span className="text-success">POST</span>
+                     <span className="text-white">https://quizkaal.in/api/login</span>
+                     <span className="text-textSecondary ml-auto">HTTP/1.1</span>
+                   </motion.div>
+                   
+                   <div className="space-y-1.5 font-mono text-[11px]">
+                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }} className="flex">
+                       <span className="text-info w-32">Host:</span>
+                       <span className="text-white">quizkaal.in</span>
+                     </motion.div>
+                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.9 }} className="flex">
+                       <span className="text-info w-32">Content-Type:</span>
+                       <span className="text-white">application/json</span>
+                     </motion.div>
+                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.2 }} className="flex">
+                       <span className="text-warning w-32">Authorization:</span>
+                       <span className="text-white">Bearer eyJhbGci...</span>
+                     </motion.div>
+                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.5 }} className="flex pb-3 border-b border-white/10">
+                       <span className="text-info w-32">Cookie:</span>
+                       <span className="text-white">session_id=987xyz</span>
+                     </motion.div>
+                     
+                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.0 }} className="pt-3 text-success">
+                       {`{`}
+                       <div className="pl-4">"email": "student@quizkaal.com",</div>
+                       <div className="pl-4">"password": "••••••••"</div>
+                       {`}`}
+                     </motion.div>
+                   </div>
+                   
+                   <motion.div 
+                     initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 2.5, type: "spring" }}
+                     className="absolute -right-2 -bottom-2 bg-primary text-white text-[9px] font-black uppercase px-3 py-1.5 rounded-tl-xl shadow-lg rotate-[-10deg]"
+                   >
+                     Ready to Send
+                   </motion.div>
                  </div>
                </motion.div>
              )}

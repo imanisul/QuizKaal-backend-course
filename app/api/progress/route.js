@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
+export const dynamic = 'force-dynamic';
+
 // Using a local file to simulate a database for development
 const DB_PATH = path.join(process.cwd(), '.progress.json');
 

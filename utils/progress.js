@@ -37,7 +37,7 @@ export function isLessonUnlocked(slug) {
 export async function syncProgress() {
   if (typeof window === "undefined") return;
   try {
-    const res = await fetch("/api/progress");
+    const res = await fetch("/api/progress", { cache: "no-store" });
     if (res.ok) {
       const data = await res.json();
       if (data.unlocked && Array.isArray(data.unlocked)) {
@@ -70,6 +70,7 @@ export async function unlockLesson(slug) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ slug }),
+      cache: "no-store",
     });
     
     if (res.ok) {
