@@ -12,6 +12,8 @@ import ScrollProgressBar from "@/components/lesson/ScrollProgressBar";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import ProgressiveRenderer from "@/components/lesson/ProgressiveRenderer";
+import { Suspense } from "react";
 
 export function generateStaticParams() {
   return allLessons.map((l) => ({ slug: l.slug }));
@@ -104,9 +106,11 @@ export default async function LessonPage({ params }) {
               </p>
             </div>
 
-            <article className="prose prose-invert max-w-none prose-headings:scroll-mt-24">
-              <MDXRemote source={lesson.content} components={MdxComponents} options={mdxOptions} />
-            </article>
+            <ProgressiveRenderer>
+              <article className="prose prose-invert max-w-none prose-headings:scroll-mt-24">
+                <MDXRemote source={lesson.content} components={MdxComponents} options={mdxOptions} />
+              </article>
+            </ProgressiveRenderer>
 
             <div className="mt-20 pt-10 border-t border-white/10">
               <CourseNavigation prev={prev} next={next} />

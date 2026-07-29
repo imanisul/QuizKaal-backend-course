@@ -46,17 +46,8 @@ Think of a **Restaurant**.
 
 ## 6. Animated Workflow
 
-<AnimatedWorkflow 
-  title="The MVC Request Lifecycle"
-  steps={[
-    { title: "User Request", icon: "👤", description: "The User clicks a button in their Browser to view their profile." },
-    { title: "Router", icon: "🛣️", description: "The Router intercepts the HTTP GET request and forwards it to the UserController." },
-    { title: "Controller", icon: "🎮", description: "The Controller asks the UserModel to fetch the user with ID 123." },
-    { title: "Model & DB", icon: "🗄️", description: "The Model runs a SQL query, retrieves the data from the Database, and returns it to the Controller." },
-    { title: "View", icon: "🖥️", description: "The Controller passes the user data into an HTML Template (View). The View compiles the final HTML page." },
-    { title: "Response", icon: "✅", description: "The final HTML page is sent back to the User's Browser." }
-  ]}
-/>
+<MVCVisualizer />
+
 
 ---
 

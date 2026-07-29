@@ -59,13 +59,7 @@ Think of a **Hospital**.
 
 ## 7. Architecture Diagram: Monolith vs Microservices
 
-<ArchitectureDiagram 
-  title="Scaling Differences"
-  nodes={[
-    { id: "mono_scale", name: "Monolith Scaling", icon: "🏢", type: "Wasteful", description: "If only the Payments feature has high traffic, you must clone the entire massive Monolith to a new server to handle it. Wastes CPU/RAM." },
-    { id: "micro_scale", name: "Microservice Scaling", icon: "🧩", type: "Efficient", description: "You can deploy 50 instances of the Payment Service, but only 2 instances of the Auth Service. You only pay for the exact resources you need." }
-  ]}
-/>
+<ArchitectureVisualizer />
 
 ---
 

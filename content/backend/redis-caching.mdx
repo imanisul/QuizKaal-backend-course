@@ -41,17 +41,7 @@ Think of a librarian.
 
 ## 6. Animated Workflow
 
-<AnimatedWorkflow 
-  title="The Cache-Aside Pattern Workflow"
-  steps={[
-    { title: "Client Request", icon: "📱", description: "A user requests their profile data." },
-    { title: "Check Redis", icon: "⚡", description: "The API checks Redis for the key `user:profile:123`." },
-    { title: "Cache Miss", icon: "❌", description: "The data is not in Redis. The API must fetch it from the Database." },
-    { title: "Query Database", icon: "🗄️", description: "The API runs a slow SQL query to get the profile." },
-    { title: "Store in Redis", icon: "💾", description: "The API stores the result in Redis with a 5-minute expiration (TTL)." },
-    { title: "Return to Client", icon: "✅", description: "The data is returned. The next time the user requests it, it will be an instant Cache Hit." }
-  ]}
-/>
+<RedisVisualizer />
 
 ---
 

@@ -6,10 +6,10 @@ import { roadmap } from "@/data/roadmap";
 import RenderIcon from "@/components/ui/IconMap";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronRight, Lock } from "lucide-react";
-import { useState } from "react";
-import { isLessonUnlocked } from "@/utils/progress";
+import { useState, useEffect } from "react";
+import { isLessonUnlocked, getUnlockedLessons, syncProgress } from "@/utils/progress";
 
-function PhaseGroup({ phaseData, currentSlug }) {
+function PhaseGroup({ phaseData, currentSlug, unlockedLessons }) {
   const [isOpen, setIsOpen] = useState(true);
 
   // Check if any lesson in this phase is currently active
@@ -39,7 +39,7 @@ function PhaseGroup({ phaseData, currentSlug }) {
             <div className="flex flex-col gap-1 pl-4 mt-1 border-l border-white/10 ml-4 py-1">
               {phaseData.lessons.map((lesson) => {
                 const isActive = lesson.slug === currentSlug;
-                const isUnlocked = isLessonUnlocked(lesson.slug);
+                const isUnlocked = unlockedLessons.includes(lesson.slug);
 
                 return (
                   <Link 
@@ -67,11 +67,24 @@ function PhaseGroup({ phaseData, currentSlug }) {
 export default function CurriculumSidebar() {
   const pathname = usePathname();
   const currentSlug = pathname.split("/").pop();
+  const [unlockedLessons, setUnlockedLessons] = useState([]);
+
+  useEffect(() => {
+    // Initial sync with backend
+    syncProgress();
+    
+    const updateProgress = () => {
+      setUnlockedLessons(getUnlockedLessons());
+    };
+    updateProgress();
+    window.addEventListener('quizkaal_progress_updated', updateProgress);
+    return () => window.removeEventListener('quizkaal_progress_updated', updateProgress);
+  }, []);
 
   return (
     <div className="pr-4">
       {roadmap.map((phase, idx) => (
-        <PhaseGroup key={idx} phaseData={phase} currentSlug={currentSlug} />
+        <PhaseGroup key={idx} phaseData={phase} currentSlug={currentSlug} unlockedLessons={unlockedLessons} />
       ))}
     </div>
   );

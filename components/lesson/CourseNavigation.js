@@ -9,10 +9,10 @@ import { Map } from "lucide-react";
 export default function CourseNavigation({ prev, next }) {
   const router = useRouter();
 
-  const handleNext = (e) => {
+  const handleNext = async (e) => {
     e.preventDefault();
     if (next) {
-      unlockLesson(next.slug);
+      await unlockLesson(next.slug);
       router.push(`/lessons/${next.slug}`);
     }
   };
