@@ -181,21 +181,21 @@ export default function RoadmapContent() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, margin: "-100px" }}
                     >
-                      <div className="w-full text-left flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-5 md:p-8">
-                        <div>
-                          <div className="text-[10px] md:text-[11px] font-bold tracking-widest uppercase text-primary mb-1 md:mb-2 flex items-center gap-2">
+                      <div className="w-full text-left flex flex-row items-start sm:items-center justify-between gap-3 p-5 md:p-8">
+                        <div className="flex-1 min-w-0 pr-2">
+                          <div className="text-[10px] md:text-[11px] font-bold tracking-widest uppercase text-primary mb-1 md:mb-2 flex flex-wrap items-center gap-2">
                             Phase {gi + 1}
                             <span className="font-mono text-[9px] md:text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary animate-pulse whitespace-nowrap">
                               Premium Course
                             </span>
                           </div>
-                          <h2 className="text-lg md:text-3xl font-extrabold tracking-tight text-white mb-1.5 md:mb-2">{group.phase}</h2>
+                          <h2 className="text-xl md:text-3xl font-extrabold tracking-tight text-white mb-1.5 md:mb-2">{group.phase}</h2>
                           {group.description && (
-                            <p className="text-xs md:text-base text-textSecondary leading-relaxed">{group.description}</p>
+                            <p className="text-sm md:text-base text-textSecondary leading-relaxed">{group.description}</p>
                           )}
                         </div>
-                        <div className="p-2 rounded-full bg-primary/20 text-primary transition-transform duration-500 shrink-0 self-end sm:self-auto group-hover/link:translate-x-1 group-hover/link:-translate-y-1">
-                          <ArrowRight size={20} className="md:w-6 md:h-6" />
+                        <div className="p-1.5 sm:p-2 rounded-full bg-primary/20 text-primary transition-transform duration-500 shrink-0 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 mt-1 sm:mt-0">
+                          <ArrowRight className="w-4 h-4 sm:w-6 sm:h-6" />
                         </div>
                       </div>
                     </motion.div>
@@ -211,23 +211,23 @@ export default function RoadmapContent() {
                     onClick={() => setExpandedPhase(expandedPhase === gi ? null : gi)}
                     aria-label={isExpanded ? `Collapse ${group.phase}` : `Expand ${group.phase}`}
                     aria-expanded={isExpanded}
-                    className="w-full text-left flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 md:p-8 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                    className="w-full text-left flex flex-row items-start sm:items-center justify-between gap-2 sm:gap-3 p-4 md:p-8 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
                   >
-                    <div className="w-full">
-                      <div className="text-[10px] md:text-[11px] font-bold tracking-widest uppercase text-primary mb-1 md:mb-2 flex items-center gap-2">
+                    <div className="flex-1 min-w-0 pr-2">
+                      <div className="text-[10px] md:text-[11px] font-bold tracking-widest uppercase text-primary mb-1 md:mb-2 flex flex-wrap items-center gap-2">
                         Phase {gi + 1}
                         <span className="font-mono text-[9px] md:text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-textSecondary whitespace-nowrap">
                           {filtered.length} Lessons
                         </span>
                       </div>
-                      <h2 className="text-lg md:text-3xl font-extrabold tracking-tight text-white mb-1.5 md:mb-2 leading-tight">{group.phase}</h2>
+                      <h2 className="text-xl md:text-3xl font-extrabold tracking-tight text-white mb-1.5 md:mb-2 leading-tight">{group.phase}</h2>
                       {group.description && (
-                         <p className="text-xs md:text-base text-textSecondary leading-relaxed line-clamp-2 md:line-clamp-none">{group.description}</p>
+                         <p className="text-sm md:text-base text-textSecondary leading-relaxed line-clamp-2 md:line-clamp-none">{group.description}</p>
                       )}
                     </div>
                     
-                    <div className={`hidden sm:flex p-2 rounded-full bg-white/5 text-textTertiary transition-transform duration-500 shrink-0 ${isExpanded ? "rotate-180" : ""}`}>
-                      <ChevronDown size={20} />
+                    <div className={`flex p-1.5 sm:p-2 rounded-full bg-white/5 text-textTertiary transition-transform duration-500 shrink-0 ${isExpanded ? "rotate-180" : ""} mt-1 sm:mt-0`}>
+                      <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
                   </button>
 
@@ -249,11 +249,11 @@ export default function RoadmapContent() {
                                   {locked ? <Lock size={12} className="md:w-4 md:h-4" /> : <CheckCircle2 size={14} className="md:w-[18px] md:h-[18px]" />}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <div className="font-bold text-xs md:text-lg text-white mb-0.5 md:mb-1 truncate flex items-center gap-2 md:gap-3">
+                                  <div className="font-bold text-sm md:text-lg text-white mb-0.5 md:mb-1 truncate flex items-center gap-2 md:gap-3">
                                     <span className="truncate">{lesson.title}</span>
-                                    {!locked && <span className="px-1.5 py-[1px] md:px-2 md:py-0.5 text-[8px] md:text-[10px] font-bold tracking-widest uppercase bg-success/20 text-success rounded-full shrink-0">Live</span>}
+                                    {!locked && <span className="px-1.5 py-[1px] md:px-2 md:py-0.5 text-[9px] md:text-[10px] font-bold tracking-widest uppercase bg-success/20 text-success rounded-full shrink-0">Live</span>}
                                   </div>
-                                  <div className="text-[10px] md:text-sm text-textSecondary truncate">{lesson.summary}</div>
+                                  <div className="text-xs md:text-sm text-textSecondary truncate">{lesson.summary}</div>
                                 </div>
                                 {!locked && (
                                   <div className="shrink-0 text-textTertiary hidden sm:flex items-center gap-2">
