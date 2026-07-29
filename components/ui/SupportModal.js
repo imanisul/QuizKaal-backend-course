@@ -145,13 +145,7 @@ export default function SupportModal() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/5">
-                <button 
-                  onClick={() => handleDismiss(7)}
-                  className="text-sm font-medium text-textTertiary hover:text-white transition-colors"
-                >
-                  Don't show again for 7 days
-                </button>
+              <div className="flex items-center justify-end mt-auto pt-6 border-t border-white/5">
                 <button 
                   onClick={() => handleDismiss(1)}
                   className="px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-sm font-bold transition-all duration-300"
