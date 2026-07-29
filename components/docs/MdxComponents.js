@@ -18,6 +18,10 @@ import RedisVisualizer from "@/components/interactive/RedisVisualizer";
 import MessageQueueVisualizer from "@/components/interactive/MessageQueueVisualizer";
 import ArchitectureVisualizer from "@/components/interactive/ArchitectureVisualizer";
 import AIVisualizer from "@/components/interactive/AIVisualizer";
+import RestApiVisualizer from "@/components/interactive/RestApiVisualizer";
+import BackendFlowVisualizer from "@/components/interactive/BackendFlowVisualizer";
+import AuthVisualizer from "@/components/interactive/AuthVisualizer";
+import DatabaseVisualizer from "@/components/interactive/DatabaseVisualizer";
 
 export const MdxComponents = {
   HttpVisualizer,
@@ -34,6 +38,13 @@ export const MdxComponents = {
   MessageQueueVisualizer,
   ArchitectureVisualizer,
   AIVisualizer,
+  RestApiVisualizer,
+  BackendFlowVisualizer,
+  AuthVisualizer,
+  DatabaseVisualizer,
+  BackendFlowVisualizer,
+  AuthVisualizer,
+  DatabaseVisualizer,
   h1: (props) => <Reveal as="h1" className="text-4xl font-extrabold tracking-tight mb-6 mt-10 text-white" {...props} />,
   h2: (props) => <Reveal as="h2" className="text-2xl font-bold tracking-tight mb-4 mt-12 text-white border-b border-white/10 pb-2" {...props} />,
   h3: (props) => <Reveal as="h3" className="text-xl font-bold tracking-tight mb-3 mt-8 text-white" {...props} />,

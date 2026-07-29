@@ -16,6 +16,8 @@ export function getUnlockedLessons() {
         return parsed;
       }
     }
+    // If empty or doesn't exist, initialize it
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(DEFAULT_UNLOCKED));
     return DEFAULT_UNLOCKED;
   } catch (err) {
     console.error("Failed to parse progress from localStorage", err);
@@ -32,57 +34,26 @@ export function isLessonUnlocked(slug) {
 }
 
 /**
- * Synchronizes local progress with the backend API. Call this on app load.
+ * Synchronizes local progress (No-op now, purely for backwards compatibility).
  */
 export async function syncProgress() {
   if (typeof window === "undefined") return;
-  try {
-    const res = await fetch("/api/progress", { cache: "no-store" });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.unlocked && Array.isArray(data.unlocked)) {
-        localStorage.setItem(PROGRESS_KEY, JSON.stringify(data.unlocked));
-        window.dispatchEvent(new Event('quizkaal_progress_updated'));
-      }
-    }
-  } catch (err) {
-    console.error("Failed to sync progress with backend", err);
-  }
+  // Make sure it's initialized
+  getUnlockedLessons();
+  window.dispatchEvent(new Event('quizkaal_progress_updated'));
 }
 
 /**
- * Unlocks a new lesson (optimistically) and saves it to the backend.
+ * Unlocks a new lesson and instantly saves it to localStorage.
  */
 export async function unlockLesson(slug) {
   if (typeof window === "undefined") return;
   const unlocked = getUnlockedLessons();
   
-  // 1. Optimistic UI Update
   if (!unlocked.includes(slug)) {
     const newUnlocked = [...unlocked, slug];
     localStorage.setItem(PROGRESS_KEY, JSON.stringify(newUnlocked));
     window.dispatchEvent(new Event('quizkaal_progress_updated'));
-  }
-
-  // 2. Persist to backend
-  try {
-    const res = await fetch("/api/progress", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug }),
-      cache: "no-store",
-    });
-    
-    if (res.ok) {
-      const data = await res.json();
-      if (data.unlocked) {
-        // Ensure perfect sync after server response
-        localStorage.setItem(PROGRESS_KEY, JSON.stringify(data.unlocked));
-        window.dispatchEvent(new Event('quizkaal_progress_updated'));
-      }
-    }
-  } catch (err) {
-    console.error("Failed to save progress to backend", err);
   }
 }
 

@@ -1,226 +1,185 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Play, RotateCcw, Server, Globe, Shield, Database, LayoutTemplate, Activity } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Globe, Server, Database, Shield, MonitorPlay, Activity, ServerCrash, Router, Network, Share2, Layers, Key, CheckCircle, Cpu } from "lucide-react";
 
-const steps = [
-  {
-    id: "init",
-    title: "1. The Click",
-    desc: "User clicks 'Send Request'. The browser begins constructing the HTTP message.",
-    icon: <Globe size={24} />
-  },
-  {
-    id: "dns",
-    title: "2. DNS Lookup",
-    desc: "Browser → Resolver → Root → TLD → Authoritative DNS. We find the IP address.",
-    icon: <Globe size={24} />
-  },
-  {
-    id: "tcp",
-    title: "3. TCP Handshake",
-    desc: "SYN → SYN-ACK → ACK. A reliable connection is established.",
-    icon: <Activity size={24} />
-  },
-  {
-    id: "ssl",
-    title: "4. TLS/SSL Handshake",
-    desc: "Certificates exchanged. Keys generated. Secure tunnel established.",
-    icon: <Shield size={24} />
-  },
-  {
-    id: "travel",
-    title: "5. The Journey",
-    desc: "Packets traverse ISP → Router → CDN → Firewall → Load Balancer.",
-    icon: <Activity size={24} />
-  },
-  {
-    id: "backend",
-    title: "6. Backend Processing",
-    desc: "API Gateway → Auth → Middleware → Controller → DB/Redis → Response.",
-    icon: <Server size={24} />
-  },
-  {
-    id: "render",
-    title: "7. Browser Rendering",
-    desc: "JSON received. Browser parses HTML/CSS/JS and renders the UI.",
-    icon: <LayoutTemplate size={24} />
-  }
+const nodes = [
+  { id: "click", label: "User Clicks Send", icon: <MonitorPlay />, type: "client", desc: "User clicks the 'Send' button on the React frontend." },
+  { id: "request", label: "Browser Creates Req", icon: <MonitorPlay />, type: "client", desc: "The browser constructs the raw HTTP message." },
+  { id: "headers", label: "Headers Added", icon: <Layers />, type: "client", desc: "Host, Content-Type, and other metadata attached." },
+  { id: "body", label: "Body Created", icon: <Database />, type: "client", desc: "JSON payload containing email/password attached." },
+  { id: "auth", label: "Auth Token", icon: <Key />, type: "client", desc: "JWT or Session ID attached to Authorization header." },
+  { id: "dns", label: "DNS Lookup", icon: <Globe />, type: "network", desc: "Resolving quizkaal.in to an IP Address (e.g. 104.21.55.12)." },
+  { id: "tcp", label: "TCP Handshake", icon: <Activity />, type: "network", desc: "SYN, SYN-ACK, ACK establishing a reliable connection." },
+  { id: "ssl", label: "SSL Handshake", icon: <Shield />, type: "network", desc: "Certificates exchanged, secure tunnel created." },
+  { id: "router", label: "Router", icon: <Router />, type: "network", desc: "Packets sent to the local router." },
+  { id: "isp", label: "ISP", icon: <Network />, type: "network", desc: "Internet Service Provider routes traffic." },
+  { id: "cdn", label: "CDN", icon: <Globe />, type: "network", desc: "Content Delivery Network (Cloudflare) intercepts." },
+  { id: "firewall", label: "Firewall", icon: <Shield />, type: "network", desc: "WAF blocks malicious payloads (SQLi, XSS)." },
+  { id: "lb", label: "Load Balancer", icon: <Share2 />, type: "network", desc: "Routes request to the least busy server." },
+  { id: "server", label: "Backend Server", icon: <Server />, type: "server", desc: "Node.js Express server receives the request." },
+  { id: "middleware", label: "Middleware", icon: <Layers />, type: "server", desc: "Parses JSON, logs request, CORS checks." },
+  { id: "auth_check", label: "Authentication", icon: <Key />, type: "server", desc: "Verifies the JWT signature." },
+  { id: "controller", label: "Controller", icon: <Cpu />, type: "server", desc: "Routes to the correct login function." },
+  { id: "logic", label: "Business Logic", icon: <Activity />, type: "server", desc: "Hashes password, compares with DB hash." },
+  { id: "db_query", label: "Database", icon: <Database />, type: "server", desc: "Query: SELECT * FROM users WHERE email = ?" },
+  { id: "db_return", label: "DB Returns Data", icon: <CheckCircle />, type: "server", desc: "PostgreSQL returns the user record." },
+  { id: "res_create", label: "Controller Responds", icon: <CheckCircle />, type: "server", desc: "Creates 200 OK JSON response with user data." },
+  { id: "res_network", label: "Network Return", icon: <Network />, type: "network", desc: "Response traverses back through the internet." },
+  { id: "browser_rx", label: "Browser Receives", icon: <MonitorPlay />, type: "client", desc: "Browser receives 200 OK and parses JSON." },
+  { id: "react_ui", label: "React Updates UI", icon: <MonitorPlay />, type: "client", desc: "User is redirected to the dashboard." },
 ];
 
 export default function HTTPVisualizer() {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [activeNode, setActiveNode] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [selectedNode, setSelectedNode] = useState(null);
 
-  const nextStep = () => {
-    if (currentStep < steps.length - 1) setCurrentStep(s => s + 1);
+  useEffect(() => {
+    let interval;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setActiveNode((prev) => {
+          if (prev >= nodes.length - 1) {
+            setIsPlaying(false);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, 800);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
+  const handlePlayPause = () => {
+    if (activeNode >= nodes.length - 1) setActiveNode(0);
+    setIsPlaying(!isPlaying);
   };
-  
-  const reset = () => setCurrentStep(0);
 
   return (
-    <div className="my-10 bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 shadow-2xl">
-      <div className="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
+    <div className="my-10 bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 shadow-2xl flex flex-col h-[700px]">
+      <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
         <h3 className="text-xl font-bold text-white flex items-center gap-2">
-          <Globe className="text-primary" /> HTTP Request Lifecycle
+          <Globe className="text-primary" /> The Complete HTTP Journey
         </h3>
-        <div className="flex gap-2">
-          <button onClick={reset} className="p-2 hover:bg-white/10 rounded text-textSecondary hover:text-white">
-            <RotateCcw size={18} />
-          </button>
-          <button 
-            onClick={nextStep}
-            disabled={currentStep === steps.length - 1}
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded font-semibold disabled:opacity-50"
-          >
-            {currentStep === steps.length - 1 ? "Finished" : "Next Step"} <Play size={16} />
-          </button>
-        </div>
+        <button 
+          onClick={handlePlayPause}
+          className="px-6 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary/80 transition-colors"
+        >
+          {isPlaying ? "Pause Simulation" : activeNode >= nodes.length - 1 ? "Restart Simulation" : "Play Simulation"}
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Step List */}
-        <div className="space-y-3 col-span-1">
-          {steps.map((step, idx) => {
-            const isActive = idx === currentStep;
-            const isPast = idx < currentStep;
-            return (
-              <div 
-                key={step.id} 
-                className={`p-3 rounded-lg border transition-all ${
-                  isActive ? "bg-primary/20 border-primary shadow-[0_0_15px_rgba(var(--primary),0.2)]" : 
-                  isPast ? "bg-white/5 border-white/10 opacity-70" : "bg-transparent border-transparent opacity-40"
-                }`}
-              >
-                <div className={`font-bold ${isActive ? "text-primary" : "text-white"}`}>{step.title}</div>
-                {(isActive || isPast) && (
-                  <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} className="text-xs text-textSecondary mt-1">
-                    {step.desc}
-                  </motion.div>
-                )}
-              </div>
-            );
-          })}
+      <div className="flex flex-1 gap-6 min-h-0">
+        {/* Left Side: The Pipeline Map */}
+        <div className="flex-1 border border-white/10 rounded-xl bg-black/50 overflow-y-auto p-4 relative no-scrollbar">
+          <div className="absolute left-8 top-8 bottom-8 w-1 bg-white/10 rounded-full" />
+          
+          <div className="space-y-4 relative">
+            {nodes.map((node, index) => {
+              const isPassed = index <= activeNode;
+              const isActive = index === activeNode;
+              
+              let colorClass = "text-white/40 border-white/10 bg-black";
+              let iconColor = "text-white/40";
+              
+              if (isActive) {
+                colorClass = "text-white border-primary bg-primary/20 shadow-[0_0_15px_rgba(var(--primary),0.3)]";
+                iconColor = "text-primary";
+              } else if (isPassed) {
+                colorClass = "text-white/70 border-success/50 bg-success/10";
+                iconColor = "text-success";
+              }
+
+              return (
+                <div 
+                  key={node.id} 
+                  onClick={() => setSelectedNode(node)}
+                  className={`flex items-center gap-4 cursor-pointer group`}
+                >
+                  <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center z-10 transition-colors bg-[#0a0a0a] ${
+                    isActive ? "border-primary" : isPassed ? "border-success" : "border-white/20"
+                  }`}>
+                    {isActive && <motion.div layoutId="pulse" className="w-4 h-4 bg-primary rounded-full animate-pulse" />}
+                    {isPassed && !isActive && <div className="w-3 h-3 bg-success rounded-full" />}
+                  </div>
+                  
+                  <div className={`flex-1 p-3 rounded-lg border transition-all hover:border-white/30 ${colorClass}`}>
+                    <div className="flex items-center gap-3">
+                      <div className={iconColor}>
+                        {React.cloneElement(node.icon, { size: 18 })}
+                      </div>
+                      <span className="font-semibold text-sm">{node.label}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Visualization Canvas */}
-        <div className="col-span-2 bg-[#111] rounded-xl border border-white/5 p-8 relative flex items-center justify-center min-h-[400px] overflow-hidden">
-           <AnimatePresence mode="wait">
-             {currentStep === 0 && (
-               <motion.div key="init" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ scale: 1.2, opacity: 0 }} className="w-full flex flex-col items-center">
-                 <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mb-6 border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-                   <Globe size={32} className="text-primary" />
-                 </div>
-                 
-                 <div className="text-xs text-left bg-[#0d1117] p-6 rounded-xl border border-white/10 w-full max-w-sm shadow-2xl relative overflow-hidden">
-                   {/* Animated Background Scanline */}
-                   <motion.div 
-                     className="absolute top-0 left-0 w-full h-1 bg-primary/50 shadow-[0_0_10px_#4f46e5]"
-                     animate={{ top: ["0%", "100%", "0%"] }}
-                     transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                   />
-                   
-                   <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="font-mono text-primary font-bold mb-3 pb-2 border-b border-white/10 flex gap-2">
-                     <span className="text-success">POST</span>
-                     <span className="text-white">https://quizkaal.in/api/login</span>
-                     <span className="text-textSecondary ml-auto">HTTP/1.1</span>
-                   </motion.div>
-                   
-                   <div className="space-y-1.5 font-mono text-[11px]">
-                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }} className="flex">
-                       <span className="text-info w-32">Host:</span>
-                       <span className="text-white">quizkaal.in</span>
-                     </motion.div>
-                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.9 }} className="flex">
-                       <span className="text-info w-32">Content-Type:</span>
-                       <span className="text-white">application/json</span>
-                     </motion.div>
-                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.2 }} className="flex">
-                       <span className="text-warning w-32">Authorization:</span>
-                       <span className="text-white">Bearer eyJhbGci...</span>
-                     </motion.div>
-                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.5 }} className="flex pb-3 border-b border-white/10">
-                       <span className="text-info w-32">Cookie:</span>
-                       <span className="text-white">session_id=987xyz</span>
-                     </motion.div>
-                     
-                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.0 }} className="pt-3 text-success">
-                       {`{`}
-                       <div className="pl-4">"email": "student@quizkaal.com",</div>
-                       <div className="pl-4">"password": "••••••••"</div>
-                       {`}`}
-                     </motion.div>
-                   </div>
-                   
-                   <motion.div 
-                     initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 2.5, type: "spring" }}
-                     className="absolute -right-2 -bottom-2 bg-primary text-white text-[9px] font-black uppercase px-3 py-1.5 rounded-tl-xl shadow-lg rotate-[-10deg]"
-                   >
-                     Ready to Send
-                   </motion.div>
-                 </div>
-               </motion.div>
-             )}
-             
-             {currentStep === 1 && (
-               <motion.div key="dns" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -50, opacity: 0 }} className="flex flex-col items-center w-full">
-                 <div className="flex items-center justify-between w-full">
-                   <div className="p-4 bg-white/5 rounded border border-white/10">Browser</div>
-                   <motion.div animate={{ x: [0, 50, 0] }} transition={{ repeat: Infinity, duration: 1.5 }} className="h-0.5 w-16 bg-primary" />
-                   <div className="p-4 bg-primary/20 rounded border border-primary/50 text-primary">DNS Resolver</div>
-                 </div>
-                 <div className="mt-8 grid grid-cols-3 gap-4 text-xs text-center w-full">
-                   <div className="p-2 border border-white/10 rounded bg-white/5">1. Root (.)</div>
-                   <div className="p-2 border border-white/10 rounded bg-white/5">2. TLD (.in)</div>
-                   <div className="p-2 border border-white/10 rounded bg-white/5">3. Auth (Route53)</div>
-                 </div>
-                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }} className="mt-6 text-success font-mono bg-success/20 px-4 py-2 rounded">
-                   Result: 104.21.55.12
-                 </motion.div>
-               </motion.div>
-             )}
+        {/* Right Side: Info Panel */}
+        <div className="flex-1 flex flex-col gap-4">
+          <div className="flex-1 border border-white/10 rounded-xl bg-[#111] p-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
+            
+            {/* Background effects */}
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-50" />
+            
+            <AnimatePresence mode="wait">
+              <motion.div 
+                key={activeNode}
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                transition={{ duration: 0.3 }}
+                className="relative z-10 flex flex-col items-center max-w-sm"
+              >
+                <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-2xl border ${
+                  nodes[activeNode].type === "client" ? "bg-blue-500/10 border-blue-500/30 text-blue-400" :
+                  nodes[activeNode].type === "network" ? "bg-purple-500/10 border-purple-500/30 text-purple-400" :
+                  "bg-green-500/10 border-green-500/30 text-green-400"
+                }`}>
+                  {React.cloneElement(nodes[activeNode].icon, { size: 40 })}
+                </div>
+                
+                <h4 className="text-2xl font-black text-white mb-2">{nodes[activeNode].label}</h4>
+                <div className="px-3 py-1 rounded-full bg-white/10 text-xs font-bold uppercase tracking-wider mb-6 text-textSecondary">
+                  Phase: {nodes[activeNode].type}
+                </div>
+                
+                <p className="text-lg text-textSecondary leading-relaxed">
+                  {nodes[activeNode].desc}
+                </p>
 
-             {currentStep === 2 && (
-               <motion.div key="tcp" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full">
-                  <div className="flex justify-between font-bold mb-8">
-                    <span>Client</span>
-                    <span>Server</span>
+                {activeNode === 3 && (
+                  <div className="mt-6 text-xs text-left bg-black/50 p-4 rounded border border-white/10 w-full font-mono text-success">
+                    {`{\n  "email": "user@test.com",\n  "password": "pwd"\n}`}
                   </div>
-                  <div className="space-y-6 relative">
-                    <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-white/10" />
-                    <div className="absolute right-4 top-0 bottom-0 w-0.5 bg-white/10" />
-                    
-                    <motion.div initial={{ x: 0, opacity: 0 }} animate={{ x: "100%", opacity: 1 }} transition={{ duration: 0.5 }} className="text-xs text-primary font-mono text-center">
-                       ---- SYN (Seq=0) ----&gt;
-                    </motion.div>
-                    <motion.div initial={{ x: "100%", opacity: 0 }} animate={{ x: "0%", opacity: 1 }} transition={{ delay: 0.6, duration: 0.5 }} className="text-xs text-warning font-mono text-center">
-                       &lt;---- SYN-ACK (Seq=0, Ack=1) ----
-                    </motion.div>
-                    <motion.div initial={{ x: 0, opacity: 0 }} animate={{ x: "100%", opacity: 1 }} transition={{ delay: 1.2, duration: 0.5 }} className="text-xs text-success font-mono text-center">
-                       ---- ACK (Seq=1, Ack=1) ----&gt;
-                    </motion.div>
+                )}
+                
+                {activeNode === 6 && (
+                  <div className="mt-6 text-xs bg-black/50 p-4 rounded border border-white/10 w-full font-mono flex flex-col gap-2">
+                    <div className="text-primary">Client &rarr; SYN &rarr; Server</div>
+                    <div className="text-warning">Client &larr; SYN-ACK &larr; Server</div>
+                    <div className="text-success">Client &rarr; ACK &rarr; Server</div>
                   </div>
-               </motion.div>
-             )}
+                )}
 
-             {/* Steps 3-6 would continue similarly with bespoke animations */}
-             {currentStep >= 3 && (
-               <motion.div key="generic" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
-                 <Shield size={64} className="text-primary mx-auto mb-6 animate-pulse" />
-                 <h4 className="text-xl font-bold text-white mb-2">{steps[currentStep].title}</h4>
-                 <p className="text-textSecondary">{steps[currentStep].desc}</p>
-                 {currentStep === 5 && (
-                    <div className="mt-6 flex justify-center gap-2 flex-wrap">
-                      {["Gateway", "Auth", "Controller", "Service", "DB"].map((s, i) => (
-                        <motion.div key={s} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.2 }} className="px-3 py-1 bg-white/10 rounded text-xs border border-white/20">
-                          {s}
-                        </motion.div>
-                      ))}
-                    </div>
-                 )}
-               </motion.div>
-             )}
-           </AnimatePresence>
+              </motion.div>
+            </AnimatePresence>
+            
+          </div>
+          
+          {/* Progress Bar */}
+          <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+            <motion.div 
+              className="h-full bg-primary"
+              initial={{ width: 0 }}
+              animate={{ width: `${((activeNode + 1) / nodes.length) * 100}%` }}
+              transition={{ duration: 0.3 }}
+            />
+          </div>
         </div>
       </div>
     </div>
