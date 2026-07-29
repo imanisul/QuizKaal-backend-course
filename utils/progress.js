@@ -1,7 +1,7 @@
 "use client";
 
 const PROGRESS_KEY = "quizkaal_course_progress";
-const DEFAULT_UNLOCKED = ["how-the-web-works"];
+const DEFAULT_UNLOCKED = ["how-the-web-works","http-https","websockets-grpc","rest-apis","graphql","mvc-architecture","sessions-vs-jwt","oauth-sso","api-security","event-loop","streams-buffers","worker-threads","sql-vs-nosql","indexing-transactions","redis-caching","rabbitmq","apache-kafka","monolithic-architecture","microservices","load-balancing-scaling","docker","kubernetes","ml-deep-learning","transformers-attention","prompt-engineering","langchain-core","vector-databases","naive-rag","hybrid-search","graph-rag","crag-self-rag","multimodal-rag","agentic-ai","langgraph","multi-agent-systems","mcp-architecture","ecommerce-backend","realtime-chat","enterprise-rag","multi-agent-platform"];
 
 /**
  * Synchronously gets the array of unlocked lesson slugs from localStorage for optimistic UI.
