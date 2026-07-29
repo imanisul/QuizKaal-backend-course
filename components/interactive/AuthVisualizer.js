@@ -2,11 +2,16 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Key, Database, ShieldCheck, ArrowRight, ShieldAlert, Zap } from "lucide-react";
+import { User, Key, Database, ShieldCheck, ArrowRight, ShieldAlert, Zap, ArrowDown } from "lucide-react";
+import AnimatedConnection from "../ui/AnimatedConnection";
 
 export default function AuthVisualizer() {
   const [activeTab, setActiveTab] = useState("sessions");
   const [step, setStep] = useState(0);
+
+  const clientRef = React.useRef(null);
+  const serverRef = React.useRef(null);
+  const containerRef = React.useRef(null);
 
   const reset = () => setStep(0);
   const next = () => setStep(s => s + 1);
@@ -18,9 +23,18 @@ export default function AuthVisualizer() {
 
   const renderSessions = () => {
     return (
-      <div className="relative h-[400px] flex items-center justify-between px-10">
+      <div ref={containerRef} className="relative min-h-[400px] h-auto flex flex-col md:flex-row items-center justify-between p-6 md:px-10 gap-8 md:gap-0">
+        <AnimatedConnection 
+          startRef={clientRef} 
+          endRef={serverRef} 
+          active={step === 1 || step === 4 || step === 2 || step === 5} 
+          containerRef={containerRef}
+          color="rgba(255,255,255,0.1)"
+          activeColor={step === 1 || step === 4 ? "rgba(var(--primary), 1)" : "#22c55e"}
+        />
+
         {/* Client */}
-        <div className="flex flex-col items-center gap-4 z-10 w-1/3">
+        <div ref={clientRef} className="flex flex-col items-center gap-4 z-10 w-full md:w-1/3">
           <div className="bg-[#111] p-6 rounded-xl border border-white/10 text-center relative w-full">
             <User size={32} className="mx-auto text-primary mb-2" />
             <div className="font-bold">Browser</div>
@@ -36,9 +50,9 @@ export default function AuthVisualizer() {
         </div>
 
         {/* Action Button */}
-        <div className="z-10 w-1/3 flex flex-col items-center justify-center">
+        <div className="z-10 w-full md:w-1/3 flex flex-col items-center justify-center shrink-0">
           {step === 0 && <button onClick={next} className="bg-primary px-4 py-2 rounded text-sm font-bold hover:bg-primary/80">1. Login</button>}
-          {step === 3 && <button onClick={next} className="bg-primary px-4 py-2 rounded text-sm font-bold hover:bg-primary/80 mt-12">4. Request Profile</button>}
+          {step === 3 && <button onClick={next} className="bg-primary px-4 py-2 rounded text-sm font-bold hover:bg-primary/80 md:mt-12">4. Request Profile</button>}
           
           {step === 1 && (
             <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 20, opacity: 1 }} exit={{ opacity: 0 }} className="text-primary flex items-center gap-2 text-xs font-bold">
@@ -58,7 +72,7 @@ export default function AuthVisualizer() {
         </div>
 
         {/* Server & DB */}
-        <div className="flex flex-col items-center gap-8 z-10 w-1/3">
+        <div ref={serverRef} className="flex flex-col items-center gap-8 z-10 w-full md:w-1/3">
           <div className="bg-[#111] p-6 rounded-xl border border-white/10 text-center w-full relative">
             <ShieldCheck size={32} className="mx-auto text-success mb-2" />
             <div className="font-bold">Server</div>
@@ -100,9 +114,19 @@ export default function AuthVisualizer() {
 
   const renderJWT = () => {
     return (
-      <div className="relative h-[400px] flex items-center justify-between px-10">
+      <div ref={containerRef} className="relative min-h-[400px] h-auto flex flex-col md:flex-row items-center justify-between p-6 md:px-10 gap-8 md:gap-0">
+        
+        <AnimatedConnection 
+          startRef={clientRef} 
+          endRef={serverRef} 
+          active={step === 1 || step === 4 || step === 2 || step === 5} 
+          containerRef={containerRef}
+          color="rgba(255,255,255,0.1)"
+          activeColor={step === 1 || step === 4 ? "rgba(var(--primary), 1)" : "#22c55e"}
+        />
+
         {/* Client */}
-        <div className="flex flex-col items-center gap-4 z-10 w-1/3">
+        <div ref={clientRef} className="flex flex-col items-center gap-4 z-10 w-full md:w-1/3">
           <div className="bg-[#111] p-6 rounded-xl border border-white/10 text-center relative w-full">
             <User size={32} className="mx-auto text-primary mb-2" />
             <div className="font-bold">Browser / App</div>
@@ -118,9 +142,9 @@ export default function AuthVisualizer() {
         </div>
 
         {/* Action Button */}
-        <div className="z-10 w-1/3 flex flex-col items-center justify-center">
+        <div className="z-10 w-full md:w-1/3 flex flex-col items-center justify-center shrink-0">
           {step === 0 && <button onClick={next} className="bg-primary px-4 py-2 rounded text-sm font-bold hover:bg-primary/80">1. Login</button>}
-          {step === 3 && <button onClick={next} className="bg-primary px-4 py-2 rounded text-sm font-bold hover:bg-primary/80 mt-12">4. Request Profile</button>}
+          {step === 3 && <button onClick={next} className="bg-primary px-4 py-2 rounded text-sm font-bold hover:bg-primary/80 md:mt-12">4. Request Profile</button>}
           
           {step === 1 && (
             <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 20, opacity: 1 }} exit={{ opacity: 0 }} className="text-primary flex items-center gap-2 text-xs font-bold">
@@ -140,7 +164,7 @@ export default function AuthVisualizer() {
         </div>
 
         {/* Server */}
-        <div className="flex flex-col items-center gap-8 z-10 w-1/3">
+        <div ref={serverRef} className="flex flex-col items-center gap-8 z-10 w-full md:w-1/3">
           <div className="bg-[#111] p-6 rounded-xl border border-white/10 text-center w-full relative">
             <ShieldCheck size={32} className="mx-auto text-success mb-2" />
             <div className="font-bold">Server</div>
@@ -176,8 +200,8 @@ export default function AuthVisualizer() {
   };
 
   return (
-    <div className="my-10 bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 shadow-2xl">
-      <div className="flex justify-between items-center mb-6">
+    <div className="my-10 bg-[#0a0a0a] border border-white/10 rounded-2xl p-4 md:p-6 shadow-2xl">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <h3 className="text-xl font-bold text-white flex items-center gap-2">
           <ShieldAlert className="text-primary" /> Auth Deep Dive
         </h3>

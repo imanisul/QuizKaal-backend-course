@@ -14,8 +14,8 @@ export default function DatabaseVisualizer() {
   ];
 
   return (
-    <div className="my-10 bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 shadow-2xl">
-      <div className="flex justify-between items-center mb-6">
+    <div className="my-10 bg-[#0a0a0a] border border-white/10 rounded-2xl p-4 md:p-6 shadow-2xl">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <h3 className="text-xl font-bold text-white flex items-center gap-2">
           <Database className="text-primary" /> SQL vs NoSQL
         </h3>
@@ -38,7 +38,7 @@ export default function DatabaseVisualizer() {
       <div className="flex flex-col md:flex-row gap-6">
         
         {/* Visual Structure */}
-        <div className="flex-1 bg-[#111] p-6 rounded-xl border border-white/10 flex flex-col items-center justify-center min-h-[300px] relative overflow-hidden">
+        <div className="flex-1 bg-[#111] p-4 md:p-6 rounded-xl border border-white/10 flex flex-col items-center justify-center min-h-[300px] relative overflow-hidden">
           <AnimatePresence mode="wait">
             {activeTab === "sql" ? (
               <motion.div 
@@ -49,7 +49,8 @@ export default function DatabaseVisualizer() {
                 <div className="bg-primary/20 text-primary border border-primary/30 p-2 rounded w-full flex items-center gap-2 font-bold mb-2">
                   <Table size={18} /> Table: Users
                 </div>
-                <table className="w-full text-xs text-left border-collapse">
+                <div className="w-full overflow-x-auto no-scrollbar">
+                  <table className="w-full text-[10px] md:text-xs text-left border-collapse min-w-[200px]">
                   <thead>
                     <tr className="bg-black/50 border border-white/10">
                       <th className="p-2 border-r border-white/10 text-white/50">ID (PK)</th>
@@ -70,13 +71,15 @@ export default function DatabaseVisualizer() {
                     </tr>
                   </tbody>
                 </table>
+                </div>
                 
                 <div className="w-1 h-8 bg-white/10" />
 
                 <div className="bg-warning/20 text-warning border border-warning/30 p-2 rounded w-full flex items-center gap-2 font-bold mb-2">
                   <Table size={18} /> Table: Departments
                 </div>
-                <table className="w-full text-xs text-left border-collapse">
+                <div className="w-full overflow-x-auto no-scrollbar">
+                  <table className="w-full text-[10px] md:text-xs text-left border-collapse min-w-[200px]">
                   <thead>
                     <tr className="bg-black/50 border border-white/10">
                       <th className="p-2 border-r border-white/10 text-white/50">ID (PK)</th>
@@ -90,6 +93,7 @@ export default function DatabaseVisualizer() {
                     </tr>
                   </tbody>
                 </table>
+                </div>
               </motion.div>
             ) : (
               <motion.div 
@@ -100,7 +104,7 @@ export default function DatabaseVisualizer() {
                 <div className="bg-success/20 text-success border border-success/30 p-2 rounded w-full flex items-center gap-2 font-bold mb-2">
                   <FileJson size={18} /> Collection: Users
                 </div>
-                <div className="bg-black/50 p-4 rounded border border-white/10 text-xs font-mono w-full text-left leading-loose">
+                <div className="bg-black/50 p-4 rounded border border-white/10 text-[10px] md:text-xs font-mono w-full text-left leading-loose overflow-x-auto no-scrollbar">
                   <span className="text-white">{"{"}</span><br/>
                   <span className="text-info ml-4">"_id"</span>: <span className="text-success">"5f4a..."</span>,<br/>
                   <span className="text-info ml-4">"name"</span>: <span className="text-success">"Alice"</span>,<br/>
@@ -119,7 +123,7 @@ export default function DatabaseVisualizer() {
         </div>
 
         {/* Scaling Visualizer */}
-        <div className="w-1/3 bg-[#111] p-6 rounded-xl border border-white/10 flex flex-col items-center justify-between">
+        <div className="w-full md:w-1/3 bg-[#111] p-6 rounded-xl border border-white/10 flex flex-col items-center justify-between shrink-0">
           <div className="text-center font-bold text-white/50 text-sm mb-4">
             <Scale size={16} className="inline mr-1 mb-1" /> Scaling Strategy
           </div>

@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Database, MonitorPlay, ArrowRight, Save, Edit, Trash2, Search, RefreshCw } from "lucide-react";
+import { Database, MonitorPlay, ArrowRight, Save, Edit, Trash2, Search, RefreshCw, ArrowDown } from "lucide-react";
+import AnimatedConnection from "../ui/AnimatedConnection";
 
 const methods = [
   { id: "GET", color: "text-blue-500", bg: "bg-blue-500", desc: "Retrieve data from the server." },
@@ -19,6 +20,9 @@ export default function RestApiVisualizer() {
     { id: 1, name: "Alice", role: "Admin" },
     { id: 2, name: "Bob", role: "User" }
   ]);
+  const clientRef = React.useRef(null);
+  const serverRef = React.useRef(null);
+  const containerRef = React.useRef(null);
 
   const handleRequest = () => {
     setIsRequesting(true);
@@ -49,8 +53,8 @@ export default function RestApiVisualizer() {
   };
 
   return (
-    <div className="my-10 bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 shadow-2xl">
-      <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-4">REST API Interactive Lab</h3>
+    <div ref={containerRef} className="my-10 bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+      <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-4 relative z-10">REST API Interactive Lab</h3>
       
       <div className="flex flex-wrap gap-3 mb-8">
         {methods.map(m => (
@@ -66,10 +70,18 @@ export default function RestApiVisualizer() {
         ))}
       </div>
 
-      <div className="flex gap-8 items-center h-[300px]">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-stretch md:items-center min-h-[300px] h-auto relative z-10">
         
+        <AnimatedConnection 
+          startRef={clientRef} 
+          endRef={serverRef} 
+          active={isRequesting} 
+          containerRef={containerRef}
+          color="rgba(255,255,255,0.1)"
+        />
+
         {/* Client Side */}
-        <div className="flex-1 bg-black/40 border border-white/10 rounded-xl p-6 h-full flex flex-col justify-between">
+        <div ref={clientRef} className="flex-1 bg-black/40 border border-white/10 rounded-xl p-6 h-full flex flex-col justify-between">
           <div className="flex items-center gap-2 font-bold text-white/50 mb-4 uppercase tracking-widest text-xs">
             <MonitorPlay size={16} /> Client (Frontend)
           </div>
@@ -96,26 +108,13 @@ export default function RestApiVisualizer() {
           </div>
         </div>
 
-        {/* Network */}
-        <div className="w-24 relative flex justify-center">
-          <div className="w-full h-0.5 bg-white/10 absolute top-1/2 -translate-y-1/2" />
-          <AnimatePresence>
-            {isRequesting && (
-              <motion.div 
-                initial={{ x: -60 }}
-                animate={{ x: 60 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.8, ease: "linear" }}
-                className="absolute top-1/2 -translate-y-1/2 bg-white rounded-full p-2 text-black shadow-[0_0_15px_rgba(255,255,255,0.5)] z-10"
-              >
-                <ArrowRight size={16} />
-              </motion.div>
-            )}
-          </AnimatePresence>
+        {/* Network Arrow (Visual fallback for mobile spacing) */}
+        <div className="h-8 md:w-24 md:h-auto relative flex justify-center items-center shrink-0">
+          <div className="md:w-full md:h-0.5 w-0.5 h-full bg-white/5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
         </div>
 
         {/* Server Side */}
-        <div className="flex-1 bg-black/40 border border-white/10 rounded-xl p-6 h-full flex flex-col justify-between relative overflow-hidden">
+        <div ref={serverRef} className="flex-1 bg-black/40 border border-white/10 rounded-xl p-6 h-full flex flex-col justify-between relative overflow-hidden">
            {isRequesting && (
              <motion.div 
                className="absolute inset-0 bg-primary/10 z-0"

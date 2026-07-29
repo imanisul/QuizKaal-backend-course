@@ -9,7 +9,7 @@ export default function ArchitectureVisualizer() {
 
   return (
     <div className="my-10 bg-[#0d1117] border border-white/10 rounded-2xl p-6 shadow-2xl relative">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b border-white/10 pb-4 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-white/10 pb-4 gap-4">
         <h3 className="text-xl font-bold text-white flex items-center gap-2">
           <Server className="text-primary" /> Architecture Patterns
         </h3>
@@ -46,11 +46,11 @@ export default function ArchitectureVisualizer() {
                  <div className="p-8 border-2 border-primary/50 bg-primary/5 rounded-2xl w-full max-w-md shadow-[0_0_30px_rgba(79,70,229,0.1)]">
                    <h4 className="font-bold text-lg text-primary mb-6">Monolith Backend Application</h4>
                    
-                   <div className="grid grid-cols-2 gap-4">
-                     <div className="p-4 bg-white/5 border border-white/10 rounded-xl flex flex-col items-center gap-2"><Users size={20} className="text-info" /> <span className="text-xs">User Module</span></div>
-                     <div className="p-4 bg-white/5 border border-white/10 rounded-xl flex flex-col items-center gap-2"><ShoppingBag size={20} className="text-success" /> <span className="text-xs">Product Module</span></div>
-                     <div className="p-4 bg-white/5 border border-white/10 rounded-xl flex flex-col items-center gap-2"><Box size={20} className="text-warning" /> <span className="text-xs">Order Module</span></div>
-                     <div className="p-4 bg-white/5 border border-white/10 rounded-xl flex flex-col items-center gap-2"><CreditCard size={20} className="text-danger" /> <span className="text-xs">Payment Module</span></div>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="p-3 md:p-4 bg-white/5 border border-white/10 rounded-xl flex flex-col items-center gap-2"><Users size={20} className="text-info" /> <span className="text-xs">User Module</span></div>
+                     <div className="p-3 md:p-4 bg-white/5 border border-white/10 rounded-xl flex flex-col items-center gap-2"><ShoppingBag size={20} className="text-success" /> <span className="text-xs">Product Module</span></div>
+                     <div className="p-3 md:p-4 bg-white/5 border border-white/10 rounded-xl flex flex-col items-center gap-2"><Box size={20} className="text-warning" /> <span className="text-xs">Order Module</span></div>
+                     <div className="p-3 md:p-4 bg-white/5 border border-white/10 rounded-xl flex flex-col items-center gap-2"><CreditCard size={20} className="text-danger" /> <span className="text-xs">Payment Module</span></div>
                    </div>
                  </div>
 
@@ -77,7 +77,7 @@ export default function ArchitectureVisualizer() {
                    API Gateway
                  </div>
 
-                 <div className="flex justify-center gap-10 w-full mt-2">
+                 <div className="flex flex-col md:flex-row justify-center gap-6 md:gap-10 w-full mt-2">
                    {/* Microservices */}
                    <div className="flex flex-col items-center gap-4">
                      <div className="p-4 w-32 h-32 bg-info/10 border-2 border-info rounded-xl flex flex-col items-center justify-center gap-2">

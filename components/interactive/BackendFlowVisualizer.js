@@ -61,7 +61,7 @@ export default function BackendFlowVisualizer() {
         <button 
           onClick={handlePlay}
           disabled={isPlaying}
-          className="px-6 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary/80 transition-colors disabled:opacity-50"
+          className="px-4 py-2 text-sm md:text-base md:px-6 bg-primary text-white font-bold rounded-lg hover:bg-primary/80 transition-colors disabled:opacity-50 shrink-0"
         >
           {isPlaying ? "Processing..." : "Send Request"}
         </button>
@@ -77,13 +77,13 @@ export default function BackendFlowVisualizer() {
           
           return (
             <div key={layer.id} className="flex flex-col relative group">
-              <div className={`p-4 rounded-xl border-2 transition-all duration-300 flex items-center gap-4 ${ringColor} ${!isActive && isPassed ? "bg-white/5 opacity-60" : "bg-black/50"}`}>
+              <div className={`p-3 md:p-4 rounded-xl border-2 transition-all duration-300 flex items-center gap-3 md:gap-4 ${ringColor} ${!isActive ? "bg-white/5 opacity-50" : "bg-black/50 opacity-100"}`}>
                 <div className={isActive ? (isReturning ? "text-success" : "text-primary") : "text-white/40"}>
                   {React.cloneElement(layer.icon, { size: 24 })}
                 </div>
-                <div className="flex-1">
-                  <div className={`font-bold ${isActive ? "text-white" : "text-white/70"}`}>{layer.label}</div>
-                  <div className="text-xs text-textSecondary">{layer.desc}</div>
+                <div className="flex-1 min-w-0">
+                  <div className={`font-bold truncate ${isActive ? "text-white" : "text-white/70"}`}>{layer.label}</div>
+                  <div className="text-[11px] md:text-xs text-textSecondary truncate">{layer.desc}</div>
                 </div>
                 
                 <AnimatePresence>

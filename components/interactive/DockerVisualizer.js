@@ -25,7 +25,7 @@ export default function DockerVisualizer() {
 
   return (
     <div className="my-10 bg-[#0d1117] border border-white/10 rounded-2xl p-6 shadow-2xl">
-      <div className="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-white/10 pb-4 gap-4">
         <h3 className="text-xl font-bold text-white flex items-center gap-2">
           <Box className="text-primary" /> Docker Containerization
         </h3>

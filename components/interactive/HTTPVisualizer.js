@@ -58,23 +58,23 @@ export default function HTTPVisualizer() {
   };
 
   return (
-    <div className="my-10 bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 shadow-2xl flex flex-col h-[700px]">
+    <div className="my-10 bg-[#0a0a0a] border border-white/10 rounded-2xl p-4 md:p-6 shadow-2xl flex flex-col min-h-[700px]">
       <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
         <h3 className="text-xl font-bold text-white flex items-center gap-2">
           <Globe className="text-primary" /> The Complete HTTP Journey
         </h3>
         <button 
           onClick={handlePlayPause}
-          className="px-6 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary/80 transition-colors"
+          className="px-4 py-2 text-sm md:text-base md:px-6 bg-primary text-white font-bold rounded-lg hover:bg-primary/80 transition-colors shrink-0"
         >
           {isPlaying ? "Pause Simulation" : activeNode >= nodes.length - 1 ? "Restart Simulation" : "Play Simulation"}
         </button>
       </div>
 
-      <div className="flex flex-1 gap-6 min-h-0">
+      <div className="flex flex-col md:flex-row flex-1 gap-6 min-h-0">
         {/* Left Side: The Pipeline Map */}
-        <div className="flex-1 border border-white/10 rounded-xl bg-black/50 overflow-y-auto p-4 relative no-scrollbar">
-          <div className="absolute left-8 top-8 bottom-8 w-1 bg-white/10 rounded-full" />
+        <div className="flex-1 border border-white/10 rounded-xl bg-black/50 overflow-y-auto p-4 relative no-scrollbar md:h-auto h-[400px]">
+          <div className="absolute left-[31px] top-8 bottom-8 w-[2px] bg-white/10 rounded-full" />
           
           <div className="space-y-4 relative">
             {nodes.map((node, index) => {
@@ -93,12 +93,13 @@ export default function HTTPVisualizer() {
               }
 
               return (
-                <div 
+                <motion.div 
+                  layout
                   key={node.id} 
                   onClick={() => setSelectedNode(node)}
                   className={`flex items-center gap-4 cursor-pointer group`}
                 >
-                  <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center z-10 transition-colors bg-[#0a0a0a] ${
+                  <div className={`w-8 h-8 shrink-0 rounded-full border-2 flex items-center justify-center z-10 transition-colors bg-[#0a0a0a] ${
                     isActive ? "border-primary" : isPassed ? "border-success" : "border-white/20"
                   }`}>
                     {isActive && <motion.div layoutId="pulse" className="w-4 h-4 bg-primary rounded-full animate-pulse" />}
@@ -113,7 +114,7 @@ export default function HTTPVisualizer() {
                       <span className="font-semibold text-sm">{node.label}</span>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -135,12 +136,12 @@ export default function HTTPVisualizer() {
                 transition={{ duration: 0.3 }}
                 className="relative z-10 flex flex-col items-center max-w-sm"
               >
-                <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-2xl border ${
+                <div className={`w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-2xl flex items-center justify-center mb-4 md:mb-6 shadow-2xl border ${
                   nodes[activeNode].type === "client" ? "bg-blue-500/10 border-blue-500/30 text-blue-400" :
                   nodes[activeNode].type === "network" ? "bg-purple-500/10 border-purple-500/30 text-purple-400" :
                   "bg-green-500/10 border-green-500/30 text-green-400"
                 }`}>
-                  {React.cloneElement(nodes[activeNode].icon, { size: 40 })}
+                  {React.cloneElement(nodes[activeNode].icon, { className: "w-8 h-8 md:w-10 md:h-10" })}
                 </div>
                 
                 <h4 className="text-2xl font-black text-white mb-2">{nodes[activeNode].label}</h4>
