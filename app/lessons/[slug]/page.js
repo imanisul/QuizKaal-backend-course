@@ -13,6 +13,7 @@ import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import ProgressiveRenderer from "@/components/lesson/ProgressiveRenderer";
+import MobileLessonNav from "@/components/lesson/MobileLessonNav";
 import { Suspense } from "react";
 
 export function generateStaticParams() {
@@ -87,6 +88,11 @@ export default async function LessonPage({ params }) {
             <h3 className="font-bold text-sm tracking-widest uppercase text-textTertiary mb-6 ml-2">Curriculum</h3>
             <CurriculumSidebar />
           </aside>
+
+          {/* Mobile Drawer Navigation */}
+          <MobileLessonNav headings={headings}>
+            <CurriculumSidebar />
+          </MobileLessonNav>
 
           {/* Main Content (MDX) */}
           <main className="min-w-0 pt-24 pb-32">

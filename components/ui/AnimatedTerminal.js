@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Terminal, Copy, CheckCircle2, Maximize2, Minimize2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import DOMPurify from 'isomorphic-dompurify';
 
 export default function AnimatedTerminal({ 
   lines = [], 
@@ -126,7 +127,7 @@ export default function AnimatedTerminal({
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} key={idx} className="flex whitespace-pre">
                     <span className="text-green-400 mr-2 shrink-0">➜</span>
                     <span className="text-blue-400 mr-2 shrink-0">~/app</span>
-                    <span className="text-white" dangerouslySetInnerHTML={{ __html: line.html || line.text }} />
+                    <span className="text-white" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(line.html || line.text) }} />
                   </motion.div>
                 );
               }
@@ -135,7 +136,7 @@ export default function AnimatedTerminal({
               if (idx < visibleLines && line.type === "output") {
                 return (
                   <motion.div initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} key={idx} className={`whitespace-pre mt-1 mb-3 ${line.className || 'text-textTertiary'}`}>
-                    {line.html ? <span dangerouslySetInnerHTML={{ __html: line.html }} /> : line.text}
+                    {line.html ? <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(line.html) }} /> : line.text}
                   </motion.div>
                 );
               }

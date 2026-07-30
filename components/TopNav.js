@@ -17,6 +17,7 @@ export default function TopNav() {
   const links = [
     { href: "/", label: "Home" },
     { href: "/roadmap", label: "Roadmap" },
+    { href: "/react-course", label: "React" },
     { href: "/ai-integration", label: "AI" },
     { href: "/cicd", label: "CI/CD" },
     { href: "/interview", label: "Interview Questions" },
