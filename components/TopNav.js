@@ -32,6 +32,10 @@ export default function TopNav() {
 
   useEffect(() => setMobileOpen(false), [pathname]);
 
+  if (pathname === '/react-course') {
+    return null;
+  }
+
   return (
     <>
       <nav className={`glass-nav sticky top-0 z-[90] ${scrolled ? "scrolled" : ""}`}>
