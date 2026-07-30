@@ -86,8 +86,8 @@ export default function AIContent() {
           </StaggerItem>
 
           <StaggerItem>
-            <div className="bg-surface border border-white/10 rounded-2xl p-6 font-mono text-sm">
-              <div className="flex gap-8 overflow-x-auto">
+            <div className="bg-surface border border-white/10 rounded-2xl p-4 md:p-6 font-mono text-sm">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-8 overflow-x-auto">
                 <ul className="space-y-2 text-textSecondary whitespace-nowrap">
                   <li className="text-white font-bold">backend/</li>
                   <li className="pl-4">├── <span className="text-purple-400">routes/</span> <span className="text-textTertiary text-xs ml-2">// API definitions (e.g. POST /chat)</span></li>
@@ -97,7 +97,7 @@ export default function AIContent() {
                   <li className="pl-4">├── <span className="text-purple-400">repositories/</span> <span className="text-textTertiary text-xs ml-2">// DB Queries (Prisma/TypeORM)</span></li>
                   <li className="pl-4">├── <span className="text-purple-400">schemas/</span> <span className="text-textTertiary text-xs ml-2">// Zod/Joi validation rules</span></li>
                 </ul>
-                <ul className="space-y-2 text-textSecondary whitespace-nowrap border-l border-white/10 pl-8">
+                <ul className="space-y-2 text-textSecondary whitespace-nowrap border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pt-0 md:pl-8">
                   <li className="pl-4">├── <span className="text-blue-400">prompts/</span> <span className="text-textTertiary text-xs ml-2">// Version-controlled system prompts</span></li>
                   <li className="pl-4">├── <span className="text-blue-400">rag/</span> <span className="text-textTertiary text-xs ml-2">// Document chunking & ingestion logic</span></li>
                   <li className="pl-4">├── <span className="text-blue-400">agents/</span> <span className="text-textTertiary text-xs ml-2">// LangGraph state machines & tools</span></li>

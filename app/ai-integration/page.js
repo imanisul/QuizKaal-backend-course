@@ -1,5 +1,6 @@
 import AIContent, { aiToc } from "./AIContent";
 import Sidebar from "@/components/Sidebar";
+import MobileTOC from "@/components/ai/MobileTOC";
 import { getAdjacentLessons } from "@/data/roadmap";
 import CourseNavigation from "@/components/lesson/CourseNavigation";
 
@@ -44,6 +45,7 @@ export default function AIIntegrationPage() {
         </div>
         
         <main className="flex-1 w-full min-w-0">
+          <MobileTOC items={aiToc} />
           <div className="lesson-container">
             <AIContent />
             

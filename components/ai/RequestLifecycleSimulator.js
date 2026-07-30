@@ -56,41 +56,44 @@ export default function RequestLifecycleSimulator() {
         <div className="bg-surface border border-white/10 rounded-2xl p-4 flex flex-col gap-3">
            <h4 className="font-bold text-white text-sm">Simulator Settings</h4>
            
-           <div className="flex bg-black/40 rounded-lg p-1">
-             <button 
-               onClick={() => setFramework("express")}
-               className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors ${framework === 'express' ? 'bg-white/10 text-white' : 'text-textTertiary hover:text-textSecondary'}`}
-             >
-               Express.js
-             </button>
-             <button 
-               onClick={() => setFramework("nestjs")}
-               className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors ${framework === 'nestjs' ? 'bg-red-500/20 text-red-400' : 'text-textTertiary hover:text-textSecondary'}`}
-             >
-               NestJS
-             </button>
-           </div>
+           <div className="flex flex-col sm:flex-row gap-3">
+             <div className="flex bg-black/40 rounded-lg p-1 flex-1">
+               <button 
+                 onClick={() => setFramework("express")}
+                 className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors ${framework === 'express' ? 'bg-white/10 text-white' : 'text-textTertiary hover:text-textSecondary'}`}
+               >
+                 Express.js
+               </button>
+               <button 
+                 onClick={() => setFramework("nestjs")}
+                 className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors ${framework === 'nestjs' ? 'bg-red-500/20 text-red-400' : 'text-textTertiary hover:text-textSecondary'}`}
+               >
+                 NestJS
+               </button>
+             </div>
 
-           <div className="flex bg-black/40 rounded-lg p-1">
-             <button 
-               onClick={() => setScenario("success")}
-               className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors flex items-center justify-center gap-1 ${scenario === 'success' ? 'bg-success/20 text-success' : 'text-textTertiary hover:text-textSecondary'}`}
-             >
-               <CheckCircle2 size={12} /> Success
-             </button>
-             <button 
-               onClick={() => setScenario("failure")}
-               className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors flex items-center justify-center gap-1 ${scenario === 'failure' ? 'bg-error/20 text-error' : 'text-textTertiary hover:text-textSecondary'}`}
-             >
-               <AlertCircle size={12} /> Failure
-             </button>
+             <div className="flex bg-black/40 rounded-lg p-1 flex-1">
+               <button 
+                 onClick={() => setScenario("success")}
+                 className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors flex items-center justify-center gap-1 ${scenario === 'success' ? 'bg-success/20 text-success' : 'text-textTertiary hover:text-textSecondary'}`}
+               >
+                 <CheckCircle2 size={12} /> Success
+               </button>
+               <button 
+                 onClick={() => setScenario("failure")}
+                 className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors flex items-center justify-center gap-1 ${scenario === 'failure' ? 'bg-error/20 text-error' : 'text-textTertiary hover:text-textSecondary'}`}
+               >
+                 <AlertCircle size={12} /> Failure
+               </button>
+             </div>
            </div>
         </div>
 
-        {/* Vertical Timeline */}
-        <div className="bg-surface border border-white/10 rounded-2xl p-4 flex-1 overflow-y-auto max-h-[600px] custom-scrollbar">
-          <div className="flex flex-col relative">
-            <div className="absolute left-4 top-4 bottom-4 w-px bg-white/5 z-0" />
+        {/* Timeline */}
+        <div className="bg-surface border border-white/10 rounded-2xl p-4 flex-1 overflow-y-auto overflow-x-auto xl:overflow-x-hidden xl:max-h-[600px] custom-scrollbar">
+          <div className="flex flex-row xl:flex-col relative gap-2 xl:gap-0 pb-2 xl:pb-0">
+            {/* The vertical line only on xl */}
+            <div className="hidden xl:block absolute left-4 top-4 bottom-4 w-px bg-white/5 z-0" />
             
             {STEPS.map((step, idx) => {
               const isActive = activeStep === step.id;
@@ -101,16 +104,20 @@ export default function RequestLifecycleSimulator() {
                 <button
                   key={step.id}
                   onClick={() => setActiveStep(step.id)}
-                  className={`relative z-10 flex items-start gap-4 p-3 rounded-xl transition-all text-left ${isActive ? 'bg-white/5 border border-white/10' : 'hover:bg-white/[0.02]'}`}
+                  className={`relative z-10 flex items-center xl:items-start gap-2 xl:gap-4 p-2 xl:p-3 rounded-xl transition-all text-left whitespace-nowrap xl:whitespace-normal shrink-0 ${isActive ? 'bg-white/5 border border-white/10' : 'hover:bg-white/[0.02]'}`}
                 >
-                  <div className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center border transition-colors
+                  <div className={`w-6 h-6 xl:w-8 xl:h-8 shrink-0 rounded-full flex items-center justify-center border transition-colors
                     ${isActive ? `bg-background ${step.color} border-current shadow-[0_0_15px_currentColor]` : isPast ? 'bg-white/5 border-white/10 text-white/40' : 'bg-black/50 border-white/5 text-white/20'}
                   `}>
-                    <Icon size={14} />
+                    <Icon size={12} className="xl:hidden" />
+                    <Icon size={14} className="hidden xl:block" />
                   </div>
                   <div>
-                    <h5 className={`text-sm font-bold transition-colors ${isActive ? 'text-white' : isPast ? 'text-textSecondary' : 'text-textTertiary'}`}>{step.id}. {step.title}</h5>
-                    <p className={`text-[10px] mt-0.5 transition-colors ${isActive ? step.color : 'text-textTertiary'}`}>{step.desc}</p>
+                    <h5 className={`text-xs xl:text-sm font-bold transition-colors ${isActive ? 'text-white' : isPast ? 'text-textSecondary' : 'text-textTertiary'}`}>
+                      <span className="xl:hidden">{step.id}. {step.title}</span> 
+                      <span className="hidden xl:inline">{step.id}. {step.title}</span>
+                    </h5>
+                    <p className={`hidden xl:block text-[10px] mt-0.5 transition-colors ${isActive ? step.color : 'text-textTertiary'}`}>{step.desc}</p>
                   </div>
                 </button>
               );
