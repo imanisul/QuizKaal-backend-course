@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion, useScroll, useSpring } from "framer-motion";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { 
   BookOpen, Code, Play, CheckCircle, Circle, ArrowRight,
@@ -19,12 +19,6 @@ export default function ReactCoursePage() {
   const [mounted, setMounted] = useState(false);
   const [activeChapter, setActiveChapter] = useState("ch1");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
 
   // Load progress on mount
   useEffect(() => {
@@ -146,7 +140,8 @@ export default function ReactCoursePage() {
             <div className="h-1.5 bg-bgCard rounded-full w-full overflow-hidden">
               <motion.div 
                 className="h-full bg-primary origin-left"
-                style={{ width: `${progressPercent}%` }}
+                initial={{ width: 0 }}
+                animate={{ width: `${progressPercent}%` }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
               />
             </div>

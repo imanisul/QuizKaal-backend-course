@@ -9,7 +9,7 @@ import CurriculumSidebar from "@/components/docs/CurriculumSidebar";
 import CourseNavigation from "@/components/lesson/CourseNavigation";
 import ProgressGuard from "@/components/lesson/ProgressGuard";
 import TableOfContents from "@/components/lesson/TableOfContents";
-import ScrollProgressBar from "@/components/lesson/ScrollProgressBar";
+import CourseProgressBar from "@/components/lesson/CourseProgressBar";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
@@ -160,7 +160,7 @@ export default async function LessonPage({ params }) {
       <Script id="schema-breadcrumb" type="application/ld+json" strategy="afterInteractive">
         {JSON.stringify(breadcrumbSchema)}
       </Script>
-      <ScrollProgressBar />
+      <CourseProgressBar />
       <ProgressGuard lessonSlug={params.slug}>
         <div className="grid grid-cols-1 xl:grid-cols-[240px_minmax(0,1fr)_240px] gap-10 max-w-[1400px] mx-auto px-6 sm:px-8 relative z-[1]">
           
