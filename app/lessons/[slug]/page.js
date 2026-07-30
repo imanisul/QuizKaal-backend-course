@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Script from "next/script";
 import { notFound } from "next/navigation";
 import { allLessons, getAdjacentLessons } from "@/data/roadmap";
 import { getLessonBySlug } from "@/lib/mdx";
@@ -23,7 +24,39 @@ export function generateStaticParams() {
 export function generateMetadata({ params }) {
   const lesson = getLessonBySlug(params.slug);
   if (!lesson) return {};
-  return { title: `QuizKaal | ${lesson.frontmatter?.title || 'Lesson'}`, description: lesson.frontmatter?.description };
+  
+  const title = `QuizKaal | ${lesson.frontmatter?.title || 'Lesson'}`;
+  const description = lesson.frontmatter?.description || "Master backend engineering with QuizKaal.";
+  const url = `https://quizkaal.in/lessons/${params.slug}`;
+
+  return { 
+    title, 
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "article",
+      siteName: "QuizKaal",
+      images: [
+        {
+          url: "/og-image.jpg",
+          width: 1200,
+          height: 630,
+          alt: title,
+        }
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/og-image.jpg"],
+    }
+  };
 }
 
 // Custom slugify function to match rehype-slug
@@ -77,8 +110,56 @@ export default async function LessonPage({ params }) {
     }
   };
 
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": lesson.frontmatter?.title,
+    "description": lesson.frontmatter?.description,
+    "author": {
+      "@type": "Organization",
+      "name": "QuizKaal"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "QuizKaal",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://quizkaal.in/logo.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://quizkaal.in/lessons/${params.slug}`
+    }
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Roadmap",
+        "item": "https://quizkaal.in/roadmap"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": lesson.frontmatter?.phase || lesson.category,
+        "item": `https://quizkaal.in/lessons/${params.slug}`
+      }
+    ]
+  };
+
   return (
     <>
+      <Script id="schema-article" type="application/ld+json" strategy="afterInteractive">
+        {JSON.stringify(articleSchema)}
+      </Script>
+      <Script id="schema-breadcrumb" type="application/ld+json" strategy="afterInteractive">
+        {JSON.stringify(breadcrumbSchema)}
+      </Script>
       <ScrollProgressBar />
       <ProgressGuard lessonSlug={params.slug}>
         <div className="grid grid-cols-1 xl:grid-cols-[240px_minmax(0,1fr)_240px] gap-10 max-w-[1400px] mx-auto px-6 sm:px-8 relative z-[1]">

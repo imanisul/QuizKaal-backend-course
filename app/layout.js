@@ -60,6 +60,30 @@ export default function RootLayout({ children }) {
             gtag('config', '${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}');
           `}
         </Script>
+        <Script id="schema-organization" type="application/ld+json" strategy="afterInteractive">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "QuizKaal",
+            "url": "https://quizkaal.in",
+            "logo": "https://quizkaal.in/logo.png",
+            "description": "An immersive, interactive backend engineering course.",
+            "sameAs": []
+          })}
+        </Script>
+        <Script id="schema-website" type="application/ld+json" strategy="afterInteractive">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "QuizKaal",
+            "url": "https://quizkaal.in",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://quizkaal.in/roadmap?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          })}
+        </Script>
       </head>
       <body className="font-ui" suppressHydrationWarning>
         <LenisProvider>
