@@ -9,54 +9,54 @@ export default function SupportModal() {
   const amounts = ["₹5", "₹10", "₹20", "₹30", "₹40", "₹50", "₹60", "₹70", "₹80", "₹90", "₹100"];
 
   useEffect(() => {
-    // Check local storage to see if we should show it
-    const lastDismissed = localStorage.getItem("supportModalDismissed");
-    const dismissDays = localStorage.getItem("supportModalDismissDays") || "30";
-    if (lastDismissed) {
-      const dismissedDate = new Date(parseInt(lastDismissed, 10));
-      const daysSinceDismissed = (new Date() - dismissedDate) / (1000 * 60 * 60 * 24);
-      if (daysSinceDismissed < parseInt(dismissDays, 10)) {
-        return; // Don't show if dismissed within specified days
+    const checkDismissed = () => {
+      const lastDismissed = localStorage.getItem("supportModalDismissed");
+      const dismissDays = localStorage.getItem("supportModalDismissDays") || "30";
+      if (lastDismissed) {
+        const dismissedDate = new Date(parseInt(lastDismissed, 10));
+        const daysSinceDismissed = (new Date() - dismissedDate) / (1000 * 60 * 60 * 24);
+        if (daysSinceDismissed < parseInt(dismissDays, 10)) {
+          return true;
+        }
       }
+      return false;
+    };
+
+    if (checkDismissed()) {
+      return;
     }
 
     let scrollHandler;
     let timer;
 
     const checkTrigger = () => {
-      // Don't interrupt if they are explicitly playing the CI/CD simulator
-      // We can check if there's a playing indicator in the DOM (hacky but works globally without context)
       const isPlayingSimulator = document.querySelector('[data-playing="true"]');
       if (isPlayingSimulator) return false;
       return true;
     };
 
-    // Trigger 1: Scroll Depth
     scrollHandler = () => {
       const scrollDepth = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
-      if (scrollDepth > 0.9 && checkTrigger()) {
+      if (scrollDepth > 0.9 && checkTrigger() && !checkDismissed()) {
         setIsOpen(true);
         window.removeEventListener("scroll", scrollHandler);
-        clearTimeout(timer);
       }
     };
     window.addEventListener("scroll", scrollHandler);
 
-    // Trigger 2: Time on site (1 minute)
-    timer = setTimeout(() => {
-      if (checkTrigger()) {
+    timer = setInterval(() => {
+      if (checkTrigger() && !checkDismissed()) {
         setIsOpen(true);
-        window.removeEventListener("scroll", scrollHandler);
       }
-    }, 60000);
+    }, 300000);
 
     return () => {
       window.removeEventListener("scroll", scrollHandler);
-      clearTimeout(timer);
+      clearInterval(timer);
     };
   }, []);
 
-  const handleDismiss = (days = 1) => {
+  const handleDismiss = (days = 0) => {
     setIsOpen(false);
     if (days > 0) {
       localStorage.setItem("supportModalDismissed", Date.now().toString());
@@ -73,7 +73,7 @@ export default function SupportModal() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => handleDismiss(1)} // Temporary dismiss for 1 day
+            onClick={() => handleDismiss(0)}
           />
           
           <motion.div 
@@ -89,7 +89,7 @@ export default function SupportModal() {
 
             <div className="p-6 md:p-8 flex flex-col relative z-10 overflow-y-auto custom-scrollbar">
               <button 
-                onClick={() => handleDismiss(1)}
+                onClick={() => handleDismiss(0)}
                 className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors"
                 aria-label="Close modal"
               >
