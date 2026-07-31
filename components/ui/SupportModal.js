@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Heart, QrCode, Coffee, ChevronRight } from "lucide-react";
+import Image from "next/image";
 
 export default function SupportModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -110,9 +111,12 @@ export default function SupportModal() {
                 {/* QR Code */}
                 <div className="shrink-0 flex flex-col items-center gap-3">
                   <div className="w-[140px] h-[140px] bg-white border-[6px] border-white/10 rounded-2xl flex items-center justify-center relative overflow-hidden group shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-                    <img 
+                    <Image 
                       src="/donate-qr.png" 
                       alt="Donation QR Code" 
+                      width={140}
+                      height={140}
+                      priority
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-xl"
                     />
                     <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/50 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />

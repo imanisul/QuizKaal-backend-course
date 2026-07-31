@@ -54,6 +54,7 @@ export default function TopNav() {
                 alt="QuizKaal Learn" 
                 width={48} 
                 height={48} 
+                priority
                 className="rounded-[12px] relative z-10 linear-glass ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500" 
               />
             </motion.div>
