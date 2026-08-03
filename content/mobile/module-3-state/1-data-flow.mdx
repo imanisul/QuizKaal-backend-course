@@ -1,0 +1,85 @@
+# The Unidirectional Data Flow
+
+How do you manage a user clicking a button and updating a counter on the screen? In modern mobile engineering, we use Unidirectional Data Flow.
+
+## 1. Introduction
+
+State management is the hardest part of frontend engineering. If you have a Shopping Cart icon in the top right, and an "Add to Cart" button in a nested list view, how do they communicate? State management libraries (like Redux, Zustand, Provider, or ViewModel) solve this by creating a single source of truth.
+
+## 2. Why this concept exists
+
+In older architectures (like MVC or jQuery), views would directly mutate each other. The button would find the cart icon and explicitly tell it to update. This creates a tangled mess of "spaghetti code" that is impossible to debug in large applications. 
+
+## 3. Visual Explanation
+
+<ConceptCard 
+  title="Unidirectional Data Flow" 
+  description="Data only flows one way. A View triggers an Action. The Action goes to a Reducer. The Reducer updates the State. The State flows back down to update the View. You NEVER mutate the View directly."
+/>
+
+## 4. Internal Working: Reactivity
+
+Modern mobile frameworks (React Native, Flutter, Jetpack Compose) are **Declarative** and **Reactive**. You do not say "change the text to '5'". You say "My state is currently 5, please re-render the UI based on this state." The engine calculates the differences and repaints the screen automatically.
+
+## 5. Interactive Animation: State Flow
+
+Trigger an action in the animation below to see how data flows through a modern architecture. Notice how the View never updates itself directly.
+
+<StateFlowDiagram />
+
+## 6. Code Examples: Global State
+
+Here is how you update global state across the three tracks:
+
+<MultiLangCodeBlock rnCodeBase64="Ly8gUmVhY3QgTmF0aXZlIChadXN0YW5kKQppbXBvcnQgeyBjcmVhdGUgfSBmcm9tICd6dXN0YW5kJzsKCmNvbnN0IHVzZVN0b3JlID0gY3JlYXRlKChzZXQpID0+ICh7CiAgY291bnQ6IDAsCiAgaW5jcmVtZW50OiAoKSA9PiBzZXQoKHN0YXRlKSA9PiAoeyBjb3VudDogc3RhdGUuY291bnQgKyAxIH0pKSwKfSkpOwoKZnVuY3Rpb24gQXBwKCkgewogIGNvbnN0IHsgY291bnQsIGluY3JlbWVudCB9ID0gdXNlU3RvcmUoKTsKICByZXR1cm4gPEJ1dHRvbiBvblByZXNzPXtpbmNyZW1lbnR9IHRpdGxlPXtcYENvdW50OiBcJHtjb3VudH1cYH0gLz47Cn0=" flutterCodeBase64="Ly8gRmx1dHRlciAoUHJvdmlkZXIpCmNsYXNzIENvdW50ZXIgd2l0aCBDaGFuZ2VOb3RpZmllciB7CiAgaW50IF9jb3VudCA9IDA7CiAgaW50IGdldCBjb3VudCA9PiBfY291bnQ7CgogIHZvaWQgaW5jcmVtZW50KCkgewogICAgX2NvdW50Kys7CiAgICBub3RpZnlMaXN0ZW5lcnMoKTsgLy8gVHJpZ2dlcnMgVUkgcmUtcmVuZGVyCiAgfQp9" androidCodeBase64="Ly8gQW5kcm9pZCAoVmlld01vZGVsICYgU3RhdGVGbG93KQpjbGFzcyBDb3VudGVyVmlld01vZGVsIDogVmlld01vZGVsKCkgewogICAgcHJpdmF0ZSB2YWwgX2NvdW50ID0gTXV0YWJsZVN0YXRlRmxvdygwKQogICAgdmFsIGNvdW50OiBTdGF0ZUZsb3c8SW50PiA9IF9jb3VudAoKICAgIGZ1biBpbmNyZW1lbnQoKSB7CiAgICAgICAgX2NvdW50LnZhbHVlKysgLy8gVHJpZ2dlcnMgQ29tcG9zZSByZS1yZW5kZXIKICAgIH0KfQ==" />
+
+**Explanation:**  
+Each framework uses a "Store" or "ViewModel" to hold the source of truth outside the UI tree. When `increment()` is called, the store updates its internal value and explicitly fires a notification event (e.g., `notifyListeners()`). The UI framework intercepts this notification and efficiently re-renders only the widgets that depend on that specific value.
+
+## 7. Real-world Examples
+
+- **WhatsApp:** When a new message arrives over a web socket, an Action is dispatched. The Reducer adds the message to the global State array. Because the Chat View is *reacting* to the State array, the message appears on screen instantly.
+
+## 8. Best Practices
+
+- **Keep state localized if possible:** Don't put form input text into a massive global Redux store. Use global state only for data needed by multiple unrelated screens (like user authentication or shopping carts).
+- **Immutability:** Never mutate state directly (e.g. `state.count = 5`). Always create a new object. 
+
+## 9. Common Mistakes
+
+- **Prop Drilling:** Passing state down through 15 nested components instead of using a Context or global store.
+- **Infinite Loops:** Triggering an Action *during* a render cycle, which updates the state, which triggers another render cycle...
+
+## 10. Interview Questions
+
+<InterviewQuestion 
+  question="What is Unidirectional Data Flow?"
+  answer="Unidirectional Data Flow is an architectural pattern where state is passed down to views, and events are passed up to update the state. The view never updates itself. Data only flows in one strictly predictable direction (Action -> Reducer -> State -> View)."
+  bestPractice="Strictly separate your UI rendering logic from your business/state mutation logic."
+/>
+
+<InterviewQuestion 
+  question="Why is immutability important in React/Redux?"
+  answer="Immutability makes state changes predictable and trackable. In React, the engine determines if a component should re-render by doing a shallow reference check (prevProps === nextProps). If you mutate an object directly, the reference stays the same, and React will completely fail to re-render the UI."
+  commonFollowUp="How do you deeply copy an object in JavaScript without mutating it? (e.g. spread operator, structuredClone)."
+/>
+
+<InterviewQuestion 
+  question="Explain the difference between local state and global state."
+  answer="Local state is data that only affects one specific component and its immediate children (e.g., whether a dropdown menu is open). Global state is data needed across the entire application by completely unrelated screens (e.g., the current logged-in user's profile)."
+  commonFollowUp="What happens to performance if you put rapidly changing local state (like text input typing) into a massive global Redux store?"
+/>
+
+## 11. Knowledge Check
+
+<QuizWidget 
+  question="In a Unidirectional Data Flow, what directly updates the View (UI)?"
+  options={["The Action", "The View itself", "The State", "The Database"]}
+  correctAnswer="The State"
+  explanation="The View is simply a reflection of the State. An Action updates the State, and the new State flows down to re-render the View."
+  takeaway="Never use DOM manipulation (like document.getElementById) in reactive frameworks. Update the state, and let the framework update the UI."
+/>
+
+## 12. Summary
+
+If you master state management, you master frontend engineering. By ensuring data only flows in one direction, your apps become predictable, debuggable, and vastly more stable in production.

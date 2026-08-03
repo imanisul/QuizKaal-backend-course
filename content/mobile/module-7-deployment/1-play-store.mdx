@@ -1,0 +1,86 @@
+# Play Store & CI/CD
+
+Building the app is only 50% of the job. Getting it onto 2 billion devices worldwide is the other 50%.
+
+## 1. Introduction
+
+Unlike the web where you just upload files to a server and users refresh their browser, mobile apps must be cryptographically signed, reviewed by human moderators at Apple and Google, and distributed through centralized App Stores. 
+
+## 2. Why this concept exists
+
+The App Store and Play Store exist to protect users from malware. Before your app is allowed on a user's phone, it must be vetted. This creates a massive bottleneck for developers—you cannot push a "quick bug fix" in 5 minutes. It might take 2 days to get approved.
+
+## 3. Visual Explanation
+
+<ConceptCard 
+  title="The Release Pipeline" 
+  description="Code Commit -> CI Server (GitHub Actions) runs Unit Tests -> Builds .AAB (Android) and .IPA (iOS) -> Cryptographically signs them with your Keystore -> Uploads to TestFlight / Play Console -> Human Review -> Release to Public."
+/>
+
+## 4. Internal Working: Cryptographic Signing
+
+You cannot upload raw source code to the App Store.
+- **Android:** You generate a Keystore file (`.jks`). You use this file to sign an Android App Bundle (`.aab`). If you lose this Keystore file, you can **never** update your app again. Google will force you to create a brand new app.
+- **iOS:** You generate Provisioning Profiles and Certificates from the Apple Developer Portal. You use Xcode to build an `.ipa` archive.
+
+## 5. Interactive Animation: Build Pipeline
+
+Watch the complete CI/CD pipeline that takes your code from a `git push` all the way to a published app on the store:
+
+<BuildPipelineDiagram />
+
+## 6. Code Examples: Fastlane
+
+To avoid doing this manually, Senior Engineers use a tool called **Fastlane** (written in Ruby) to automate screenshots, building, and uploading.
+
+<MultiLangCodeBlock rnCodeBase64="IyBGYXN0ZmlsZSAoRmFzdGxhbmUpCmxhbmUgOmJldGEgZG8KICAjIDEuIEluY3JlbWVudCBidWlsZCBudW1iZXIKICBpbmNyZW1lbnRfYnVpbGRfbnVtYmVyCiAgCiAgIyAyLiBCdWlsZCBpT1MgYXBwCiAgYnVpbGRfYXBwKHdvcmtzcGFjZTogIk15QXBwLnhjd29ya3NwYWNlIiwgc2NoZW1lOiAiTXlBcHAiKQogIAogICMgMy4gVXBsb2FkIHRvIEFwcGxlIFRlc3RGbGlnaHQKICB1cGxvYWRfdG9fdGVzdGZsaWdodAogIAogICMgNC4gTm90aWZ5IFNsYWNrCiAgc2xhY2sobWVzc2FnZTogIk5ldyBCZXRhIGlzIHJlYWR5ISIpCmVuZA==" flutterCodeBase64="IyBGYXN0ZmlsZSAoQW5kcm9pZCkKbGFuZSA6ZGVwbG95X3BsYXlfc3RvcmUgZG8KICBncmFkbGUoCiAgICB0YXNrOiAiYnVuZGxlIiwKICAgIGJ1aWxkX3R5cGU6ICJSZWxlYXNlIgogICkKICB1cGxvYWRfdG9fcGxheV9zdG9yZSgKICAgIHRyYWNrOiAicHJvZHVjdGlvbiIsCiAgICBhYWI6ICJidWlsZC9hcHAvb3V0cHV0cy9idW5kbGUvcmVsZWFzZS9hcHAtcmVsZWFzZS5hYWIiCiAgKQplbmQ=" androidCodeBase64="IyBHaXRIdWIgQWN0aW9ucyAoQ0kvQ0QpCm5hbWU6IEFuZHJvaWQgUmVsZWFzZQpvbjoKICBwdXNoOgogICAgdGFnczoKICAgICAgLSAndionCmpvYnM6CiAgYnVpbGQ6CiAgICBydW5zLW9uOiB1YnVudHUtbGF0ZXN0CiAgICBzdGVwczoKICAgICAgLSB1c2VzOiBhY3Rpb25zL2NoZWNrb3V0QHYyCiAgICAgIC0gcnVuOiAuL2dyYWRsZXcgYnVuZGxlUmVsZWFzZQogICAgICAtIHVzZXM6IHIwYWRrbGwvdXBsb2FkLWdvb2dsZS1wbGF5QHYxCiAgICAgICAgd2l0aDoKICAgICAgICAgIHNlcnZpY2VBY2NvdW50SnNvblBsYWluVGV4dDogXCR7eyBzZWNyZXRzLlNFUlZJQ0VfQUNDT1VOVF9KU09OIH19CiAgICAgICAgICBwYWNrYWdlTmFtZTogY29tLmV4YW1wbGUuYXBwCiAgICAgICAgICByZWxlYXNlRmlsZXM6IGFwcC9idWlsZC9vdXRwdXRzL2J1bmRsZS9yZWxlYXNlL2FwcC1yZWxlYXNlLmFhYg==" />
+
+**Explanation:**  
+Instead of an engineer manually clicking "Build" in Xcode or Android Studio for 45 minutes, we write scripts. CI/CD (Continuous Integration / Continuous Deployment) servers run these scripts automatically every time code is merged to the main branch.
+
+## 7. Real-world Examples
+
+- **Over-the-Air (OTA) Updates:** Because App Store reviews take days, React Native apps often use Microsoft CodePush. This allows developers to push JavaScript updates directly to the user's phone, bypassing the App Store review entirely (legal, as long as it doesn't change the core purpose of the app).
+
+## 8. Best Practices
+
+- **Automate everything:** Human error during the release process causes production crashes. Use GitHub Actions and Fastlane.
+- **Never commit your Keystore:** Put your `.jks` file and passwords in an encrypted environment variable or a private vault. Never commit them to a public GitHub repository.
+
+## 9. Common Mistakes
+
+- **Forgetting to increment the version code:** The Play Store and App Store will reject your upload if the internal `versionCode` or `buildNumber` is the exact same as a previous upload.
+- **Losing the Android Keystore password:** It is unrecoverable. 
+
+## 10. Interview Questions
+
+<InterviewQuestion 
+  question="What is the difference between an APK and an AAB (Android App Bundle)?"
+  answer="An APK is an old format that contains all assets and code for all device architectures in one massive file. An AAB (Android App Bundle) is a publishing format. Google Play takes the AAB, analyzes the user's specific phone (e.g., screen density, language), and generates a tiny, custom APK just for their specific device, saving massive amounts of download size."
+  bestPractice="Google now requires all new apps to be uploaded as AABs, not APKs."
+/>
+
+<InterviewQuestion 
+  question="How do you automate the deployment of an iOS app?"
+  answer="You typically use Fastlane combined with a CI/CD provider like GitHub Actions or Bitrise. Fastlane handles the complex 'code signing' process by interacting directly with the Apple Developer Portal to fetch Provisioning Profiles, builds the .ipa archive using Xcode command line tools, and uploads it to TestFlight."
+/>
+
+<InterviewQuestion 
+  question="What is Over-The-Air (OTA) updating and which frameworks support it?"
+  answer="OTA allows you to bypass the App Store review process by sending code updates directly to the app over the internet. This is only possible with Javascript-based frameworks like React Native (using CodePush). Fully compiled native apps (Swift, Kotlin, Flutter/Dart) cannot use OTA updates because you cannot inject new binary machine code into a running iOS app due to security restrictions."
+  commonFollowUp="What are Apple's legal guidelines regarding OTA updates?"
+/>
+
+## 11. Knowledge Check
+
+<QuizWidget 
+  question="If you discover a critical bug in your iOS app, what is the standard time required to fix it for Native iOS (Swift) developers?"
+  options={["5 minutes (Instant)", "However long it takes Apple to review the new build (usually 12-48 hours)", "30 days", "It cannot be fixed without a new phone"]}
+  correctAnswer="However long it takes Apple to review the new build (usually 12-48 hours)"
+  explanation="Unlike the web where deployments are instant, native apps must be compiled, uploaded, and manually reviewed by Apple before users can download the fix."
+  takeaway="Mobile bugs are far more expensive than web bugs because you cannot fix them instantly. Testing is non-negotiable."
+/>
+
+## 12. Summary
+
+Deployment is the final boss of mobile engineering. A robust CI/CD pipeline ensures that your code makes it from your laptop to a user's pocket safely, securely, and automatically.

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Pause, RotateCcw, ChevronRight } from "lucide-react";
+import { Play, Pause, RotateCcw, ChevronRight, Settings } from "lucide-react";
 
 export default function AnimatedWorkflow({ steps = [], title = "Animated Workflow" }) {
   const [currentStep, setCurrentStep] = useState(0);
@@ -90,7 +90,7 @@ export default function AnimatedWorkflow({ steps = [], title = "Animated Workflo
                   }}
                 >
                   <div className={`text-4xl mb-3 ${isActive ? "animate-bounce" : ""}`}>
-                    {step.icon || "⚙️"}
+                    {step.icon ? (typeof step.icon === "string" ? step.icon : React.createElement(step.icon, { size: 36 })) : <Settings size={36} />}
                   </div>
                   <div className={`font-bold text-sm ${isActive ? "text-primary" : "text-white"}`}>
                     {step.title}

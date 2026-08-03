@@ -1,187 +1,257 @@
 ---
-title: "Docker Mastery"
-description: "Master Docker from the ground up: Architecture, Image building, Networking, Security, and Production CI/CD Deployments using our interactive simulator."
+title: "Docker & Containers"
+description: "Solve 'It works on my machine!' forever. Learn how to package your code and OS into an indestructible container."
 phase: "System Design"
-difficulty: "expert"
+time: "60 min"
+difficulty: "advanced"
 ---
 
-## 1. Simple Explanation
-
-**Docker** is a tool that allows you to package your application and all of its dependencies (libraries, runtime, OS tools) into a single, standardized unit called a **Container**. This container can run on any computer—your laptop, a test server, or a cloud server—and it will behave exactly the same way every time.
-
-## 2. Why this technology exists
-
-Before Docker, deploying software was a nightmare. A developer would write code on a Mac, test it, and say, *"It works on my machine!"*. But when they pushed it to a Linux production server, the application would crash. Why? Because the production server might have a different version of Node.js, missing environment variables, or a conflicting database version. Docker was created to completely eliminate environmental inconsistencies.
-
-## 3. What problem it solves
-
-Docker solves the **"Works on my machine"** problem. It ensures that the environment your code runs in is 100% identical across development, testing, staging, and production. It also allows you to run multiple isolated applications on the same server without them interfering with each other.
-
-## 4. Real-life analogy
-
-Think of the global shipping industry before the invention of the **Shipping Container**. People shipped goods in barrels, sacks, and wooden crates of all different sizes. Loading a ship took weeks because every item required custom handling.
-
-Then, the standardized steel shipping container was invented. Suddenly, it didn't matter if you were shipping cars, clothes, or electronics—they all went into the exact same 20-foot steel box. Cranes, trucks, and ships were all standardized to handle that one box size.
-
-Docker is the shipping container for software. It doesn't matter if you are running a Node.js API, a Python AI model, or a Java backend; Docker packages them all into a standard "container" that can be deployed instantly anywhere in the world.
-
----
-
-## 5. Internal working
-
-<ArchitectureDiagram 
-  title="Docker Engine Architecture"
-  nodes={[
-    { id: "cli", name: "Docker CLI", icon: "⌨️", type: "Client", description: "The command line interface where you run commands like 'docker build' and 'docker run'." },
-    { id: "daemon", name: "Docker Daemon", icon: "🧠", type: "Server", description: "The background service (dockerd) that listens for API requests and actually creates/manages images and containers." },
-    { id: "containerd", name: "Containerd", icon: "⚙️", type: "Runtime", description: "The industry-standard core container runtime that manages the complete container lifecycle of its host system." },
-    { id: "registry", name: "Docker Registry", icon: "☁️", type: "Cloud Storage", description: "A remote hub (like Docker Hub or AWS ECR) where images are stored and shared." }
-  ]}
+<LessonHero 
+  title="Docker Mastery" 
+  module="System Design" 
+  difficulty="Advanced" 
+  time="60 min" 
+  xp="300" 
 />
 
-Docker relies on powerful Linux Kernel features:
-- **Namespaces:** Provides *Isolation* (PID, NET, MNT). It tricks the container into thinking it's running on a dedicated machine.
-- **cGroups (Control Groups):** Provides *Resource Limiting*. It restricts how much CPU and RAM a container can use so it doesn't crash the host.
-- **UnionFS (Union File System):** Provides *Layering*. Images are built in layers to save disk space.
+## 1. Introduction
+
+**What is this lesson?**
+In this lesson, we will learn about **Docker**, the industry standard for Containerization. It is a tool that allows you to package your application, its dependencies, and the entire operating system into a single, portable box called a Container.
+
+**Why are we learning it?**
+If you want to deploy a Microservices Architecture with 50 Node.js servers, you cannot manually SSH into 50 Linux machines to install `node v18` and `npm install`. Docker allows you to write a single text file that automatically builds and runs your app anywhere in the world, identically.
+
+**Why should a backend engineer know this?**
+"It works on my machine, but it crashes on the production server." Every engineer has said this. Docker completely eliminates this problem. If your code runs inside a Docker container on your Macbook, it is 100% guaranteed to run exactly the same way on AWS.
 
 ---
 
-## 6. Animated Workflow
+## 2. Why This Exists
 
-Watch how your source code transforms into a running application.
+**What problem existed before?**
+Before Docker, companies used **Virtual Machines (VMs)** to isolate applications. If you wanted to run 3 isolated Node.js apps on a physical server, you had to install 3 entire Virtual Operating Systems (like Ubuntu). Each VM took up 20GB of hard drive space and 4GB of RAM just to boot the OS, leaving almost no resources for your actual code!
+
+**Why was this technology created?**
+Docker (released in 2013) introduced Linux Containers to the masses. Instead of virtualizing the hardware to run multiple OSs, Docker virtualizes the *Operating System itself*. 
+
+**How did companies solve this problem?**
+With Docker, all 3 Node.js apps share the exact same underlying Linux kernel, but they *think* they are isolated. A Docker Container takes up 50 Megabytes (instead of 20 Gigabytes) and boots up in 0.1 seconds (instead of 2 minutes). You can run thousands of containers on a single machine!
+
+---
+
+## 3. Problems It Solves
+
+**The Dependency Matrix from Hell:**
+App A requires Node.js v14. App B requires Node.js v18. If you try to run both on the same laptop, they conflict and crash. 
+Docker puts App A inside a sealed box with Node v14, and App B inside a sealed box with Node v18. They never see each other.
+
+**The Onboarding Nightmare:**
+When a new developer joins the company, they spend 3 days installing PostgreSQL, Redis, Node, Python, and setting up environment variables just to run the app locally.
+With Docker, they type exactly one command: `docker-compose up`. The entire massive architecture boots up on their laptop in 30 seconds.
+
+---
+
+## 4. Real Life Analogy
+
+<AnalogyCard title="The Shipping Container">
+  **Before Docker (Loading a ship):**
+  Imagine you are a port worker loading a cargo ship. A farmer brings a pile of loose watermelons. A car dealer brings a Toyota. A musician brings 50 pianos. You have to figure out how to stack watermelons on top of pianos without destroying them. Every ship is a custom nightmare.
+
+  **Docker (The Standardized Container):**
+  The shipping industry invented the Standardized Steel Shipping Container. The farmer puts watermelons in a box. The car dealer puts the Toyota in an identical box. The port worker doesn't care what is inside the box! They just stack the identical boxes on the ship using a crane.
+  Docker is the standard box for software. AWS doesn't care if you wrote Node.js, Python, or Go. AWS just takes your Docker box and runs it!
+</AnalogyCard>
+
+---
+
+## 5. Interactive Visualization
+
+Click the "Build Image" and "Run Container" buttons below. Watch how the Dockerfile instructions are executed layer-by-layer to create an immutable Image, which is then stamped out into a running Container!
 
 <DockerVisualizer />
 
----
-
-## 7. Architecture Diagram: Containers vs VMs
-
-<ArchitectureDiagram 
-  title="Containers vs Virtual Machines"
-  nodes={[
-    { id: "vm", name: "Virtual Machine", icon: "🖥️", type: "Heavyweight", description: "Requires a Hypervisor and a full Guest OS (like Windows or Ubuntu) for every single application. Slow to boot, uses Gigabytes of RAM." },
-    { id: "container", name: "Docker Container", icon: "🐳", type: "Lightweight", description: "Shares the Host OS Kernel. No Guest OS required. Boots in milliseconds, uses Megabytes of RAM. Highly efficient." }
-  ]}
-/>
+Notice how you can run 5 identical Containers from the exact same Image, and they all run on different internal ports but share the same underlying OS kernel!
 
 ---
 
-## 8. Request Lifecycle
+## 6. Step-by-Step Explanation
 
-<RequestLifecycle 
-  title="How a Web Request hits a Dockerized App"
-  steps={[
-    { title: "User Request", description: "A user navigates to your website in their browser." },
-    { title: "Host Port Binding", description: "The request hits your server on Port 80 (HTTP). Docker has bound Port 80 on the host machine to Port 3000 inside the container.", code: "docker run -p 80:3000 myapp" },
-    { title: "Docker Bridge Network", description: "The Docker network stack routes the packet from the host interface to the container's isolated virtual network interface." },
-    { title: "Node.js API", description: "Your Node.js app running inside the container on port 3000 receives the request and processes it." }
-  ]}
-/>
+Let's break down the core terminology of Docker:
+
+**1. The Dockerfile**
+↓
+A simple text file containing the exact instructions on how to build your app. ("Start with Ubuntu, install Node, copy my code, run npm install").
+
+**2. The Docker Image**
+↓
+When you "Build" the Dockerfile, Docker executes the instructions and freezes the result into a read-only template called an **Image**. An Image is like a Class in Object-Oriented Programming, or a blueprint for a house.
+
+**3. The Docker Container**
+↓
+When you "Run" the Image, it becomes a **Container**. A Container is the actual live, running process. You can spawn 100 running Containers (Houses) from a single Image (Blueprint).
+
+**4. Docker Hub / Registry**
+↓
+Once you build an Image, you upload it to a Registry (like Docker Hub or AWS ECR). This is just like pushing code to GitHub. Your production server then downloads the Image and runs it!
 
 ---
 
-## 9. Code Implementation
+## 7. Deep Explanation: Image Layers
 
-Here is a production-ready `Dockerfile` for a Node.js application.
+<ConceptBlock type="info" title="Why is Docker so fast?">
+  When you build a Dockerfile, every single line creates a new "Layer" on the hard drive. 
+  
+  Line 1: `FROM node:18` (Downloads 100MB Node OS) -> Layer A
+  Line 2: `COPY package.json .` (Copies 1KB file) -> Layer B
+  Line 3: `RUN npm install` (Downloads 50MB node_modules) -> Layer C
+  Line 4: `COPY src/ ./src` (Copies your code) -> Layer D
+  
+  If you change a typo in your Javascript code (Layer D) and rebuild the image, Docker is incredibly smart. It realizes Layers A, B, and C haven't changed! It completely skips them, using the cached layers. It only rebuilds Layer D, which takes 0.1 seconds!
+</ConceptBlock>
 
+---
+
+## 8. Node.js Implementation
+
+Let's look at the absolute gold-standard `Dockerfile` for a production Node.js application, and how to run it.
+
+<CodeTabs>
+  <div label="Dockerfile">
+    ```dockerfile
+    # 1. Use the official, lightweight Alpine Linux version of Node 18
+    FROM node:18-alpine
+
+    # 2. Set the working directory inside the container
+    WORKDIR /usr/src/app
+
+    # 3. Copy ONLY package files first (to heavily optimize Docker Caching)
+    COPY package*.json ./
+
+    # 4. Install dependencies (This layer gets cached unless package.json changes!)
+    RUN npm ci --only=production
+
+    # 5. Copy the rest of the application code
+    COPY . .
+
+    # 6. Tell Docker that this container wants to listen on Port 3000
+    EXPOSE 3000
+
+    # 7. The command that actually runs when the container starts
+    CMD ["node", "server.js"]
+    ```
+  </div>
+  <div label="docker-compose.yml">
+    ```yaml
+    # Docker Compose allows you to boot up your App AND its Database 
+    # simultaneously with a single command!
+    version: '3.8'
+
+    services:
+      my-node-app:
+        build: .                   # Build the Dockerfile in this directory
+        ports:
+          - "3000:3000"            # Map localhost:3000 to Container's Port 3000
+        environment:
+          - DB_URL=mongodb://mongo-db:27017/myapp
+        depends_on:
+          - mongo-db               # Wait for the DB to boot first!
+
+      mongo-db:
+        image: mongo:latest        # Download official MongoDB image from Docker Hub
+        ports:
+          - "27017:27017"
+        volumes:
+          - mongo-data:/data/db    # Save database data permanently on the host hard drive
+
+    volumes:
+      mongo-data:
+    ```
+  </div>
+</CodeTabs>
+
+**How to test this:**
+Instead of installing MongoDB manually, and running `npm start` manually... you just run:
+`docker-compose up -d`
+
+Docker will download MongoDB, build your Node app, link them together on a private internal network, and boot them both in the background. It is magic.
+
+---
+
+## 9. Interactive Playground
+
+If you have Docker Desktop installed, try this command in your terminal right now:
+`docker run -d -p 8080:80 nginx`
+
+Open your browser and go to `localhost:8080`. You will see the "Welcome to nginx!" screen. You just downloaded and booted an enterprise-grade web server in 3 seconds without installing a single thing on your actual Mac/Windows OS!
+
+---
+
+## 10. Common Mistakes
+
+<WarningCard title="Leaking Secrets in Images">
+  **The Mistake:** Writing `ENV STRIPE_SECRET_KEY=sk_live_123` directly inside your `Dockerfile`, or copying a `.env` file into the Image.
+
+  **Why it happens:** Developers treat the Dockerfile like a local script and want to make sure the app has access to the database passwords.
+
+  **The Fix:** Docker Images are readable by anyone who downloads them! If you push that Image to Docker Hub, hackers will instantly steal your Stripe key. 
+  Images must be completely agnostic. You inject environment variables at *Runtime*, not Build time. Pass them dynamically using `docker run -e STRIPE_SECRET_KEY=...` or via `docker-compose.yml`!
+</WarningCard>
+
+---
+
+## 11. Best Practices
+
+**Docker Volumes (Persistent Data):**
+Containers are **Ephemeral** (temporary). If you delete a MongoDB container, every single user in your database is deleted forever! To fix this, you must use **Volumes**. A Volume punches a hole through the Container and saves the database files directly onto your host computer's hard drive. When the container is destroyed, the Volume survives!
+
+**Multi-Stage Builds:**
+If you write a React or Typescript app, you need `devDependencies` (like Webpack or the TS Compiler) to build the code, but you don't need them to *run* the code in production. A Multi-Stage Dockerfile compiles the TS code in Stage 1, and then copies *only* the compiled Javascript to Stage 2, throwing away all the heavy compilers. This reduces your Image size from 1.5GB to 50MB!
+
+---
+
+## 12. Performance & Security
+
+**Security (Root User):**
+By default, the `CMD ["node", "server.js"]` inside a Docker container runs as the `root` Linux user. If a hacker exploits a vulnerability in your Node app, they gain root access to the container. 
+You should always add `USER node` right before the `CMD` in your Dockerfile. This forces the app to run as a restricted, unprivileged user, vastly shrinking the blast radius of a hack.
+
+
+---
+
+## 14. Practice Challenge
+
+**Mini Assignment:**
+1. Create an empty folder. Add a file named `app.js` with exactly one line: `console.log("Hello from inside the Container!");`.
+2. Create a `Dockerfile`:
 ```dockerfile
-# 1. Base Image: Use a minimal alpine image
-FROM node:20-alpine AS builder
-
-# 2. Set the working directory
-WORKDIR /app
-
-# 3. Copy package files first to leverage Docker Layer Caching!
-COPY package*.json ./
-
-# 4. Install production dependencies only
-RUN npm ci --only=production
-
-# 5. Copy the rest of the application code
-COPY . .
-
-# 6. Document the port
-EXPOSE 3000
-
-# 7. Security: Run as a non-root user
-USER node
-
-# 8. Start the application
-CMD ["node", "server.js"]
+FROM node:18-alpine
+COPY app.js .
+CMD ["node", "app.js"]
 ```
+3. Open terminal and build the image: `docker build -t my-first-app .`
+4. Run the image: `docker run my-first-app`
+5. You should see the console log print! You just containerized an application!
 
 ---
 
-## 10. Real-world production example
+## 15. Summary
 
-<RealWorldCaseStudy 
-  company="Spotify"
-  role="Microservices Architecture"
-  challenge="Spotify had hundreds of different engineering teams building thousands of microservices in different languages (Java, Python, Node). Deploying them on bare-metal servers was causing massive dependency conflicts and deployment delays."
-  solution="They migrated their entire infrastructure to Docker containers. This allowed every team to package their specific microservice into a standard container. The operations team no longer needed to worry about dependencies—they just ran the containers."
-  results={["Instant scaling during peak hours", "Eliminated 'works on my machine' bugs", "Enabled thousands of deployments per day"]}
-/>
-
----
-
-## 11. Best practices
-
-1. **Use Multi-stage Builds:** Compile your code in one stage, and only copy the compiled binary to the final image to keep it tiny.
-2. **Leverage the Build Cache:** Always put `COPY package.json` BEFORE `COPY . .`. This prevents npm from reinstalling packages every time you change a single line of application code.
-3. **Use .dockerignore:** Prevent `.git`, `node_modules`, and `.env` files from being copied into the container context.
-
-## 12. Common mistakes
-
-- **Using `latest` tags:** Never use `FROM node:latest`. Tomorrow, `latest` might point to Node 22, which could break your app. Always pin versions (e.g., `node:20.11.0-alpine`).
-- **Storing Data inside the Container:** Containers are ephemeral. If they crash, all data is lost. Always use **Volumes** to store database data.
-
-## 13. Performance considerations
-
-- Image size directly impacts deployment speed. A 2GB image takes minutes to pull across the network. A 50MB alpine image takes seconds. Optimize your images.
-- Be careful with CPU limits. If you don't define limits in a cluster (like Kubernetes), a memory-leak in one container can consume the entire host server, crashing other containers.
-
-## 14. Security considerations
-
-- **Never run as Root:** By default, Docker runs as root. Always add `USER node` to drop privileges. If a hacker breaches the app, they won't have root access to the container.
-- **Scan for CVEs:** Use tools like `docker scout` to scan your images for known vulnerabilities before pushing them to production.
-
-## 15. Scaling strategies
-
-Docker itself doesn't auto-scale. To scale Docker containers horizontally across hundreds of servers, you must use an Orchestration tool like **Kubernetes (K8s)** or **Docker Swarm**. They monitor traffic and automatically spin up more container replicas when load increases.
+*   **Docker** packages code and its OS into a portable box.
+*   **Dockerfile:** The blueprint script.
+*   **Image:** The read-only template built from the Dockerfile.
+*   **Container:** The running instance of the Image.
+*   **Layer Caching:** Optimizing the Dockerfile to build instantly.
+*   **Docker Compose:** A tool to boot up multiple connected containers (App + DB) locally.
 
 ---
 
-## 16. Interview questions
+## 16. Next Lesson
 
-1. **"What is the difference between an Image and a Container?"**
-   *Answer:* An image is a read-only, static template (like a Class in OOP). A container is a running instance of that image (like an Object).
-2. **"Why do we use Alpine images?"**
-   *Answer:* Alpine is a minimal Linux distribution that is around 5MB in size. It drastically reduces image pull times and minimizes the attack surface area for hackers.
-3. **"Explain how Docker layer caching works."**
-   *Answer:* Each instruction in a Dockerfile creates a layer. If the instruction hasn't changed since the last build, Docker reuses the cached layer. If a layer changes, all subsequent layers must be rebuilt.
+You have packaged your Microservices into Docker Containers. 
+Now, you need to deploy 500 containers to AWS. What happens if Container #42 crashes? Who restarts it? What happens if Black Friday traffic hits? Who boots up 500 more containers?
 
----
+You cannot do this manually. You need an automated orchestrator, a robotic conductor to manage the symphony of containers. 
+In the next lesson, we will master the endgame of backend engineering: **Kubernetes**.
 
-## 17. Quiz
-
-<Quiz 
-  question="Why should you copy package.json and run 'npm install' BEFORE copying the rest of your source code?"
-  options={[
-    "To make the container run faster",
-    "To leverage Docker's layer caching so dependencies aren't reinstalled on every code change",
-    "Because npm requires package.json to be the first file in the directory",
-    "To reduce the final image size"
-  ]}
-  answer="To leverage Docker's layer caching so dependencies aren't reinstalled on every code change"
-/>
-
----
-
-## 18. Hands-on assignment
-
-1. Create a simple Express.js API.
-2. Write a `Dockerfile` for it using a Node Alpine image.
-3. Create a `.dockerignore` file.
-4. Build the image: `docker build -t my-api .`
-5. Run the container: `docker run -p 4000:3000 my-api`
-6. Test it by opening `http://localhost:4000` in your browser!
+<CourseNavigation prev={{ slug: "load-balancing-scaling", title: "Load Balancing & Scaling", emoji: "Maximize" }} next={{ slug: "kubernetes", title: "Kubernetes & Orchestration", emoji: "Ship" }} lessonSlug="docker" />

@@ -1,165 +1,179 @@
 ---
 title: "Hybrid Search & Re-ranking"
-description: "Overcome the flaws of Naive RAG. Combine traditional keyword search with vector search, and use Cross-Encoders to re-rank results for massive accuracy boosts."
-phase: "Advanced RAG Architectures"
+description: "Combine keyword search with vector search for dramatically better retrieval accuracy."
+time: "50 min"
 difficulty: "advanced"
+xp: 100
+phase: "Advanced RAG Architectures"
 ---
 
-## 1. Simple Explanation
-
-Naive RAG relies entirely on **Vector Search** (searching by meaning). This is great for vague questions, but terrible for exact matches. 
-If a user searches for "Error Code 404", a Vector Database might think "Error Code 500" is mathematically similar and return the wrong document!
-**Hybrid Search** fixes this by running *two* searches simultaneously: a Vector Search (for meaning) and a Keyword Search (BM25 - for exact matches). It merges the results. 
-Then, a **Re-ranker** (a specialized AI model) acts as a judge, reading the top 10 merged results and scoring them based on how perfectly they actually answer the user's question, putting the absolute best result at the #1 spot before sending it to the LLM.
-
-## 2. Why this technology exists
-
-As enterprises put RAG into production, they realized Naive RAG often retrieved irrelevant documents. If the retrieved documents are wrong, the LLM's answer is wrong.
-Engineers realized they threw away 40 years of incredible keyword search technology (like Elasticsearch) to jump entirely onto the Vector hype train. Hybrid Search exists to combine the best of the old world (exact matches) with the best of the new world (semantic meaning).
-
-## 3. What problem it solves
-
-- **Exact ID Matching:** Finding specific product IDs, employee names, or error codes that Vector math struggles with.
-- **The "Lost in the Middle" Problem:** LLMs ignore data in the middle of long prompts. Re-ranking ensures the single most relevant paragraph is placed at the very top of the prompt where the LLM pays the most attention.
-- **Retrieval Precision:** Drastically reduces the chance of the LLM receiving unrelated context, dropping hallucination rates to near zero.
-
-## 4. Real-life analogy
-
-**Hybrid Search + Re-ranking is like Hiring a Detective.**
-1. **Keyword Search:** You ask the local police to print out every file containing the exact name "John Doe".
-2. **Vector Search:** You ask a profiler to find all files about "suspicious men lurking near banks".
-3. **Merging:** You combine the two stacks of files on a desk (maybe 50 files total).
-4. **Re-ranking (The Detective):** The master detective reads through all 50 files and meticulously ranks them from 1 to 50 based on how likely they are to solve the current crime. The top 3 files are handed to the Chief (The LLM) to make the final decision.
-
----
-
-## 5. Internal working
-
-<AnimatedWorkflow 
-  title="Hybrid Search + Cohere Re-rank Pipeline"
-  steps={[
-    { title: "Query", description: "User asks: 'How to fix Error 503 on Nginx?'", icon: "❓" },
-    { title: "Dual Search", description: "Runs BM25 (Keyword) AND Dense Vector Search simultaneously.", icon: "🔀" },
-    { title: "Reciprocal Rank Fusion", description: "Merges the two lists of results mathematically into Top 20.", icon: "🔗" },
-    { title: "Cross-Encoder", description: "Cohere Re-rank model scores all 20 chunks strictly against the query.", icon: "⚖️" },
-    { title: "Final Prompt", description: "Top 3 highest-scoring chunks are sent to the LLM.", icon: "✅" }
+<LearningObjectives
+  objectives={[
+    "Understand why pure vector search fails for certain queries",
+    "Learn how to combine BM25 (keyword) with vector (semantic) search",
+    "Implement re-ranking using cross-encoder models",
+    "Build a hybrid search pipeline with reciprocal rank fusion"
   ]}
 />
 
----
+## The Problem with Pure Vector Search
 
-## 6. Architecture & Data Flow
+Vector search is powerful for semantic matching, but it has blind spots:
 
-<AnimatedWorkflow 
-  title="Vector vs Keyword Weaknesses"
-  steps={[
-    { title: "Query", description: "Find: 'Harry Potter'", icon: "🔍" },
-    { title: "Vector Result", description: "Returns 'Lord of the Rings' (Semantic Match: Fantasy Book). Fails.", icon: "❌" },
-    { title: "Keyword Result", description: "Returns 'Harry Potter'. Succeeds.", icon: "✅" },
-    { title: "Query", description: "Find: 'Automobile'", icon: "🔍" },
-    { title: "Keyword Result", description: "Returns nothing (Document says 'Car'). Fails.", icon: "❌" },
-    { title: "Vector Result", description: "Returns 'Car'. Succeeds.", icon: "✅" }
-  ]}
-/>
+| Query | Vector Search Issue |
+|-------|-------------------|
+| "error code E-4012" | Semantic search doesn't understand error codes as exact identifiers |
+| "John Smith's account" | Names don't have semantic meaning — "John Smith" isn't semantically closer to his account than "Jane Doe" |
+| "version 3.2.1 changelog" | Version numbers need exact matching, not semantic similarity |
 
-## 7. Step-by-step process explanation
+**Keyword search** (like BM25/Elasticsearch) excels at these cases but fails at semantic understanding. The solution? **Combine both.**
 
-1. **User Query:** "Why is my Macbook battery draining fast?"
-2. **Dense Retrieval:** The Vector DB finds chunks semantically related to "battery issues", "power", "laptops". (Returns 10 chunks).
-3. **Sparse Retrieval (BM25):** A keyword engine (like Elasticsearch or Pinecone's sparse index) finds chunks containing the exact words "Macbook", "battery", "draining". (Returns 10 chunks).
-4. **RRF (Reciprocal Rank Fusion):** A math formula merges the two lists. If a chunk was #1 in both lists, it gets a massive boost. We now have 20 unique chunks.
-5. **Re-ranking:** We send the query and the 20 chunks to a Cross-Encoder model (like `Cohere Rerank` or `bge-reranker`). It outputs a relevance score (0.0 to 1.0) for each chunk.
-6. **Top K:** We take the 3 chunks with the highest scores and send them to the LLM.
+## What is Hybrid Search?
 
-## 8. Code examples
+Hybrid Search runs **both** keyword search and vector search, then **merges** the results using a fusion algorithm.
 
-**Using Cohere to Re-rank results (Node.js):**
+```
+User Query: "How to fix E-4012 timeout error in production?"
+
+                    ┌─────────────────┐
+                    │   User Query    │
+                    └────────┬────────┘
+                             │
+              ┌──────────────┴──────────────┐
+              │                             │
+     ┌────────▼────────┐          ┌────────▼────────┐
+     │  BM25 Keyword   │          │  Vector Search  │
+     │    Search       │          │  (Semantic)     │
+     └────────┬────────┘          └────────┬────────┘
+              │                             │
+              │  "E-4012" exact match       │  "timeout error" meaning
+              │  scores high                │  scores high
+              │                             │
+              └──────────────┬──────────────┘
+                             │
+                    ┌────────▼────────┐
+                    │  Rank Fusion    │
+                    │  (RRF / Weighted)│
+                    └────────┬────────┘
+                             │
+                    ┌────────▼────────┐
+                    │  Re-Ranker      │
+                    │  (Cross-Encoder)│
+                    └────────┬────────┘
+                             │
+                    ┌────────▼────────┐
+                    │  Top-K Results  │
+                    └─────────────────┘
+```
+
+## BM25: The Keyword Search Algorithm
+
+BM25 (Best Matching 25) is the industry-standard keyword search algorithm used by Elasticsearch and Solr. It scores documents based on:
+
+- **Term Frequency (TF):** How many times the query term appears in the document
+- **Inverse Document Frequency (IDF):** How rare the term is across all documents
+- **Document Length:** Longer documents are penalized slightly
+
 ```javascript
-import { CohereClient } from "cohere-ai";
-
-const cohere = new CohereClient({
-  token: process.env.COHERE_API_KEY,
-});
-
-async function rerankResults(query, retrievedChunks) {
-  // retrievedChunks is an array of 20 strings from our Hybrid Search
-  const response = await cohere.rerank({
-    query: query,
-    documents: retrievedChunks,
-    model: "rerank-english-v2.0",
-    topN: 3, // Only give me the absolute best 3
-  });
-
-  // Response contains the indices of the best chunks in order
-  const bestChunks = response.results.map(r => retrievedChunks[r.index]);
-  return bestChunks;
+// Simplified BM25 scoring
+function bm25Score(term, document, corpus) {
+  const k1 = 1.5;  // term frequency saturation
+  const b = 0.75;   // length normalization
+  
+  const tf = termFrequency(term, document);
+  const idf = Math.log(
+    (corpus.length - documentsContaining(term) + 0.5) /
+    (documentsContaining(term) + 0.5)
+  );
+  const avgDl = averageDocumentLength(corpus);
+  const dl = document.length;
+  
+  return idf * (tf * (k1 + 1)) / 
+         (tf + k1 * (1 - b + b * (dl / avgDl)));
 }
 ```
 
-## 9. Common Use Cases
+## Reciprocal Rank Fusion (RRF)
 
-- **E-commerce Search:** Finding "Red Nike Shoes size 10" (needs exact keyword matches for brand/size, and semantic match for "shoes/sneakers").
-- **Codebase QA:** Searching internal GitHub repos. You need exact matches for function names (`calculateTaxes()`), but semantic search for conceptual questions ("How is auth handled?").
-- **Legal Document Review:** High stakes domains where retrieving a tangentially related document instead of the exact clause could result in a lawsuit.
+RRF is the simplest and most effective way to merge two ranked lists:
 
-## 10. Best practices
+```javascript
+function reciprocalRankFusion(results1, results2, k = 60) {
+  const scores = {};
+  
+  // Score each document by its rank in each list
+  results1.forEach((doc, rank) => {
+    scores[doc.id] = (scores[doc.id] || 0) + 1 / (k + rank + 1);
+  });
+  
+  results2.forEach((doc, rank) => {
+    scores[doc.id] = (scores[doc.id] || 0) + 1 / (k + rank + 1);
+  });
+  
+  // Sort by combined score
+  return Object.entries(scores)
+    .sort((a, b) => b[1] - a[1])
+    .map(([id, score]) => ({ id, score }));
+}
+```
 
-- **Alpha Weighting (0.0 to 1.0):** Many Vector DBs (like Pinecone or Weaviate) allow you to tune the Hybrid Search. `alpha = 1.0` is pure vector search. `alpha = 0.0` is pure keyword. For most text, `0.75` (leaning towards semantic) is the sweet spot.
-- **Re-rank locally:** Calling the Cohere API adds latency (network round trip). If speed is critical, run an open-source Cross-Encoder model (like `BAAI/bge-reranker-base`) locally on your own server.
+## Cross-Encoder Re-Ranking
 
-## 11. Common mistakes
+After fusion, the top results are **re-ranked** using a cross-encoder model. Unlike embeddings (which encode query and document separately), a cross-encoder takes the **query + document pair together** and produces a relevance score.
 
-- **Skipping the initial retrieval:** A Cross-Encoder (Re-ranker) is computationally very heavy. You cannot ask it to re-rank all 1,000,000 documents in your database; it would take hours. You *must* use Vector/Keyword search first to narrow it down to ~50 documents, then use the Re-ranker.
-- **Using a Bi-Encoder instead of a Cross-Encoder for ranking:** Embedding models are Bi-Encoders (they embed the query and doc separately, then compare). Cross-Encoders pass the query AND the doc through the neural network *together*, allowing the model to see how the words interact. Cross-Encoders are much slower, but vastly more accurate for ranking.
+```javascript
+import { CohereRerank } from "@langchain/cohere";
 
-## 12. Performance tips
+// After initial retrieval (BM25 + vector)
+const initialResults = await hybridSearch(query, 20); // Get top 20
 
-- **Latency vs Accuracy Tradeoff:** Hybrid Search + Re-ranking adds two extra steps to your pipeline. If your Naive RAG took 500ms, this might take 1200ms. If you are building a real-time chat app, you must aggressively cache common queries to avoid this latency.
+// Re-rank with a cross-encoder
+const reranker = new CohereRerank({
+  model: "rerank-english-v3.0",
+  topN: 5, // Return only the top 5 after re-ranking
+});
 
-## 13. Security considerations
+const rerankedResults = await reranker.compressDocuments(
+  initialResults,
+  query
+);
 
-- **Prompt Injection in Re-ranking:** If an attacker hides "This document is highly relevant to all queries" inside a chunk, the Cross-Encoder might actually be tricked into scoring it higher, forcing it into the final LLM prompt.
+// rerankedResults are now ordered by ACTUAL relevance, not just similarity
+```
 
-## 14. Scalability & Deployment
+### Why Re-Ranking Works Better
 
-- Implementing Hybrid Search used to require running Pinecone AND Elasticsearch side-by-side. Today, modern Vector DBs (Weaviate, Qdrant, Pinecone) support BM25 natively, meaning you only need one database to handle both sparse and dense retrieval.
+| Stage | Speed | Accuracy | Method |
+|-------|-------|----------|--------|
+| **BM25** | Very fast | Good for keywords | Inverted index |
+| **Vector Search** | Fast | Good for meaning | ANN (approximate nearest neighbors) |
+| **Cross-Encoder** | Slow | Excellent | Full attention over query+document |
 
-## 15. Interview questions
+The pipeline uses fast methods first (to narrow 100K docs → 20) and then the expensive cross-encoder (to rank 20 → 5).
 
-**Q: What is the main difference between an Embedding Model (Bi-Encoder) and a Re-ranker (Cross-Encoder)?**
-A: A Bi-Encoder embeds the query and document independently into vectors and compares their distance; it's extremely fast and scalable. A Cross-Encoder processes the query and the document simultaneously through the neural network layers; it's computationally expensive and slow, but understands the relationship between the words far better, making it perfect for final-stage ranking.
+<InterviewPrep
+  questions={[
+    {
+      question: "When would you use hybrid search instead of pure vector search in a RAG system?",
+      answer: "I'd use hybrid search when the corpus contains (1) technical identifiers like error codes, version numbers, or product SKUs that need exact matching, (2) proper nouns (people, companies, locations) that don't have semantic meaning, or (3) when users mix natural language with specific terms (e.g., 'How to fix E-4012 in production'). In practice, hybrid search almost always outperforms pure vector search for real-world applications because real queries combine semantic intent with specific keywords.",
+      difficulty: "advanced",
+      commonMistake: "Saying hybrid search is always better. For purely semantic queries (e.g., 'explain how authentication works'), vector search alone can be equally effective and simpler to implement."
+    },
+    {
+      question: "Explain the difference between a bi-encoder and a cross-encoder for retrieval.",
+      answer: "A bi-encoder (like OpenAI embeddings) encodes the query and document independently into separate vectors, then computes similarity (e.g., cosine). It's fast because documents can be pre-encoded. A cross-encoder takes the query-document pair as a single input and computes a relevance score using full attention. It's much more accurate but expensive because every query-document pair requires a full forward pass. In practice, you use bi-encoders for initial retrieval (fast, scalable) and cross-encoders for re-ranking (accurate, applied to fewer candidates).",
+      difficulty: "expert",
+      commonMistake: "Not mentioning the computational cost trade-off. You can't use a cross-encoder for initial retrieval over 100K documents."
+    }
+  ]}
+/>
 
-**Q: What is Reciprocal Rank Fusion (RRF)?**
-A: It is a mathematical algorithm used to combine the results of two different search systems (like Vector and Keyword). It works by giving a high score to items that appear near the top of *both* lists, ensuring the most universally relevant documents bubble to the top.
-
-## 16. MCQs
-
-1. Which scenario demonstrates the primary weakness of pure Vector Search?
-   - A) Searching for "How do I reset my password?"
-   - B) Searching for "Troubleshooting guidelines for error code ERR_CONN_REFUSED."
-   - C) Searching for "What is the company policy on remote work?"
-   - D) Searching for "Who is the CEO?"
-   **Answer: B**
-
-2. In the Hybrid Search pipeline, when should the Re-ranker be executed?
-   - A) Before any retrieval happens.
-   - B) During the chunking phase.
-   - C) After the Vector and Keyword results have been retrieved and merged.
-   - D) After the LLM generates the final answer.
-   **Answer: C**
-
-## 17. Assignments
-
-**Analyze the Trade-offs:**
-1. Think of an app you use daily (e.g., Spotify, Amazon, Wikipedia).
-2. Write down one search query you might use where **Keyword Search** would be better.
-3. Write down one search query where **Vector Search** would be better.
-4. Explain how a Re-ranker would improve the final output for both.
-
-## 18. Summary
-
-Naive RAG is a great prototype, but Hybrid Search + Re-ranking is how you build a production-grade system. By leveraging the speed of Vector/Keyword retrieval and the deep reasoning of a Cross-Encoder, you guarantee that the LLM is fed only the highest quality, most relevant data possible.
-
-## 19. Next lesson progression
-
-Retrieving text chunks is powerful, but what if the answer requires connecting the dots across 5 different documents? Text chunks don't understand relationships. To solve this, we must map our data using nodes and edges in **GraphRAG & Knowledge Graphs**.
+<LessonSummary
+  keyPoints={[
+    "Hybrid search combines BM25 (keyword) and vector (semantic) search for better accuracy",
+    "Reciprocal Rank Fusion (RRF) is the standard algorithm for merging two ranked lists",
+    "Cross-encoder re-ranking dramatically improves the quality of the final results",
+    "The pipeline: fast retrieval (BM25 + vector) → rank fusion → slow but accurate re-ranking",
+    "Hybrid search excels when queries mix natural language with specific identifiers"
+  ]}
+/>

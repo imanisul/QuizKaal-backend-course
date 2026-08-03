@@ -1,0 +1,96 @@
+# What is Mobile Engineering?
+
+Welcome to **Mobile Engineering Mastery**. This isn't just a coding tutorial; this is a comprehensive guide to understanding how mobile devices, operating systems, and applications work internally.
+
+## 1. Introduction
+
+Mobile Engineering is the discipline of designing, building, and deploying software specifically for mobile devices (smartphones, tablets, and wearables). Unlike web development, mobile engineering is deeply tied to the hardware constraints and lifecycle states of the host operating system.
+
+## 2. Why this concept exists
+
+Why do we need specialized "Mobile Engineers" when web developers exist? 
+Because mobile devices have strict constraints:
+- **Battery Life:** Bad code drains the user's battery.
+- **Connectivity:** Apps must handle dropping from 5G to 3G to offline seamlessly.
+- **Memory & CPU:** Background apps are ruthlessly killed by the OS to save RAM.
+- **Lifecycles:** Mobile apps do not just "run." They pause, resume, background, and terminate.
+
+## 3. Visual Explanation
+
+When a user taps an app icon on their phone, the OS doesn't just load a webpage. It allocates an entirely new OS-level process, initializes the UI thread, and mounts a hierarchical view tree.
+
+<ConceptCard 
+  title="The Mobile Paradigm" 
+  description="Every mobile framework (Native, React Native, Flutter) ultimately boils down to manipulating a tree of native UI views on a strictly timed 16ms render loop."
+/>
+
+## 4. Internal Working: The App Lifecycle
+
+Unlike a website that simply exists until the tab is closed, mobile apps have complex lifecycles. If the user receives a phone call, your app is immediately pushed to the "Background" state. If you were recording audio or making a network request, you must properly pause those operations, or the OS will kill your app for misbehaving.
+
+## 5. Interactive Animation: The Android Activity Lifecycle
+
+Play with the interactive timeline below. Notice how the app transitions through specific function hooks as it is launched, backgrounded, and killed by the OS.
+
+<LifecycleTimeline />
+
+## 6. Code Examples
+
+How do we hook into these lifecycle events? Here is how it looks across different tracks:
+
+<MultiLangCodeBlock rnCodeBase64="aW1wb3J0IHsgdXNlRWZmZWN0IH0gZnJvbSAncmVhY3QnOwppbXBvcnQgeyBBcHBTdGF0ZSB9IGZyb20gJ3JlYWN0LW5hdGl2ZSc7CgpleHBvcnQgZGVmYXVsdCBmdW5jdGlvbiBBcHAoKSB7CiAgdXNlRWZmZWN0KCgpID0+IHsKICAgIGNvbnN0IHN1YnNjcmlwdGlvbiA9IEFwcFN0YXRlLmFkZEV2ZW50TGlzdGVuZXIoJ2NoYW5nZScsIG5leHRBcHBTdGF0ZSA9PiB7CiAgICAgIGlmIChuZXh0QXBwU3RhdGUgPT09ICdhY3RpdmUnKSB7CiAgICAgICAgY29uc29sZS5sb2coJ0FwcCBpcyBpbiBmb3JlZ3JvdW5kISAob25SZXN1bWUpJyk7CiAgICAgIH0gZWxzZSBpZiAobmV4dEFwcFN0YXRlID09PSAnYmFja2dyb3VuZCcpIHsKICAgICAgICBjb25zb2xlLmxvZygnQXBwIGlzIGluIGJhY2tncm91bmQhIChvblBhdXNlKScpOwogICAgICB9CiAgICB9KTsKCiAgICByZXR1cm4gKCkgPT4gc3Vic2NyaXB0aW9uLnJlbW92ZSgpOwogIH0sIFtdKTsKfQ==" flutterCodeBase64="Y2xhc3MgQXBwTGlmZWN5Y2xlT2JzZXJ2ZXIgZXh0ZW5kcyBXaWRnZXRzQmluZGluZ09ic2VydmVyIHsKICBAb3ZlcnJpZGUKICB2b2lkIGRpZENoYW5nZUFwcExpZmVjeWNsZVN0YXRlKEFwcExpZmVjeWNsZVN0YXRlIHN0YXRlKSB7CiAgICBpZiAoc3RhdGUgPT0gQXBwTGlmZWN5Y2xlU3RhdGUucmVzdW1lZCkgewogICAgICBwcmludCgnQXBwIGlzIGluIGZvcmVncm91bmQhIChvblJlc3VtZSknKTsKICAgIH0gZWxzZSBpZiAoc3RhdGUgPT0gQXBwTGlmZWN5Y2xlU3RhdGUucGF1c2VkKSB7CiAgICAgIHByaW50KCdBcHAgaXMgaW4gYmFja2dyb3VuZCEgKG9uUGF1c2UpJyk7CiAgICB9CiAgfQp9" androidCodeBase64="Y2xhc3MgTWFpbkFjdGl2aXR5IDogQXBwQ29tcGF0QWN0aXZpdHkoKSB7CiAgICBvdmVycmlkZSBmdW4gb25SZXN1bWUoKSB7CiAgICAgICAgc3VwZXIub25SZXN1bWUoKQogICAgICAgIHByaW50bG4oIkFwcCBpcyBpbiBmb3JlZ3JvdW5kISAob25SZXN1bWUpIikKICAgIH0KCiAgICBvdmVycmlkZSBmdW4gb25QYXVzZSgpIHsKICAgICAgICBzdXBlci5vblBhdXNlKCkKICAgICAgICBwcmludGxuKCJBcHAgaXMgaW4gYmFja2dyb3VuZCEgKG9uUGF1c2UpIikKICAgIH0KfQ==" />
+
+**Explanation:**  
+Each framework exposes lifecycle hooks that allow you to execute code when the app moves between the foreground and background. This is where you pause videos, stop tracking location, or sync data to local storage.
+
+## 7. Real-world Examples
+
+- **Spotify:** When Spotify is pushed to the background, it requests a special OS permission (Foreground Service in Android, Background Audio in iOS) to keep playing music without being killed.
+- **Uber:** Uses background location tracking. If they don't handle lifecycles correctly, the app gets killed and your driver loses your location.
+
+## 8. Best Practices
+
+- **Never block the Main Thread:** Always perform database queries or network requests on a background thread.
+- **Save State:** Always save the user's input during `onPause()`. The OS might kill your app to free up memory.
+- **Graceful Degradation:** Design for offline-first. Ensure the app is still somewhat functional without internet.
+
+## 9. Common Mistakes
+
+- **Memory Leaks:** Forgetting to unregister listeners (like the AppState listener in React Native) in `onDestroy` or `componentWillUnmount`.
+- **Assuming constant network:** Crashing the app when a fetch request fails because the user entered a tunnel.
+- **Ignoring Battery Impact:** Leaving GPS running continuously in the background.
+
+## 10. Interview Questions
+
+<InterviewQuestion 
+  question="What is the difference between onPause and onStop in Android?"
+  answer="onPause is called when the activity loses focus but is still partially visible (like a dialog appearing over it). onStop is called when the activity is no longer visible to the user at all."
+  bestPractice="Release heavy resources like camera and video playback during onStop to save battery and memory."
+  commonFollowUp="How do you persist data if the OS kills the app while it is in the background?"
+/>
+
+<InterviewQuestion 
+  question="How does React Native's AppState map to native lifecycles?"
+  answer="AppState listens to native lifecycle events over the bridge. 'active' corresponds to onResume, and 'background' corresponds to onStop/didEnterBackground."
+  bestPractice="Always clean up your AppState event listeners in the useEffect return function to prevent memory leaks."
+/>
+
+<InterviewQuestion 
+  question="How do you handle memory leaks in mobile applications?"
+  answer="Memory leaks occur when objects are kept in memory even when they are no longer needed, usually because a static reference or long-running listener is holding onto them. You fix them by properly nullifying references and unregistering listeners in the teardown lifecycle hooks (onDestroy or componentWillUnmount)."
+  commonFollowUp="What tools can you use to detect memory leaks? (e.g., LeakCanary in Android, Instruments in iOS)."
+/>
+
+## 11. Knowledge Check
+
+<QuizWidget 
+  question="Which mobile lifecycle event is triggered when the app is no longer visible to the user?"
+  options={["onCreate", "onResume", "onStop", "onDestroy"]}
+  correctAnswer="onStop"
+  explanation="onStop is called when the app is fully hidden (e.g. user goes to home screen). onPause is called when it loses focus but might still be partially visible."
+  takeaway="Always release heavy resources like UI animations and camera when onStop is triggered to optimize performance."
+/>
+
+## 12. Summary
+
+Mobile engineering is fundamentally about managing resources. Because phones have limited battery and memory, the OS strictly controls app lifecycles. Your job as a mobile engineer is to write resilient code that reacts elegantly to these OS state changes.

@@ -1,0 +1,256 @@
+---
+title: "Ports"
+description: "How does a server know if a packet is meant for the database or the web server? Enter ports."
+phase: "Internet & How It Works"
+time: "20 min"
+difficulty: "beginner"
+---
+
+<LessonHero 
+  title="Ports & Services" 
+  module="Internet & How It Works" 
+  difficulty="Beginner" 
+  time="20 min" 
+  xp="50" 
+/>
+
+## 1. Introduction
+
+**What is this lesson?**
+In this lesson, we will learn about **Ports**—the virtual doors on a computer that allow multiple applications to receive network traffic simultaneously without getting confused.
+
+**Why are we learning it?**
+When data arrives at an IP Address, it has reached the correct machine. But a machine runs many programs! The data needs to know exactly which program it should talk to (e.g., the web server or the database).
+
+**Why should a backend engineer know this?**
+As a backend engineer, you will constantly start servers, debug "Port already in use" errors, and configure firewalls to open or close specific ports to secure your applications.
+
+---
+
+## 2. Why This Exists
+
+**What problem existed before?**
+Imagine if a computer could only listen to the network as a single entity. If data arrived, the computer would have no idea which software program should process it. You would only be able to run a single networked application per computer!
+
+**Why was this technology created?**
+To allow computers to multitask. Ports were created as 16-bit numbers (from `0` to `65535`). They act as virtual mailboxes. When a network packet arrives, it specifies a "Destination Port", and the computer drops the packet into the correct mailbox.
+
+**How did companies solve this problem?**
+The Internet Assigned Numbers Authority (IANA) standardized port numbers so the whole world agrees on them. For example, the entire internet agreed that unencrypted web traffic always goes to Port `80`, and secure web traffic goes to Port `443`.
+
+---
+
+## 3. Problems It Solves
+
+**Without Ports, a server could only do one job.**
+You would need one physical computer for your web server, a completely separate physical computer for your database, and another computer just for email. 
+
+**With Ports, a single server is a powerhouse.**
+A single `$5/month` server on DigitalOcean can run your React app (Port `3000`), your Node.js API (Port `8080`), your PostgreSQL Database (Port `5432`), and a Redis Cache (Port `6379`) all at the exact same time!
+
+---
+
+## 4. Real Life Analogy
+
+<AnalogyCard title="The Apartment Building & Door Numbers">
+  If an **IP Address** is the street address of a large apartment building, a **Port** is the specific apartment number inside that building.
+
+  Imagine sending a pizza to "123 Main Street". The delivery driver arrives at the building (the IP address), but there are 65,000 apartments inside!
+
+  The driver doesn't know who ordered the pizza. You must specify: "123 Main Street, **Apt 3000**". 
+
+  In networking, we combine the IP Address and Port together, separated by a colon, like this: `192.168.1.100:3000`. This combination is called a **Socket**.
+</AnalogyCard>
+
+---
+
+## 5. Interactive Visualization
+
+Try sending traffic to the server below. Select a port and watch how the server's internal router (the Operating System) delivers the packet to the correct application!
+
+<PortVisualizer />
+
+Notice what happens when you send traffic to a closed port (like `9999`)! The Operating System rejects it because no application is listening.
+
+---
+
+## 6. Step-by-Step Explanation
+
+Let's break down how your browser connects to a web server:
+
+**Step 1: The User types a URL**
+↓
+You type `https://quizkaal.com` into your browser. 
+
+**Step 2: DNS Resolution**
+↓
+Your computer uses DNS to find the IP address (`104.21.45.120`).
+
+**Step 3: The Implicit Port**
+↓
+Because you typed `https://`, your browser *automatically* knows it must use Port `443`. (If you typed `http://`, it would use Port `80`).
+
+**Step 4: The Packet is Sent**
+↓
+Your computer sends a network packet across the internet destined for `104.21.45.120:443`.
+
+**Step 5: The Operating System Routes It**
+↓
+The packet arrives at the server. The Linux operating system looks at the packet, sees `Port 443`, and hands the data to the Nginx Web Server which was actively "listening" on that port.
+
+---
+
+## 7. Deep Explanation: Common Ports
+
+As a Backend Engineer, you will encounter these ports daily. You must memorize them!
+
+<ConceptBlock type="info" title="Ports You Must Memorize">
+  **Port 80 (HTTP):** Standard, unencrypted web traffic.
+  **Port 443 (HTTPS):** Secure, encrypted web traffic.
+  **Port 22 (SSH):** Secure Shell. Used by developers to remotely log into a server's terminal.
+  **Port 5432:** PostgreSQL Database.
+  **Port 3306:** MySQL Database.
+  **Port 27017:** MongoDB Database.
+  **Port 6379:** Redis (In-memory cache).
+  **Ports 3000, 4000, 8080:** Common default ports for local web development (React, Express, Spring Boot).
+</ConceptBlock>
+
+---
+
+## 8. Node.js Implementation
+
+Let's build two different Node.js servers on the same computer using Express. We will put the "Auth API" on Port 3000 and the "Products API" on Port 4000. 
+
+We will also intentionally cause the most common beginner error: `EADDRINUSE`.
+
+<CodeTabs>
+  <div label="multi-port.js (Node.js)">
+    ```javascript
+    const express = require('express');
+
+    // Create our Auth API
+    const authApp = express();
+    authApp.get('/login', (req, res) => res.send('Login Successful!'));
+
+    // Create our Products API
+    const productsApp = express();
+    productsApp.get('/items', (req, res) => res.send('Here are your products!'));
+
+    // Start Auth API on Port 3000
+    authApp.listen(3000, () => {
+      console.log('✅ Auth API is listening on http://localhost:3000');
+    });
+
+    // Start Products API on Port 4000
+    productsApp.listen(4000, () => {
+      console.log('✅ Products API is listening on http://localhost:4000');
+    });
+
+    // WHAT NOT TO DO:
+    // If we try to start another server on Port 3000, it will CRASH!
+    // const badApp = express();
+    // badApp.listen(3000, () => { console.log('This will never run.') });
+    ```
+  </div>
+</CodeTabs>
+
+**Expected Output:**
+```bash
+✅ Auth API is listening on http://localhost:3000
+✅ Products API is listening on http://localhost:4000
+```
+
+If you uncomment the `badApp` code, you will get this famous error:
+```bash
+Error: listen EADDRINUSE: address already in use :::3000
+```
+
+<ConceptBlock type="idea" title="Best Practice">
+  Never hardcode ports like `3000` in production. Always use environment variables: `const PORT = process.env.PORT || 3000;`. When you deploy your code, the cloud provider (like Heroku or AWS) will inject their own random port into `process.env.PORT`!
+</ConceptBlock>
+
+---
+
+## 9. Interactive Playground
+
+Open your computer's terminal and see what ports are currently being used on your machine!
+
+```bash
+# Mac / Linux: List all processes listening on a port
+lsof -i -P -n | grep LISTEN
+
+# Windows:
+netstat -aon | findstr "LISTENING"
+```
+
+If you ever get an `EADDRINUSE` error on port 3000, you can find out what app is blocking it:
+```bash
+# Mac / Linux
+lsof -i :3000
+```
+
+---
+
+## 10. Common Mistakes
+
+<WarningCard title="EADDRINUSE (Address Already in Use)">
+  **The Mistake:** You start your Node server, but it crashes with `EADDRINUSE :::3000`.
+
+  **Why it happens:** Two applications cannot listen on the exact same port at the same time. You likely already have a server running in a hidden terminal window, or a zombie process didn't shut down properly.
+
+  **The Fix:** Find the process ID (PID) using `lsof -i :3000` and kill it using `kill -9 <PID>`. Then, restart your server!
+</WarningCard>
+
+---
+
+## 11. Best Practices
+
+**How Netflix & Amazon build this:**
+In enterprise architectures, backend engineers never expose their application servers (like Express or Spring Boot) directly to the public on ports 3000 or 8080. Instead, they run an **API Gateway** or a **Reverse Proxy** (like Nginx) on Port 443. The proxy receives the traffic, encrypts it, and internally forwards the traffic to the hidden Node.js servers running on random, hidden ports.
+
+---
+
+## 12. Performance & Security
+
+**Security (Firewalls):**
+A **Firewall** acts like a bouncer at the apartment building. It looks at the Port Number of incoming packets and decides whether to let them in or block them.
+In a secure production environment, a server's Firewall will usually **block all ports** by default, except for:
+- Port `443` (so the public can view the website).
+- Port `22` (so the admin can SSH into the server).
+
+**Security (Databases):**
+You would *never* expose Port `5432` (PostgreSQL) to the public internet! Opening a database port to the public exposes it to brute-force attacks and automated scanning bots. It should only be accessible from inside your private Virtual Private Cloud (VPC).
+
+
+---
+
+## 14. Practice Challenge
+
+**Mini Assignment:**
+1. Open your terminal.
+2. Try to connect to a website on port 80 using `telnet` or `nc` (Netcat). 
+   ```bash
+   nc google.com 80
+   ```
+3. Type `GET / HTTP/1.1` and hit Enter twice.
+4. Watch Google's server respond to you with raw HTML! You just manually acted like a browser.
+
+---
+
+## 15. Summary
+
+*   **Ports** are like apartment numbers, allowing one IP address to host multiple applications.
+*   **Port 80** is HTTP, **Port 443** is HTTPS.
+*   An IP Address + a Port is called a **Socket** (e.g., `192.168.1.1:3000`).
+*   **EADDRINUSE** happens when two programs try to use the same port.
+*   **Firewalls** protect servers by blocking traffic to unused or sensitive ports (like database ports).
+
+---
+
+## 16. Next Lesson
+
+Now you understand DNS, IP Addresses, and Ports. You have all the puzzle pieces!
+
+In the next lesson, we will put them all together. What EXACTLY happens when you press "Enter" in your browser? We will trace the **Complete Browser Request Flow**.
+
+<CourseNavigation prev={{ slug: "ip-address", title: "IP Address", emoji: "MapPin" }} next={{ slug: "browser-request-flow", title: "Browser Request Flow", emoji: "Compass" }} lessonSlug="ports" />

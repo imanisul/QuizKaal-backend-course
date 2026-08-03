@@ -1,0 +1,132 @@
+---
+title: "History of the Internet"
+description: "From ARPANET to the World Wide Web, learn how the internet evolved over decades."
+phase: "Internet & How It Works"
+time: "15 min"
+difficulty: "beginner"
+xp: 50
+---
+
+<LearningObjectives 
+  objectives={[
+    "Understand the origin of the Internet and ARPANET.",
+    "Learn the difference between circuit switching and packet switching.",
+    "Discover the invention of the World Wide Web (WWW).",
+    "Identify why modern backend systems prioritize resilience and distributed scaling."
+  ]}
+/>
+
+## 1. The Genesis
+
+<ConceptBlock type="idea" title="Overview">
+  The internet wasn't built in a day. It evolved over decades from a secret military project into the global backbone of modern society. Understanding this history helps you understand why backend systems are designed the way they are.
+</ConceptBlock>
+
+<WarningCard title="The Internet is NOT the Web">
+  Just a reminder! The **Internet** is the physical network infrastructure created in the late 1960s. The **World Wide Web (WWW)** is the application layer (websites, HTTP) invented by Tim Berners-Lee in 1989 that runs *on top* of the internet.
+</WarningCard>
+
+---
+
+## 2. The Interactive Timeline
+
+Click through the timeline below to explore the major milestones that shaped the internet.
+
+<TimelineVisualizer />
+
+<AnalogyCard title="Packet Switching vs Circuit Switching">
+  - **Circuit Switching (Old Telephone Lines):** Like a dedicated train track. Once a train (call) is on the track, no one else can use it until the train arrives and the track is cleared. If the track breaks, communication is entirely lost.
+  - **Packet Switching (The Internet):** Like sending 100 postcards through the mail system. They might take different routes, planes, and trucks, but they all eventually arrive and get reassembled. If a post office closes, the cards just route around it.
+</AnalogyCard>
+
+---
+
+## 3. Real World Practice
+
+<PracticeExercise title="Trace a route to Google">
+  Open your terminal and trace the route packets take from your computer to Google's servers. Watch as your data hops through various routers (the modern descendants of ARPANET).
+</PracticeExercise>
+
+<CodeTabs>
+  <div label="Mac / Linux">
+    ```bash
+    traceroute google.com
+    # Watch the packets hop through your ISP and backbone routers
+    ```
+  </div>
+  <div label="Windows">
+    ```cmd
+    tracert google.com
+    # Watch the packets hop through your ISP and backbone routers
+    ```
+  </div>
+</CodeTabs>
+
+---
+
+## 4. Node.js Implementation
+
+To understand how the internet communicates at its most basic level, let's build the simplest possible web server using Node.js's native `http` module. This is how servers communicated before modern frameworks like Express existed!
+
+<CodeTabs>
+  <div label="server.js">
+    ```javascript
+    // 1. Import the native http module (built into Node.js)
+    const http = require('http');
+
+    // 2. Create the server
+    const server = http.createServer((request, response) => {
+      // 3. Log the incoming request to the terminal
+      console.log(`Incoming request to: ${request.url}`);
+
+      // 4. Send an HTTP 200 OK status and set the content type to plain text
+      response.writeHead(200, { 'Content-Type': 'text/plain' });
+
+      // 5. Send the actual data back to the client
+      response.end('Hello from the early Internet!\n');
+    });
+
+    // 6. Tell the server to listen on port 3000
+    const PORT = 3000;
+    server.listen(PORT, () => {
+      console.log(`🚀 Server is listening on http://localhost:${PORT}`);
+    });
+    ```
+  </div>
+</CodeTabs>
+
+<ConceptBlock type="tip" title="What's happening here?">
+  When you run this code using `node server.js`, your computer opens up **Port 3000** and listens for incoming packets. If you open your browser and go to `http://localhost:3000`, your browser sends an HTTP request packet to your Node.js server. The server reads it, logs it, and sends back a text response.
+</ConceptBlock>
+
+<WarningCard title="Don't use this in production!">
+  While understanding the native `http` module is crucial for interviews, you will almost never use it directly in a production application. In modern backends, we use frameworks like **Express.js** to handle the heavy lifting of routing and security.
+</WarningCard>
+
+
+---
+
+## 5. Knowledge Check
+
+<Quiz 
+  question="Who is widely credited with inventing the World Wide Web?"
+  options={[
+    "Al Gore",
+    "Tim Berners-Lee",
+    "Steve Jobs",
+    "Vint Cerf"
+  ]}
+  correctAnswerIndex={1}
+  explanation="Tim Berners-Lee invented the World Wide Web at CERN in 1989. Vint Cerf is often credited as one of the 'fathers of the Internet' for his work on TCP/IP."
+/>
+
+<LessonSummary 
+  takeaways={[
+    "The Internet started as ARPANET, designed by the US military to survive node failures.",
+    "Packet switching replaced circuit switching, making networks resilient and efficient.",
+    "The World Wide Web (invented in 1989) is just one application running on the Internet.",
+    "Modern backend architectures inherit this emphasis on decentralized, resilient scaling."
+  ]}
+  nextLessonTitle="How Data Travels"
+  nextLessonUrl="/lessons/how-data-travels"
+/>

@@ -1,182 +1,167 @@
 ---
 title: "Multi-Agent Orchestration"
-description: "Why build one Agent when you can build a team? Learn how to orchestrate networks of specialized AIs using Supervisor patterns."
-phase: "Agentic AI & LangGraph"
+description: "Supervisors, research agents, reflection, and managing teams of AI agents."
+time: "55 min"
 difficulty: "expert"
+xp: 125
+phase: "Agentic AI & LangGraph"
 ---
 
-## 1. Simple Explanation
-
-If you ask a single human to write the code, design the graphics, write the legal policy, and market a new product all by themselves, they will likely fail or produce mediocre work. They get confused and lose focus.
-The exact same thing happens to a single AI Agent given too many instructions and too many tools. 
-**Multi-Agent Systems** solve this by breaking a massive goal into smaller roles. You create a "Coder Agent" (who only has coding tools), a "Researcher Agent" (who only has Web Search tools), and a "Supervisor Agent". The Supervisor acts like a manager, reading the user's goal and delegating sub-tasks to the specialized agents, ensuring high-quality, focused output.
-
-## 2. Why this technology exists
-
-As developers built complex LangGraph pipelines, they realized that giving one LLM access to 50 different tools caused catastrophic failures. The model would "hallucinate" tool usage, trying to use the Calculator tool to search the web, or simply "forgetting" its original system prompt because the context window grew too large.
-By splitting the architecture into multiple specialized agents, each agent maintains a pristine, focused system prompt and only sees the tools relevant to its specific job. 
-
-## 3. What problem it solves
-
-- **Prompt Overload:** Keeps system prompts small and focused.
-- **Tool Confusion:** Prevents the LLM from getting paralyzed by having to choose between 50 different tools.
-- **Parallel Execution:** While the Researcher Agent is searching the web, the Coder Agent can simultaneously start setting up the project repository.
-
-## 4. Real-life analogy
-
-**A Single Agent is like a Solo Founder.**
-They answer the phones, write the code, and mop the floors. It works for a small project, but they quickly burn out and make mistakes as the company grows.
-
-**A Multi-Agent System is like a Corporate Hierarchy.**
-The CEO (Supervisor Agent) receives a mandate from the Board (The User): *"Launch a new product."* 
-The CEO doesn't write code. The CEO messages the VP of Engineering (Coder Agent): *"Build the app."* The CEO messages the VP of Marketing (Copywriter Agent): *"Write the ad campaign."* The VPs do the actual work and report back to the CEO, who packages it all together for the Board.
-
----
-
-## 5. Internal working
-
-<AnimatedWorkflow 
-  title="The Supervisor Architecture"
-  steps={[
-    { title: "User Query", description: "'Write a report on AAPL stock and plot a chart.'", icon: "🗣️" },
-    { title: "Supervisor", description: "Reads query. Routes to 'Researcher'.", icon: "👑" },
-    { title: "Researcher Agent", description: "Uses Finance API to get AAPL data. Returns data to Supervisor.", icon: "🔍" },
-    { title: "Supervisor", description: "Reads data. Routes to 'Coder'.", icon: "👑" },
-    { title: "Coder Agent", description: "Uses Python tool to plot a chart from the data. Returns to Supervisor.", icon: "💻" },
-    { title: "Final Output", description: "Supervisor returns the completed report and chart to the user.", icon: "✅" }
+<LearningObjectives
+  objectives={[
+    "Understand why single agents fail at complex tasks",
+    "Learn the Supervisor and Hierarchical agent patterns",
+    "Build a multi-agent system using LangGraph",
+    "Compare CrewAI, AutoGen, and LangGraph for orchestration"
   ]}
 />
 
----
+## The Single Agent Bottleneck
 
-## 6. Architecture & Data Flow
+A single ReAct agent struggles with complex tasks (like "Write a 10-page market research report") because:
 
-<AnimatedWorkflow 
-  title="Network Topologies"
-  steps={[
-    { title: "Supervisor Pattern", description: "Hub and Spoke. All agents report back to the central Manager.", icon: "🕸️" },
-    { title: "Hierarchical Teams", description: "Supervisor manages Sub-Supervisors (e.g., VP Engineering manages Frontend Agent & Backend Agent).", icon: "🏛️" },
-    { title: "Network Pattern", description: "Agents talk directly to each other without a manager (e.g., Coder talks directly to QA Agent).", icon: "🌐" }
-  ]}
+1. **Context Bloat:** The prompt gets too large with instructions for researching, writing, and formatting.
+2. **Tool Overload:** Giving one agent 20 different tools confuses it. It picks the wrong tools or hallucinates arguments.
+3. **Loss of Focus:** It forgets the original goal halfway through execution.
+
+<AnalogyCard
+  title="The Startup Analogy"
+  description="A single agent is like a solo founder trying to be the CEO, lead developer, marketing manager, and accountant simultaneously. They will eventually drop the ball. A Multi-Agent System is like hiring a dedicated team. You have a Researcher agent, a Writer agent, and a QA agent, all managed by a Supervisor agent who coordinates their work."
 />
 
-## 7. Step-by-step process explanation
+## Multi-Agent Patterns
 
-Implementing a Supervisor pattern using LangGraph:
-1. **Create Specialized Agents:** 
-   - Define Agent A (Researcher) with Web Search tools.
-   - Define Agent B (Math Expert) with Calculator tools.
-2. **Create the Supervisor Node:** Define an LLM whose *only* job is routing. Its prompt is: *"You are a supervisor. Given the conversation history, who should act next? Output 'Researcher', 'Math Expert', or 'FINISH'."*
-3. **Graph Edges:** 
-   - `Supervisor -> [Researcher | Math Expert | FINISH]` (Conditional Edge based on the Supervisor's output).
-   - `Researcher -> Supervisor` (Normal Edge, always returns to boss).
-   - `Math Expert -> Supervisor` (Normal Edge, always returns to boss).
-4. **Execution:** The Graph loops, bouncing between the Supervisor and the workers until the Supervisor decides the job is completely done and outputs 'FINISH'.
+### 1. The Supervisor Pattern
 
-## 8. Code examples
+One "Manager" agent routes tasks to specialized "Worker" agents.
 
-*Note: You can build this from scratch in LangGraph, but higher-level frameworks like **CrewAI** make it much easier.*
-
-**Building a Multi-Agent Team with CrewAI (Python):**
-```python
-from crewai import Agent, Task, Crew, Process
-
-# 1. Define Specialized Agents
-researcher = Agent(
-    role='Senior Research Analyst',
-    goal='Uncover cutting-edge developments in AI',
-    backstory='You work at a leading tech think tank.',
-    verbose=True,
-    allow_delegation=False,
-    tools=[search_tool]
-)
-
-writer = Agent(
-    role='Tech Content Strategist',
-    goal='Craft compelling content on tech advancements',
-    backstory='You are a renowned content strategist.',
-    verbose=True,
-    allow_delegation=True # The writer can ask the researcher for more info!
-)
-
-# 2. Define Tasks
-task1 = Task(description='Analyze 2024 AI trends', agent=researcher)
-task2 = Task(description='Write a blog post about the findings', agent=writer)
-
-# 3. Form the Crew (The Multi-Agent System)
-crew = Crew(
-    agents=[researcher, writer],
-    tasks=[task1, task2],
-    process=Process.sequential # Run task 1, then pass result to task 2
-)
-
-result = crew.kickoff()
+```
+                  ┌──────────────┐
+                  │  Supervisor  │
+                  │   (Router)   │
+                  └──────┬───────┘
+                         │
+        ┌────────────────┼────────────────┐
+        ▼                ▼                ▼
+┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+│  Researcher  │  │    Writer    │  │  QA Checker  │
+│  (Web Search)│  │ (Formatting) │  │  (Validation)│
+└──────────────┘  └──────────────┘  └──────────────┘
 ```
 
-## 9. Common Use Cases
+The Supervisor decides *who* should act next. When a worker finishes, control returns to the Supervisor.
 
-- **Automated QA & Testing:** Coder Agent writes a function. QA Agent immediately tries to write tests to break it. If broken, it kicks it back to the Coder Agent. They loop until the tests pass.
-- **Content Creation:** Researcher Agent gathers facts, Writer Agent drafts an article, Editor Agent critiques the grammar and tone, SEO Agent optimizes the keywords.
-- **Cybersecurity:** "Red Team" Agent tries to hack a simulated server, "Blue Team" Agent tries to patch the vulnerabilities it finds.
+### 2. The Network (Peer-to-Peer) Pattern
 
-## 10. Best practices
+Agents talk directly to each other without a central manager. Useful for debates or brainstorming.
 
-- **The "Pass the Baton" approach:** In a pure Network topology, Agents can easily get stuck in an endless argument ("Your code is wrong!" "No, your test is wrong!"). A Supervisor topology (or sequential process) enforces order and prevents infinite loops.
-- **Give Agents a Persona:** LLMs perform much better when you give them a detailed backstory. Instead of *"You are a coder"*, use *"You are a Staff Engineer at Google with 20 years of experience in high-performance Rust"*.
+### 3. The Hierarchical Pattern
 
-## 11. Common mistakes
+Supervisors managing other Supervisors (e.g., A "Tech Lead" agent managing "Frontend" and "Backend" agents, reporting to a "Product Manager" agent).
 
-- **Too many Agents:** The more agents you add, the more API calls are made, and the slower/more expensive the system becomes. If a single Agent with 3 tools can do the job reliably, don't build a 5-agent Crew.
-- **Context Bloat:** If the Researcher Agent reads 50 Wikipedia articles and dumps all 100,000 tokens into the shared State, the Writer Agent will crash due to context window limits. Agents must summarize their findings before passing them to the next Agent.
+## Building a Supervisor with LangGraph
 
-## 12. Performance tips
+LangGraph is perfectly suited for multi-agent systems because agents are just nodes in a state graph.
 
-- **Use different models for different agents:** The Supervisor Agent needs high reasoning capabilities, so use the expensive `GPT-4o`. The Copywriter Agent just needs to format text, so use the cheap and fast `Llama-3-8B`. This drastically reduces overall system costs.
+```javascript
+import { StateGraph, END } from "@langchain/langgraph";
+import { ChatOpenAI } from "@langchain/openai";
 
-## 13. Security considerations
+const model = new ChatOpenAI({ model: "gpt-4" });
 
-- **Cascading Failures:** If a malicious user tricks the Supervisor Agent (via prompt injection), the Supervisor might instruct the Database Agent to drop all tables. Security boundaries must be enforced at the Tool level, not just the Agent prompt level.
+// 1. Define the Team State
+// This is the shared whiteboard all agents can read/write
+const TeamState = {
+  messages: [],       // Conversation history
+  nextAgent: "",      // Who goes next?
+  researchData: "",   // Data collected by researcher
+  draftReport: "",    // Report written by writer
+};
 
-## 14. Scalability & Deployment
+// 2. Define the Supervisor Node
+async function supervisorNode(state) {
+  const prompt = `
+    You are a manager. Your team has two workers: "Researcher" and "Writer".
+    Given the conversation so far, who should act next?
+    If the task is complete, reply "FINISH".
+    
+    Conversation: ${state.messages.join("\n")}
+    
+    Reply ONLY with: "Researcher", "Writer", or "FINISH".
+  `;
+  
+  const response = await model.invoke(prompt);
+  return { nextAgent: response.content.trim() };
+}
 
-- Frameworks like **CrewAI** and **AutoGen** (by Microsoft) run primarily on Python and are great for prototyping. However, for robust, fault-tolerant enterprise systems that require strict state management and pausing (HITL), building Multi-Agent architectures natively on **LangGraph** (TypeScript or Python) is becoming the industry standard.
+// 3. Define the Worker Nodes
+async function researcherNode(state) {
+  // Agent logic with web search tools...
+  const data = await runResearchAgent(state.messages);
+  return { researchData: data, messages: [...state.messages, "Research complete"] };
+}
 
-## 15. Interview questions
+async function writerNode(state) {
+  // Agent logic with writing tools...
+  const report = await runWriterAgent(state.researchData);
+  return { draftReport: report, messages: [...state.messages, "Draft written"] };
+}
 
-**Q: In a Supervisor architecture, does the Supervisor Agent execute tools?**
-A: Typically, no. The Supervisor acts purely as a router. Its only job is to evaluate the current state of the project and decide which specialized "Worker Agent" should act next.
+// 4. Build the Graph
+const workflow = new StateGraph({ channels: TeamState })
+  .addNode("supervisor", supervisorNode)
+  .addNode("Researcher", researcherNode)
+  .addNode("Writer", writerNode)
+  
+  // The supervisor decides who goes next
+  .addConditionalEdges("supervisor", (state) => {
+    if (state.nextAgent === "FINISH") return END;
+    return state.nextAgent;
+  })
+  
+  // Workers always report back to the supervisor
+  .addEdge("Researcher", "supervisor")
+  .addEdge("Writer", "supervisor")
+  .addEdge("__start__", "supervisor");
 
-**Q: What is the main advantage of Multi-Agent Systems over a Single Agent?**
-A: Separation of concerns. It keeps system prompts small, limits the number of tools any single LLM has to choose from, and prevents the AI from losing focus on complex, multi-step goals.
+const team = workflow.compile();
+```
 
-## 16. MCQs
+## Frameworks Comparison
 
-1. Which Agent topology allows a central manager to delegate tasks to specialized workers?
-   - A) Sequential Topology
-   - B) Supervisor Topology
-   - C) Network Topology
-   - D) Neural Topology
-   **Answer: B**
+| Framework | Architecture | Best For |
+|-----------|-------------|----------|
+| **LangGraph** | Graph-based state machine | Production systems requiring strict control, cycles, and custom logic |
+| **CrewAI** | Role-based (Crew, Tasks, Agents) | Fast prototyping, simple sequential or hierarchical tasks |
+| **AutoGen** | Conversational (Agents talk to each other) | Multi-agent debates, code generation and execution |
 
-2. If a Writer Agent needs to ensure its article is grammatically perfect, how might a Multi-Agent system handle this?
-   - A) By increasing the LLM Temperature.
-   - B) By using a Vector Database.
-   - C) By routing the drafted article to a specialized Editor Agent for critique before finalizing.
-   - D) By disabling tools.
-   **Answer: C**
+### Why LangGraph Wins in Production
 
-## 17. Assignments
+CrewAI and AutoGen are easier to set up, but they are **black boxes**. When a CrewAI agent gets stuck in a loop, it's hard to intervene. LangGraph forces you to define the edges and state explicitly, giving you absolute control over the workflow, state persistence, and human-in-the-loop interventions.
 
-**Design a Crew:**
-1. You are tasked with building a system to automatically trade stocks based on Twitter sentiment.
-2. List out the specialized Agents you would need. (e.g., `Social Media Scraper`, `Sentiment Analyst`, `Financial Analyst`, `Trading Executor`).
-3. For each agent, write a 1-sentence Persona.
-4. Draw the flow of data. Who talks to who? Does the Scraper talk directly to the Executor, or do they pass data through the Analysts first?
+<InterviewPrep
+  questions={[
+    {
+      question: "What is the Supervisor pattern in multi-agent systems and why is it useful?",
+      answer: "The Supervisor pattern involves a central routing agent that orchestrates specialized worker agents. Instead of giving one agent 20 tools and a massive prompt, you give the Supervisor the job of deciding 'who goes next', and you give the workers narrow scopes (e.g., a Researcher with search tools, a Coder with execution tools). This solves the context bloat and tool overload problems that cause single agents to fail on complex tasks.",
+      difficulty: "advanced",
+      commonMistake: "Confusing a Supervisor with a sequential chain. A Supervisor dynamically decides the routing based on state — it might send a task back to the Researcher if the Writer says the data is insufficient."
+    },
+    {
+      question: "How do agents communicate in a LangGraph multi-agent system?",
+      answer: "Agents in LangGraph don't technically 'talk' directly to each other like they do in AutoGen. Instead, they communicate by reading and updating a shared State object (the graph state). When the Researcher finishes, it updates the `researchData` property in the state. When the Writer runs, it reads that property. This blackboard pattern makes the system highly observable and debuggable.",
+      difficulty: "expert",
+      commonMistake: "Thinking agents pass messages directly to each other via API calls."
+    }
+  ]}
+/>
 
-## 18. Summary
-
-Multi-Agent Orchestration is the closest we have come to true Artificial General Intelligence (AGI) workflows. By creating societies of specialized AI personas that collaborate, debate, and verify each other's work, we can automate complex business operations that were previously thought impossible for machines.
-
-## 19. Next lesson progression
-
-Now that we have teams of AIs, how do we securely connect them to our enterprise databases, Slack workspaces, and local file systems without writing thousands of custom API integrations? The answer lies in the **Model Context Protocol (MCP)**.
+<LessonSummary
+  keyPoints={[
+    "Single agents fail on complex tasks due to context bloat and tool overload",
+    "Multi-agent systems divide work among specialized agents with narrow scopes",
+    "The Supervisor pattern uses a router agent to coordinate worker agents",
+    "LangGraph models multi-agent systems as state graphs where agents are nodes",
+    "Agents communicate by reading and writing to a shared graph state"
+  ]}
+/>

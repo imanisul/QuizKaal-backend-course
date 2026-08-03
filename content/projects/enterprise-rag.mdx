@@ -1,16 +1,196 @@
 ---
 title: "Enterprise RAG System"
-description: "PDF chatting, citation, LangChain"
-phase: "Real-World Projects"
+description: "Build a production-ready RAG system with access control, citations, and conversational memory."
+time: "2.5 hrs"
 difficulty: "expert"
+xp: 200
+phase: "Real-World Projects"
 ---
 
-## Module Overview
+<LearningObjectives
+  objectives={[
+    "Implement document-level Access Control Lists (ACLs) in vector search",
+    "Generate accurate citations linking back to source documents",
+    "Manage conversational memory with LangChain",
+    "Deploy a scalable vector database architecture"
+  ]}
+/>
 
-Welcome to **Enterprise RAG System**. This module covers pdf chatting, citation, langchain. 
+## The Enterprise Requirements
 
-<Callout type="info" title="Content Coming Soon">
-This is a placeholder for the advanced deep-dive content. The interactive visualizations, code examples, and quizzes for this specific module are currently being authored and will be published shortly!
-</Callout>
+Building a toy RAG system is easy. Building one for an enterprise is hard. You must solve three major problems:
 
-In the meantime, you can continue exploring the rest of the roadmap or review the previous lessons.
+1. **Access Control:** The CEO and the intern are both asking the HR bot questions. The CEO should get answers based on confidential executive documents. The intern should not.
+2. **Citations:** The AI says "Policy 4B allows remote work." Where did it get that? Enterprise users need proof.
+3. **Conversational Memory:** Users ask follow-up questions ("What about part-time employees?"). The system needs to remember the context.
+
+## 1. Access Control in Vector Search
+
+You cannot enforce access control *after* retrieval (by filtering the results), because if the top 10 vector results are confidential, and you filter them out, you are left with 0 results for the user, even though relevant non-confidential documents exist further down the list.
+
+**Access control must happen DURING the vector search using Metadata Filtering.**
+
+```javascript
+import { Pinecone } from "@pinecone-database/pinecone";
+import { PineconeStore } from "@langchain/pinecone";
+
+// 1. During Indexing: Tag documents with access roles
+const documents = [
+  { 
+    pageContent: "Executive bonuses are capped at 50%.", 
+    metadata: { doc_id: "doc_1", roles_allowed: ["admin", "executive"] }
+  },
+  { 
+    pageContent: "Standard remote work policy.", 
+    metadata: { doc_id: "doc_2", roles_allowed: ["admin", "executive", "employee"] }
+  }
+];
+
+// 2. At Query Time: Filter by the user's role
+async function searchForUser(query, userRole) {
+  const vectorStore = await PineconeStore.fromExistingIndex(
+    new OpenAIEmbeddings(),
+    { pineconeIndex: index }
+  );
+  
+  const results = await vectorStore.similaritySearch(query, 5, {
+    roles_allowed: { $in: [userRole] } // Pinecone metadata filter
+  });
+  
+  return results;
+}
+```
+
+## 2. Generating Citations
+
+To generate citations, the LLM must be explicitly instructed to cite the `doc_id` or source name from the metadata.
+
+```javascript
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
+
+const prompt = ChatPromptTemplate.fromTemplate(`
+  You are an enterprise AI assistant. Answer the user's question based ONLY 
+  on the provided context.
+  
+  CRITICAL INSTRUCTION: You must cite the source for every claim you make.
+  Append [Source: {source_name}] to the end of sentences that rely on a document.
+  
+  Context:
+  {context}
+  
+  Question: {question}
+`);
+
+// When formatting the context, we must include the metadata!
+const formatDocs = (docs) => {
+  return docs.map(doc => 
+    `Source Name: ${doc.metadata.source}\nContent: ${doc.pageContent}`
+  ).join("\n\n---\n\n");
+};
+
+// Example LLM Output:
+// "Employees receive 20 days of PTO per year [Source: Employee_Handbook_v2.pdf]."
+```
+
+## 3. Conversational Memory (Follow-ups)
+
+If a user asks "What is the PTO policy?" and then follows up with "Does it roll over?", a pure RAG system fails because "Does it roll over?" contains no semantic keywords about PTO.
+
+The solution is to **Rewrite the Query** using the conversation history before searching the vector database.
+
+```javascript
+import { createHistoryAwareRetriever } from "langchain/chains/history_aware_retriever";
+import { MessagesPlaceholder } from "@langchain/core/prompts";
+
+// 1. The Prompt that rewrites the user's question
+const contextualizeQPrompt = ChatPromptTemplate.fromMessages([
+  ["system", "Given a chat history and the latest user question, formulate a standalone question that can be understood without the chat history. Do NOT answer the question, just reformulate it."],
+  new MessagesPlaceholder("chat_history"),
+  ["human", "{input}"]
+]);
+
+// 2. Wrap your retriever
+const historyAwareRetriever = await createHistoryAwareRetriever({
+  llm: model,
+  retriever: vectorStore.asRetriever(),
+  rephrasePrompt: contextualizeQPrompt,
+});
+
+// HOW IT WORKS:
+// User: "Does it roll over?"
+// History: [Human: "What is the PTO policy?", AI: "You get 20 days."]
+// 
+// LLM Rewrites Query To -> "Does the 20 days of PTO roll over to the next year?"
+// 
+// The rewritten query is sent to the Vector DB for highly accurate retrieval!
+```
+
+## 4. Putting it together: The Enterprise Pipeline
+
+```javascript
+import { createRetrievalChain } from "langchain/chains/retrieval";
+
+// 1. History-aware retriever (handles follow-ups)
+const retriever = await createHistoryAwareRetriever({
+  llm: model,
+  retriever: userScopedRetriever, // Filtered by user role (ACL)
+  rephrasePrompt: contextualizeQPrompt,
+});
+
+// 2. Document combination chain (handles citations)
+const combineDocsChain = await createStuffDocumentsChain({
+  llm: model,
+  prompt: citationPrompt,
+});
+
+// 3. Final execution chain
+const conversationalRetrievalChain = await createRetrievalChain({
+  retriever,
+  combineDocsChain,
+});
+
+// 4. Execution
+const response = await conversationalRetrievalChain.invoke({
+  chat_history: memory.getMessages(),
+  input: "Does it roll over?"
+});
+```
+
+<InterviewPrep
+  questions={[
+    {
+      question: "How do you handle access control (ACLs) in a RAG system?",
+      answer: "Access control must be enforced at the vector database level using metadata filtering, not post-retrieval. During the indexing phase, I tag every document chunk with the groups or roles allowed to view it (e.g., `{'roles': ['hr', 'executive']}`). At query time, I pass the user's role as a filter to the vector DB search query. This ensures the vector DB only searches within the subspace of documents the user is authorized to see, guaranteeing both security and retrieval accuracy.",
+      difficulty: "expert",
+      commonMistake: "Suggesting filtering results after retrieving the top 10 from the DB. This leads to empty results if the top 10 happen to be unauthorized documents."
+    },
+    {
+      question: "Why do follow-up questions fail in standard RAG, and how do you fix it?",
+      answer: "Standard RAG embeds the exact text of the user's query. Follow-up questions often contain pronouns (e.g., 'Why did he do that?') that lack semantic meaning on their own. Embedding 'Why did he do that?' retrieves garbage from the vector database. To fix this, I use a Query Rewriting step: I pass the chat history and the new question to a fast LLM (like GPT-3.5 or Claude Haiku) and ask it to generate a standalone query (e.g., 'Why did the CEO resign?'). I then embed the standalone query to search the database.",
+      difficulty: "advanced",
+      commonMistake: "Trying to embed the entire chat history. This dilutes the embedding vector with too much unrelated context, leading to poor search results."
+    }
+  ]}
+/>
+
+<PracticeExercise
+  title="Implement Query Rewriting"
+  description="Write a standalone function that takes a chat history array and a new question, and returns a rewritten query."
+  steps={[
+    "Define a ChatPromptTemplate instructing the LLM to rewrite the query.",
+    "Pass an array of previous messages (Role: Human, Role: AI).",
+    "Pass the ambiguous new question.",
+    "Invoke the LLM and print the output to verify it resolves pronouns."
+  ]}
+/>
+
+<LessonSummary
+  keyPoints={[
+    "Enterprise RAG requires Access Control, Citations, and Conversational Memory",
+    "Access control must be implemented as metadata filters during the vector search",
+    "Citations require injecting metadata (source names) into the LLM context prompt",
+    "Follow-up questions fail in vector search because pronouns lack semantic meaning",
+    "Query Rewriting uses the chat history to generate a standalone question before vector search"
+  ]}
+/>

@@ -1,0 +1,91 @@
+# Auth & Local Databases
+
+How do apps keep you logged in when you close and reopen them? The answer is Local Storage and Authentication Tokens.
+
+## 1. Introduction
+
+Authentication in mobile engineering is a two-part process. First, the app securely transmits credentials to the server to get an Access Token (usually a JWT). Second, the app must securely store that token on the local file system of the phone so the user doesn't have to log in every single time they open the app.
+
+## 2. Why this concept exists
+
+Mobile users expect an "always logged in" experience. Typing a password on a virtual keyboard is annoying. We use local databases to persist state across app lifecycles.
+
+## 3. Visual Explanation
+
+<ConceptCard 
+  title="The JWT Lifecycle" 
+  description="1. Login -> 2. Receive JWT -> 3. Save JWT to Encrypted Storage -> 4. App Killed -> 5. App Relaunched -> 6. Read JWT from Storage -> 7. Attach to API headers."
+/>
+
+## 4. Internal Working: Local Storage Options
+
+- **SharedPreferences (Android) / UserDefaults (iOS):** Good for simple key-value pairs (e.g. `isDarkMode: true`). Do NOT store passwords here; it is unencrypted.
+- **Keystore (Android) / Keychain (iOS):** Hardware-level encrypted storage. This is where you MUST store JWTs and sensitive data.
+- **SQLite / CoreData / Realm:** Local relational databases for storing massive amounts of data (like WhatsApp chat history) for offline usage.
+
+## 5. Interactive Animation: Login Flow
+
+Observe the full login flow on a mobile device, focusing on how the token is handled internally.
+
+<InteractivePhoneMockup 
+  scenario="login"
+  title="Authentication & Persistence Flow"
+/>
+
+### Complete Authentication Pipeline
+
+Every step of the login process — from user input to token storage — happens in a precise sequence. Click "Simulate Login" to watch the entire flow:
+
+<AuthFlowDiagram />
+
+## 6. Code Examples: Secure Storage
+
+How to securely store a JWT across tracks:
+
+<MultiLangCodeBlock rnCodeBase64="Ly8gUmVhY3QgTmF0aXZlIChFeHBvIFNlY3VyZVN0b3JlKQppbXBvcnQgKiBhcyBTZWN1cmVTdG9yZSBmcm9tICdleHBvLXNlY3VyZS1zdG9yZSc7Cgphc3luYyBmdW5jdGlvbiBzYXZlVG9rZW4odG9rZW4pIHsKICBhd2FpdCBTZWN1cmVTdG9yZS5zZXRJdGVtQXN5bmMoJ2p3dF90b2tlbicsIHRva2VuKTsKfQoKYXN5bmMgZnVuY3Rpb24gZ2V0VG9rZW4oKSB7CiAgcmV0dXJuIGF3YWl0IFNlY3VyZVN0b3JlLmdldEl0ZW1Bc3luYygnand0X3Rva2VuJyk7Cn0=" flutterCodeBase64="Ly8gRmx1dHRlciAoZmx1dHRlcl9zZWN1cmVfc3RvcmFnZSkKaW1wb3J0ICdwYWNrYWdlOmZsdXR0ZXJfc2VjdXJlX3N0b3JhZ2UvZmx1dHRlcl9zZWN1cmVfc3RvcmFnZS5kYXJ0JzsKCmZpbmFsIHN0b3JhZ2UgPSBuZXcgRmx1dHRlclNlY3VyZVN0b3JhZ2UoKTsKCkZ1dHVyZTx2b2lkPiBzYXZlVG9rZW4oU3RyaW5nIHRva2VuKSBhc3luYyB7CiAgYXdhaXQgc3RvcmFnZS53cml0ZShrZXk6ICdqd3RfdG9rZW4nLCB2YWx1ZTogdG9rZW4pOwp9CgpGdXR1cmU8U3RyaW5nPz4gZ2V0VG9rZW4oKSBhc3luYyB7CiAgcmV0dXJuIGF3YWl0IHN0b3JhZ2UucmVhZChrZXk6ICdqd3RfdG9rZW4nKTsKfQ==" androidCodeBase64="Ly8gQW5kcm9pZCAoRW5jcnlwdGVkU2hhcmVkUHJlZmVyZW5jZXMpCnZhbCBtYXN0ZXJLZXkgPSBNYXN0ZXJLZXkuQnVpbGRlcihjb250ZXh0KQogICAgLnNldEtleVNjaGVtZShNYXN0ZXJLZXkuS2V5U2NoZW1lLkFFUzI1Nl9HQ00pCiAgICAuYnVpbGQoKQoKdmFsIHNoYXJlZFByZWZlcmVuY2VzID0gRW5jcnlwdGVkU2hhcmVkUHJlZmVyZW5jZXMuY3JlYXRlKAogICAgY29udGV4dCwKICAgICJzZWNyZXRfc2hhcmVkX3ByZWZzIiwKICAgIG1hc3RlcktleSwKICAgIEVuY3J5cHRlZFNoYXJlZFByZWZlcmVuY2VzLlByZWZLZXlFbmNyeXB0aW9uU2NoZW1lLkFFUzI1Nl9TSVYsCiAgICBFbmNyeXB0ZWRTaGFyZWRQcmVmZXJlbmNlcy5QcmVmVmFsdWVFbmNyeXB0aW9uU2NoZW1lLkFFUzI1Nl9HQ00KKQoKc2hhcmVkUHJlZmVyZW5jZXMuZWRpdCgpLnB1dFN0cmluZygiand0X3Rva2VuIiwgdG9rZW4pLmFwcGx5KCk=" />
+
+**Explanation:**  
+Each framework exposes access to the underlying OS hardware encryption APIs. Using these specific SecureStore APIs ensures that the JWT is encrypted at rest using AES-256 and is virtually impossible to extract, even if the device is rooted or stolen.
+
+## 7. Real-world Examples
+
+- **Banking Apps:** Often require FaceID/TouchID *before* they will decrypt the token stored in the Keychain.
+- **Spotify Offline Mode:** Downloads encrypted MP3s and stores metadata in a local SQLite database, allowing you to listen without internet.
+
+## 8. Best Practices
+
+- **Never use Async Storage for Secrets:** `AsyncStorage` in React Native and `SharedPreferences` in Android store data in plain text XML files. A rooted phone can read them instantly.
+- **Token Expiry:** Implement Refresh Tokens. The short-lived JWT expires every 15 minutes, and a Refresh Token fetches a new one seamlessly in the background.
+
+## 9. Common Mistakes
+
+- **Storing Passwords:** Storing the actual password on the device instead of a JWT.
+- **Not Clearing Data:** Failing to clear the Secure Storage and SQLite database when the user clicks "Log Out".
+
+## 10. Interview Questions
+
+<InterviewQuestion 
+  question="What is the difference between AsyncStorage and SecureStore?"
+  answer="AsyncStorage saves data in plaintext as XML/JSON files on the device. It is meant for non-sensitive data like user preferences. SecureStore uses hardware-level encryption (iOS Keychain / Android Keystore) to encrypt data before saving it, making it the only safe place for authentication tokens."
+  bestPractice="Treat anything in AsyncStorage as if the user can open it up and read it in a text editor."
+/>
+
+<InterviewQuestion 
+  question="How do you handle a scenario where the user's JWT has expired while they are actively using the app?"
+  answer="You should use an Axios interceptor (or similar network middleware). When the backend returns a 401 Unauthorized, the interceptor pauses the request, silently uses a Refresh Token to fetch a new JWT, saves it to Secure Storage, and then retries the original request without the user ever noticing."
+  commonFollowUp="What happens if the Refresh Token is also expired?"
+/>
+
+## 11. Knowledge Check
+
+<QuizWidget 
+  question="Where is the ONLY acceptable place to store an authentication token on a mobile device?"
+  options={["React State", "Redux Global Store", "SharedPreferences / AsyncStorage", "iOS Keychain / Android Keystore"]}
+  correctAnswer="iOS Keychain / Android Keystore"
+  explanation="The Keychain/Keystore uses hardware-backed encryption (often utilizing a Secure Enclave chip) to protect sensitive data from being extracted, even on a compromised device."
+  takeaway="Never store sensitive data in plaintext. The OS provides encrypted keystores for a reason—use them."
+/>
+
+## 12. Summary
+
+Handling authentication correctly separates juniors from seniors. Understanding the difference between plain-text local storage and encrypted hardware storage is vital to protecting your users' security.

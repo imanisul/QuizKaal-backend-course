@@ -1,172 +1,196 @@
 ---
 title: "GraphRAG & Knowledge Graphs"
-description: "Move beyond text chunks. Learn how Knowledge Graphs map complex relationships and how GraphRAG allows AI to answer multi-hop reasoning questions."
-phase: "Advanced RAG Architectures"
+description: "Use Neo4j and knowledge graphs for structured, relationship-aware retrieval."
+time: "60 min"
 difficulty: "expert"
+xp: 125
+phase: "Advanced RAG Architectures"
 ---
 
-## 1. Simple Explanation
-
-Standard RAG breaks documents into isolated chunks of text. It's like ripping the pages out of an encyclopedia and scattering them on the floor. If a user asks, *"How is Company A connected to Person B?"*, standard RAG might fail because the answer requires reading Page 10, Page 45, and Page 100 together.
-**Knowledge Graphs** don't store text chunks; they store relationships. (e.g., `[Company A] --OWNED_BY--> [Person B]`). 
-**GraphRAG** combines LLMs with Knowledge Graphs. The LLM traverses this web of relationships to answer complex, "multi-hop" questions that require connecting the dots across dozens of different documents.
-
-## 2. Why this technology exists
-
-As enterprises tried to use RAG for complex domains (like legal discovery, fraud detection, or medical research), they hit a wall. Standard Vector Databases are blind to relationships. If you search for "Symptoms of Disease X", you get text chunks. But if you ask, "Which doctors in New York treat patients with Disease X who also take Medication Y?", standard RAG completely collapses.
-Graph databases (like Neo4j) have existed for years to model these relationships. GraphRAG exists to bridge the semantic understanding of LLMs with the structured, relational power of graph databases.
-
-## 3. What problem it solves
-
-- **Multi-hop Reasoning:** Answering questions where A leads to B, and B leads to C.
-- **Global Context:** Standard RAG only understands the 3 paragraphs it retrieves. GraphRAG can summarize the entire dataset by traversing the graph.
-- **Explainability:** You can visually see the exact path the AI took to arrive at its answer (e.g., tracing a money-laundering network).
-
-## 4. Real-life analogy
-
-**Standard RAG is like using a Dictionary.**
-You look up "Apple", you get a definition. You look up "Steve Jobs", you get a definition. But the dictionary doesn't explicitly tell you the complex story connecting them.
-
-**GraphRAG is like a Detective's Evidence Board.**
-You have a corkboard with photos of suspects, locations, and bank accounts. You use red string to connect a suspect to a location, and a location to a bank account. By following the red string, you can answer the question: "How is Suspect A connected to Bank Account C?", even if they are never mentioned in the same file.
-
----
-
-## 5. Internal working
-
-<AnimatedWorkflow 
-  title="The GraphRAG Pipeline"
-  steps={[
-    { title: "Extract Entities", description: "LLM reads raw text and extracts Nodes (Person, Company) and Edges (Owns, Works_For).", icon: "🧠" },
-    { title: "Build Graph", description: "Data is inserted into a Graph Database (like Neo4j).", icon: "🕸️" },
-    { title: "Query Translation", description: "User asks a question in English. LLM translates it to a Cypher database query.", icon: "🗣️" },
-    { title: "Graph Traversal", description: "Neo4j follows the relationships and returns structured data.", icon: "🔍" },
-    { title: "Final Generation", description: "LLM reads the structured data and generates the final English answer.", icon: "✅" }
+<LearningObjectives
+  objectives={[
+    "Understand why flat vector retrieval fails for relationship-heavy queries",
+    "Learn how Knowledge Graphs represent entities and relationships",
+    "Implement GraphRAG using Neo4j and LangChain",
+    "Compare GraphRAG with Naive RAG for multi-hop reasoning"
   ]}
 />
 
----
+## Why Knowledge Graphs?
 
-## 6. Architecture & Data Flow
+Naive RAG treats documents as **isolated chunks**. It cannot answer questions that require understanding **relationships between entities**.
 
-<AnimatedWorkflow 
-  title="Multi-hop Reasoning Example"
-  steps={[
-    { title: "Question", description: "Who is the CEO of the company that owns WhatsApp?", icon: "❓" },
-    { title: "Hop 1", description: "Graph finds node [WhatsApp] --OWNED_BY--> [Meta].", icon: "🔗" },
-    { title: "Hop 2", description: "Graph finds node [Meta] --HAS_CEO--> [Mark Zuckerberg].", icon: "🔗" },
-    { title: "Retrieval", description: "Returns the path to the LLM.", icon: "📥" },
-    { title: "Answer", description: "LLM says: 'The CEO of Meta (which owns WhatsApp) is Mark Zuckerberg.'", icon: "✅" }
-  ]}
+| Query | Naive RAG | GraphRAG |
+|-------|-----------|----------|
+| "Who reports to the VP of Engineering?" | Retrieves random chunks mentioning "VP" | Traverses the org chart graph: VP → DirectReports |
+| "What products use the same database as Service X?" | Might find irrelevant mentions of databases | Follows edges: ServiceX → uses → PostgresDB ← uses → ServiceY |
+| "How are Alice and Bob connected?" | Finds chunks about Alice OR Bob separately | Traverses: Alice → manages → TeamAlpha ← memberOf → Bob |
+
+<AnalogyCard
+  title="The Social Network Analogy"
+  description="Imagine searching Facebook for 'friends of friends who work at Google.' A keyword search would just find anyone mentioning 'Google' and 'friends.' But Facebook's social graph can TRAVERSE relationships: You → Friends → Their Jobs → filter(Google). That's what GraphRAG does for documents — it builds a graph of entities and relationships, then traverses it to answer complex queries."
 />
 
-## 7. Step-by-step process explanation
+## What is a Knowledge Graph?
 
-Unlike Naive RAG where ingestion is just "chunk and embed", GraphRAG ingestion is computationally heavy:
-1. **Entity Extraction:** You pass your raw PDF to an LLM. You ask the LLM: *"Read this text. Extract all People, Organizations, and Locations, and how they relate to each other."*
-2. **Graph Construction:** The LLM outputs structured JSON. You insert this into Neo4j. (Node: `Elon Musk`) -> (Edge: `CEO_OF`) -> (Node: `Tesla`).
-3. **The User Query:** A user asks, "Which companies are related to Elon Musk?"
-4. **Cypher Generation:** The LLM translates the user's English into a graph query language (Cypher). `MATCH (p:Person {name: 'Elon Musk'})-[r]->(c:Company) RETURN c.name`
-5. **Execution:** Neo4j executes the query and returns the exact companies.
-6. **Synthesis:** The LLM turns the database result into a natural sounding sentence.
+A Knowledge Graph stores data as **nodes** (entities) and **edges** (relationships):
 
-## 8. Code examples
-
-**Generating a Cypher Query (Node.js & Neo4j):**
-```javascript
-import { ChatOpenAI } from "@langchain/openai";
-import { GraphCypherQAChain } from "langchain/chains";
-import { Neo4jGraph } from "@langchain/community/graphs/neo4j_graph";
-
-// 1. Connect to the Knowledge Graph
-const graph = await Neo4jGraph.initialize({
-  url: process.env.NEO4J_URI,
-  username: process.env.NEO4J_USERNAME,
-  password: process.env.NEO4J_PASSWORD,
-});
-
-// 2. Initialize the LLM
-const model = new ChatOpenAI({ modelName: "gpt-4", temperature: 0 });
-
-// 3. Create a chain that translates English to Cypher, executes it, and formats the answer
-const chain = GraphCypherQAChain.fromLLM({
-  llm: model,
-  graph: graph,
-});
-
-// 4. Ask a complex multi-hop question
-const response = await chain.invoke({
-  query: "Who are the directors of the movies that Tom Hanks acted in?",
-});
-
-console.log(response.text); 
-// Output: "Tom Hanks acted in Forrest Gump (directed by Robert Zemeckis) and..."
+```
+┌──────────┐    manages    ┌──────────┐
+│  Alice   │──────────────▶│  Team X  │
+│ (Person) │               │  (Team)  │
+└──────────┘               └──────────┘
+      │                          │
+      │ works_at            builds
+      ▼                          ▼
+┌──────────┐               ┌──────────┐
+│  Acme    │               │ Product  │
+│(Company) │               │   API    │
+└──────────┘               └──────────┘
 ```
 
-## 9. Common Use Cases
+## Neo4j: The Graph Database
 
-- **Fraud Detection:** Tracing complex webs of shell companies and transactions to find ultimate beneficial owners.
-- **Medical Research:** Connecting Genes to Proteins to Diseases across thousands of scientific papers.
-- **Supply Chain Analysis:** Understanding that if Factory A in China goes down, Part B is delayed, which means Product C cannot be manufactured.
+Neo4j stores data natively as a graph and queries it using **Cypher** — a pattern-matching query language.
 
-## 10. Best practices
+```cypher
+// Create nodes and relationships
+CREATE (alice:Person {name: "Alice", role: "Engineering Manager"})
+CREATE (bob:Person {name: "Bob", role: "Senior Engineer"})
+CREATE (teamX:Team {name: "Platform Team"})
 
-- **Ontology Design:** Don't just let the LLM invent relationships randomly (or you will end up with `WORKS_AT`, `EMPLOYED_BY`, `IS_STAFF_OF` which all mean the same thing). Define a strict Ontology (schema) beforehand and force the LLM to only use those predefined relationships during extraction.
-- **Graph + Vector (The Ultimate Combo):** Modern Neo4j supports Vector embeddings! You can find the starting node using Vector Semantic Search, and then traverse the Graph relationships from that node.
+CREATE (alice)-[:MANAGES]->(teamX)
+CREATE (bob)-[:MEMBER_OF]->(teamX)
+CREATE (teamX)-[:BUILDS]->(api:Service {name: "Payment API"})
 
-## 11. Common mistakes
+// Query: Who is on the team that builds the Payment API?
+MATCH (person:Person)-[:MEMBER_OF]->(team:Team)-[:BUILDS]->(s:Service)
+WHERE s.name = "Payment API"
+RETURN person.name, person.role
+```
 
-- **Using GraphRAG for everything:** Building a Knowledge Graph is incredibly expensive and slow (you have to run every single document through an LLM just to ingest it). If users are just asking "What is the refund policy?", Naive RAG is 100x cheaper and faster. Only use GraphRAG for highly relational data.
-- **Trusting the LLM to write perfect Cypher:** LLMs often hallucinate database schemas. You must provide the exact Graph Schema in the prompt when asking the LLM to generate the query, otherwise it will try to query tables/nodes that don't exist.
+## Building a GraphRAG Pipeline
 
-## 12. Performance tips
+### Step 1: Extract Entities from Documents
 
-- **Entity Disambiguation:** When ingesting data, the LLM might extract "Apple", "Apple Inc.", and "Apple Corporation" as three separate nodes. You must run a secondary clean-up process to merge these into a single node, or your graph queries will fail.
+Use an LLM to extract entities and relationships from unstructured text:
 
-## 13. Security considerations
+```javascript
+import { ChatOpenAI } from "@langchain/openai";
 
-- **Graph Injection:** If an attacker knows your LLM generates database queries, they might try to prompt-inject a `DELETE MATCH (n) DETACH DELETE n` command to wipe your entire database. Always execute LLM-generated queries using a read-only database user!
+const extractionPrompt = `
+Extract all entities and relationships from this text.
 
-## 14. Scalability & Deployment
+Return JSON:
+{
+  "entities": [
+    { "name": "...", "type": "Person|Company|Product|Technology" }
+  ],
+  "relationships": [
+    { "source": "...", "target": "...", "relation": "..." }
+  ]
+}
 
-- Microsoft recently released an open-source framework specifically called "GraphRAG". It automates the massive pipeline of extracting entities, building the graph, and creating hierarchical summaries. Running it on a large dataset requires massive LLM API usage, often costing hundreds of dollars just to index the data.
+Text: {text}
+`;
 
-## 15. Interview questions
+const model = new ChatOpenAI({ model: "gpt-4", temperature: 0 });
+const result = await model.invoke(extractionPrompt.replace("{text}", document));
+const graph = JSON.parse(result.content);
+```
 
-**Q: In standard RAG, what happens if the answer to a user's question is split across 5 different documents?**
-A: Standard RAG usually fails. The Vector Search will pull the top 3 chunks, which might only contain parts of the puzzle, leaving the LLM without the full context. GraphRAG solves this by linking the entities across all 5 documents explicitly in the database.
+### Step 2: Store in Neo4j
 
-**Q: What is a Node and what is an Edge in a Knowledge Graph?**
-A: A Node represents an entity (a Noun: Person, Place, Company). An Edge represents the relationship between nodes (a Verb: Owns, Works_For, Married_To). Edges can also have properties (e.g., `Married_To { since: 2010 }`).
+```javascript
+import neo4j from "neo4j-driver";
 
-## 16. MCQs
+const driver = neo4j.driver(
+  "bolt://localhost:7687",
+  neo4j.auth.basic("neo4j", "password")
+);
 
-1. Which database query language is most commonly generated by LLMs to traverse Knowledge Graphs in Neo4j?
-   - A) SQL
-   - B) MongoDB Aggregations
-   - C) Cypher
-   - D) GraphQL
-   **Answer: C**
+const session = driver.session();
 
-2. Why is the ingestion phase of GraphRAG significantly more expensive than Naive RAG?
-   - A) Because graph databases require expensive hardware.
-   - B) Because every single document must be processed by an LLM to extract entities and relationships, rather than just mathematically embedded.
-   - C) Because it requires a manual human review of every node.
-   - D) Because Cypher queries cost money per execution.
-   **Answer: B**
+// Insert extracted entities
+for (const entity of graph.entities) {
+  await session.run(
+    `MERGE (e:${entity.type} {name: $name})`,
+    { name: entity.name }
+  );
+}
 
-## 17. Assignments
+// Insert relationships
+for (const rel of graph.relationships) {
+  await session.run(
+    `MATCH (a {name: $source}), (b {name: $target})
+     MERGE (a)-[:${rel.relation}]->(b)`,
+    { source: rel.source, target: rel.target }
+  );
+}
+```
 
-**Design an Ontology:**
-1. Imagine you are building a Knowledge Graph for a University.
-2. List 5 types of Nodes you would need (e.g., `Student`, `Professor`).
-3. List 5 types of Edges connecting them (e.g., `ENROLLED_IN`, `TEACHES`).
-4. Write out a multi-hop path: `[Student] --ENROLLED_IN--> [Course] <--TEACHES-- [Professor]`. You just designed the schema for an educational GraphRAG system!
+### Step 3: Query with Graph Traversal + LLM
 
-## 18. Summary
+```javascript
+async function graphRAG(question) {
+  // 1. Use LLM to generate a Cypher query
+  const cypherPrompt = `
+    Given this question, write a Neo4j Cypher query to find the answer.
+    Schema: (Person)-[:MANAGES]->(Team)-[:BUILDS]->(Service)
+    Question: ${question}
+  `;
+  
+  const cypher = await model.invoke(cypherPrompt);
+  
+  // 2. Execute the Cypher query
+  const result = await session.run(cypher.content);
+  
+  // 3. Pass the graph results as context to the LLM
+  const answerPrompt = `
+    Based on this graph data, answer the question.
+    Graph data: ${JSON.stringify(result.records)}
+    Question: ${question}
+  `;
+  
+  return await model.invoke(answerPrompt);
+}
 
-GraphRAG represents the cutting edge of enterprise AI. By transforming flat text into interconnected webs of knowledge, AI systems can finally answer the complex, multi-layered questions that define real-world business and research, moving from simple document retrieval to genuine deductive reasoning.
+const answer = await graphRAG("Which teams use PostgreSQL?");
+```
 
-## 19. Next lesson progression
+## GraphRAG vs Naive RAG
 
-GraphRAG is powerful, but what if the LLM retrieves the wrong nodes? What if the retrieved data is outdated? We need a system that can *reflect* on its own retrieval and correct its mistakes. Next, we explore **Corrective RAG (CRAG) & Self-RAG**.
+| Feature | Naive RAG | GraphRAG |
+|---------|-----------|----------|
+| **Data Structure** | Flat chunks in a vector store | Entities + relationships in a graph |
+| **Query Type** | Single-hop semantic similarity | Multi-hop relationship traversal |
+| **Best For** | "What is X?" questions | "How is X related to Y?" questions |
+| **Setup Complexity** | Low | High (requires entity extraction + graph DB) |
+| **Maintenance** | Re-embed on doc changes | Re-extract entities on doc changes |
+
+<InterviewPrep
+  questions={[
+    {
+      question: "When would you choose GraphRAG over standard vector-based RAG?",
+      answer: "I'd choose GraphRAG when the queries require multi-hop reasoning over relationships — for example, organizational hierarchies ('Who reports to the CTO?'), dependency tracking ('What services depend on this database?'), or compliance auditing ('Which policies apply to this team's products?'). If the queries are primarily 'What is X?' or 'Explain Y', standard vector RAG is simpler and sufficient. I'd also consider a hybrid approach: use vector RAG for semantic search and GraphRAG for relationship queries, combining both result sets.",
+      difficulty: "expert",
+      commonMistake: "Recommending GraphRAG for everything. It adds significant complexity (entity extraction, graph maintenance) and is only justified when relationship-aware retrieval is needed."
+    },
+    {
+      question: "How do you handle entity extraction errors when building a Knowledge Graph from unstructured text?",
+      answer: "Entity extraction is never 100% accurate. I mitigate this with: (1) Using GPT-4 with structured output (JSON mode) and clear entity type definitions. (2) Running extraction twice and taking the intersection (entities found both times are higher confidence). (3) Using MERGE instead of CREATE in Neo4j to avoid duplicate nodes. (4) Implementing a human-in-the-loop review for critical entities. (5) Adding confidence scores to extracted entities and filtering low-confidence ones at query time.",
+      difficulty: "expert",
+      commonMistake: "Assuming LLM extraction is perfect and not building in any error handling or deduplication."
+    }
+  ]}
+/>
+
+<LessonSummary
+  keyPoints={[
+    "Knowledge Graphs store entities as nodes and relationships as edges",
+    "GraphRAG excels at multi-hop, relationship-aware queries that Naive RAG cannot answer",
+    "Neo4j uses Cypher query language for graph traversal",
+    "The pipeline: Extract entities from docs → Store in graph DB → Query with Cypher + LLM",
+    "Use GraphRAG for relationship queries; stick with vector RAG for semantic similarity queries"
+  ]}
+/>

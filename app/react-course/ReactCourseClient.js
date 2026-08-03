@@ -6,39 +6,34 @@ import Link from "next/link";
 import { 
   BookOpen, Code, Play, CheckCircle, Circle, ArrowRight,
   Monitor, Layout, GitBranch, Cpu, Database, Zap, Layers, RefreshCw,
-  Home, ChevronLeft, Menu, X
+  Home, ChevronLeft, Menu, X, Lightbulb, Globe, AlertTriangle, ShieldCheck, FileText, FastForward
 } from "lucide-react";
 
 import { curriculum } from "@/data/reactCourseData";
 import AnimatedVisual from "@/components/react-course/AnimatedVisuals";
+import CourseHeader from '@/components/ui/CourseHeader';
 import BeforeAfterAnimation from "@/components/react-course/BeforeAfterAnimation";
 import InterviewQuestionsList from "@/components/react-course/InterviewQuestionsList";
+import { progressEngine, useProgress as useGlobalProgress } from "@/utils/progressEngine";
 
 export default function ReactCoursePage() {
-  const [progress, setProgress] = useState({});
   const [mounted, setMounted] = useState(false);
   const [activeChapter, setActiveChapter] = useState("ch1");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Load progress on mount
+  const globalState = useGlobalProgress();
+
+  const allChapterIds = curriculum.flatMap(g => g.chapters.map(ch => ch.id));
+
+  // Derive progress from the global engine
+  const progress = {};
+  allChapterIds.forEach(id => {
+    progress[id] = progressEngine.isCompleted(id) ? 'Completed' : 'Not Started';
+  });
+
   useEffect(() => {
     setMounted(true);
-    const saved = localStorage.getItem("react-course-progress");
-    if (saved) {
-      setProgress(JSON.parse(saved));
-    } else {
-      const initial = {};
-      curriculum.forEach(group => group.chapters.forEach(ch => initial[ch.id] = "Not Started"));
-      setProgress(initial);
-    }
   }, []);
-
-  // Save progress
-  useEffect(() => {
-    if (Object.keys(progress).length > 0) {
-      localStorage.setItem("react-course-progress", JSON.stringify(progress));
-    }
-  }, [progress]);
 
   // Setup scroll listener to highlight active chapter
   useEffect(() => {
@@ -66,24 +61,22 @@ export default function ReactCoursePage() {
   const progressPercent = totalChapters === 0 ? 0 : Math.round((completedChapters / totalChapters) * 100);
 
   const toggleProgress = (id) => {
-    setProgress(prev => {
-      const curr = prev[id];
-      const nextStatus = curr === "Completed" ? "Not Started" : "Completed";
+    const isCurrentlyCompleted = progressEngine.isCompleted(id);
+    
+    if (!isCurrentlyCompleted) {
+      progressEngine.markComplete(id, 'react-course', 50);
       
-      // Auto-unlock/scroll to next chapter when completed
-      if (nextStatus === "Completed") {
-        const allChapters = curriculum.flatMap(g => g.chapters);
-        const idx = allChapters.findIndex(c => c.id === id);
-        if (idx !== -1 && idx < allChapters.length - 1) {
-          const nextChapterId = allChapters[idx + 1].id;
-          setTimeout(() => {
-            scrollToChapter(nextChapterId);
-          }, 400); // short delay so user sees the success state first
-        }
+      // Auto-scroll to next chapter
+      const allChapters = curriculum.flatMap(g => g.chapters);
+      const idx = allChapters.findIndex(c => c.id === id);
+      if (idx !== -1 && idx < allChapters.length - 1) {
+        const nextChapterId = allChapters[idx + 1].id;
+        setTimeout(() => {
+          scrollToChapter(nextChapterId);
+        }, 400);
       }
-
-      return { ...prev, [id]: nextStatus };
-    });
+    }
+    // Note: We no longer allow un-completing a lesson (one-way progress)
   };
 
   const scrollToChapter = (id) => {
@@ -152,7 +145,7 @@ export default function ReactCoursePage() {
       <div className="flex-1 flex max-w-7xl w-full mx-auto relative">
         
         {/* Sticky Sidebar */}
-        <aside className="w-80 hidden lg:block shrink-0 border-r border-borderStrong h-[calc(100vh-6rem)] sticky top-[4rem] overflow-y-auto custom-scrollbar p-6">
+        <aside className="w-80 hidden lg:block shrink-0 border-r border-borderStrong global-sticky-sidebar overflow-y-auto custom-scrollbar p-6">
           <nav className="space-y-10">
             {curriculum.map((group) => (
               <div key={group.level}>
@@ -269,29 +262,34 @@ export default function ReactCoursePage() {
         )}
 
         {/* Main Content Area */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-12 lg:pl-20 pb-40 max-w-full overflow-hidden">
+        <main className="flex-1 global-page-pt p-4 sm:p-6 lg:p-12 lg:pl-20 pb-40 max-w-full overflow-hidden">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="max-w-3xl mx-auto space-y-24 sm:space-y-32"
           >
-            {/* Intro Section */}
-            <section className="text-center py-16">
-              <motion.div 
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.7, type: "spring", bounce: 0.5 }}
-                className="inline-flex items-center justify-center p-5 rounded-3xl bg-primaryDim text-primary mb-8 shadow-inner"
-              >
-                <Code size={56} strokeWidth={1.5} />
-              </motion.div>
-              <h1 className="text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight mb-6 bg-gradient-to-br from-white via-gray-200 to-gray-500 bg-clip-text text-transparent">
-                React Mastery
-              </h1>
-              <p className="text-lg sm:text-xl text-textSecondary max-w-2xl mx-auto leading-relaxed px-4">
-                A complete, self-contained interactive learning module. Master modern React with guided concepts, mental models, and hands-on mini projects.
-              </p>
-            </section>
+            {/* Unified Course Header */}
+            <div className="pt-8">
+              <CourseHeader 
+                title="React Mastery"
+                description="A complete, self-contained interactive learning module. Master modern React with guided concepts, mental models, and hands-on mini projects."
+                icon={Code}
+                completedCount={completedChapters}
+                totalLessons={totalChapters}
+                nextLessonTitle={
+                  curriculum
+                    .flatMap(g => g.chapters)
+                    .find(ch => progress[ch.id] !== "Completed")?.title || "Course Complete"
+                }
+                nextLessonPath={
+                  "#" + (curriculum
+                    .flatMap(g => g.chapters)
+                    .find(ch => progress[ch.id] !== "Completed")?.id || "")
+                }
+                themeColor="from-[#61DAFB] to-[#00B4D8]"
+                bgGlow="from-[#61DAFB]/20 to-[#00B4D8]/20"
+              />
+            </div>
 
             {/* Render Chapter Placeholders */}
             {curriculum.map(group => 
@@ -339,6 +337,47 @@ export default function ReactCoursePage() {
                             AfterComp={chapter.beforeAfter.AfterComp}
                           />
                         )}
+
+                        {/* Extended Educational Content Grid */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10 mt-6">
+                          {chapter.whyItExists && (
+                            <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-primary/50 transition-colors">
+                              <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
+                                <div className="p-2 bg-primaryDim text-primary rounded-lg"><Lightbulb size={18}/></div>
+                                Why This Exists
+                              </h4>
+                              <p className="text-sm leading-relaxed text-textSecondary">{chapter.whyItExists}</p>
+                            </div>
+                          )}
+                          {chapter.realWorld && (
+                            <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-indigo-500/50 transition-colors">
+                              <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
+                                <div className="p-2 bg-indigo-500/20 text-indigo-400 rounded-lg"><Globe size={18}/></div>
+                                How Companies Use It
+                              </h4>
+                              <p className="text-sm leading-relaxed text-textSecondary">{chapter.realWorld}</p>
+                            </div>
+                          )}
+                          {chapter.commonMistakes && (
+                            <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-rose-500/50 transition-colors">
+                              <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
+                                <div className="p-2 bg-rose-500/20 text-rose-400 rounded-lg"><AlertTriangle size={18}/></div>
+                                Common Mistakes
+                              </h4>
+                              <p className="text-sm leading-relaxed text-textSecondary">{chapter.commonMistakes}</p>
+                            </div>
+                          )}
+                          {chapter.performanceSecurity && (
+                            <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-emerald-500/50 transition-colors">
+                              <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
+                                <div className="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg"><ShieldCheck size={18}/></div>
+                                Performance & Security
+                              </h4>
+                              <p className="text-sm leading-relaxed text-textSecondary">{chapter.performanceSecurity}</p>
+                            </div>
+                          )}
+                        </div>
+
                         
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10 mt-6">
                           {/* Internals */}
@@ -437,8 +476,31 @@ export default function ReactCoursePage() {
                         </div>
                       </>
                     )}
+                        {/* Summary and Next Lesson */}
+                        {(chapter.summary || chapter.nextLesson) && (
+                          <div className="mt-8 space-y-4 relative z-10">
+                            {chapter.summary && (
+                              <div className="p-5 bg-primary/5 rounded-xl border border-primary/20 flex gap-4 items-start">
+                                <div className="p-2 bg-primary/20 text-primary rounded-lg shrink-0 mt-0.5"><FileText size={16}/></div>
+                                <div>
+                                  <h4 className="font-bold text-white mb-1 text-sm">Summary</h4>
+                                  <p className="text-sm text-textSecondary leading-relaxed">{chapter.summary}</p>
+                                </div>
+                              </div>
+                            )}
+                            {chapter.nextLesson && (
+                              <div className="p-5 bg-secondary/5 rounded-xl border border-secondary/20 flex gap-4 items-start">
+                                <div className="p-2 bg-secondary/20 text-secondary rounded-lg shrink-0 mt-0.5"><FastForward size={16}/></div>
+                                <div>
+                                  <h4 className="font-bold text-white mb-1 text-sm">Up Next</h4>
+                                  <p className="text-sm text-textSecondary leading-relaxed">{chapter.nextLesson}</p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
 
-                    <div className="mt-10 flex flex-col sm:flex-row justify-start items-center gap-4 border-t border-borderStrong pt-8 relative z-10">
+                        <div className="mt-10 flex flex-col sm:flex-row justify-start items-center gap-4 border-t border-borderStrong pt-8 relative z-10">
                       <button 
                         onClick={() => toggleProgress(chapter.id)}
                         className={`px-8 py-3.5 rounded-xl font-bold transition-all duration-300 flex items-center gap-2 ${

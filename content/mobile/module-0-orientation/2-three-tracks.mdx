@@ -1,0 +1,88 @@
+# The Three Tracks
+
+In this course, we teach three distinct paths to mobile engineering. You don't have to learn all three simultaneously, but understanding the differences makes you a Senior Mobile Engineer.
+
+## 1. Introduction
+
+When building a mobile application, companies must decide their technical stack. Do they write code twice (once for iOS, once for Android) using Native tools? Or do they write it once using Cross-Platform frameworks like React Native or Flutter? 
+
+## 2. Why this concept exists
+
+Cross-platform frameworks save time and money, but Native development offers maximum performance and immediate access to new OS features. Understanding the trade-offs is a critical architecture decision.
+
+## 3. Visual Explanation
+
+<ConceptCard 
+  title="The Compilation Bridge" 
+  description="Native code speaks directly to the OS. React Native uses a JavaScript Bridge (or JSI) to communicate with Native modules. Flutter draws its own pixels using a C++ rendering engine (Skia/Impeller) bypassing native OEM widgets entirely."
+/>
+
+## 4. Internal Working: Rendering
+
+- **Native (Kotlin/Swift):** Directly creates OS-level buttons (`android.widget.Button` or `UIButton`).
+- **React Native:** JavaScript tells the OS to create native buttons over a bridge. The UI *looks* 100% native.
+- **Flutter:** Does *not* use native buttons. It draws every pixel on a blank canvas (like a video game engine).
+
+## 5. Interactive Animation: UI Rendering Mockup
+
+Let's look at how a basic login flow looks. Regardless of the framework you choose, the end result to the user should feel indistinguishable.
+
+<InteractivePhoneMockup 
+  scenario="login"
+  title="Cross-Platform Output"
+/>
+
+## 6. Code Examples
+
+Here is how you render a "Hello World" text box across the three tracks:
+
+<MultiLangCodeBlock rnCodeBase64="aW1wb3J0IHsgVGV4dCwgVmlldyB9IGZyb20gJ3JlYWN0LW5hdGl2ZSc7CgpleHBvcnQgZGVmYXVsdCBmdW5jdGlvbiBBcHAoKSB7CiAgcmV0dXJuICgKICAgIDxWaWV3IHN0eWxlPXt7IGZsZXg6IDEsIGp1c3RpZnlDb250ZW50OiAnY2VudGVyJyB9fT4KICAgICAgPFRleHQ+SGVsbG8gV29ybGQ8L1RleHQ+CiAgICA8L1ZpZXc+CiAgKTsKfQ==" flutterCodeBase64="aW1wb3J0ICdwYWNrYWdlOmZsdXR0ZXIvbWF0ZXJpYWwuZGFydCc7Cgp2b2lkIG1haW4oKSA9PiBydW5BcHAoCiAgTWF0ZXJpYWxBcHAoCiAgICBob21lOiBTY2FmZm9sZCgKICAgICAgYm9keTogQ2VudGVyKAogICAgICAgIGNoaWxkOiBUZXh0KCdIZWxsbyBXb3JsZCcpLAogICAgICApLAogICAgKSwKICApLAopOw==" androidCodeBase64="Y2xhc3MgTWFpbkFjdGl2aXR5IDogQ29tcG9uZW50QWN0aXZpdHkoKSB7CiAgICBvdmVycmlkZSBmdW4gb25DcmVhdGUoc2F2ZWRJbnN0YW5jZVN0YXRlOiBCdW5kbGU/KSB7CiAgICAgICAgc3VwZXIub25DcmVhdGUoc2F2ZWRJbnN0YW5jZVN0YXRlKQogICAgICAgIHNldENvbnRlbnQgewogICAgICAgICAgICBCb3goY29udGVudEFsaWdubWVudCA9IEFsaWdubWVudC5DZW50ZXIpIHsKICAgICAgICAgICAgICAgIFRleHQoIkhlbGxvIFdvcmxkIikKICAgICAgICAgICAgfQogICAgICAgIH0KICAgIH0KfQ==" />
+
+**Explanation:**  
+Each framework has a different paradigm for declaring UI. React Native uses JSX elements that map to native views. Flutter uses a massive nested tree of Dart `Widget` classes. Android uses Jetpack Compose to declaratively build native UI.
+
+## 7. Real-world Examples
+
+- **Native:** Lyft, WhatsApp. They require extreme optimization and deep hardware integration.
+- **React Native:** Instagram, Discord, Coinbase. They have massive web engineering teams that they transitioned to mobile.
+- **Flutter:** Google Pay, Alibaba, BMW. They wanted pixel-perfect custom UI designs that look identical on both platforms.
+
+## 8. Best Practices
+
+- **Specialize first:** Pick a primary track. Do not try to learn React Native, Flutter, and Android perfectly at the exact same time. 
+- **Leverage Web Skills:** If you know React/Web, start with **React Native**.
+- **Leverage OOP Skills:** If you love Object-Oriented Programming (Java/C#), start with **Android (Kotlin)** or **Flutter (Dart)**.
+
+## 9. Common Mistakes
+
+- **Assuming 100% cross-platform:** Believing cross-platform means you don't need to know native code. *Eventually, you will always have to write native code for complex features.*
+- **Premature Optimization:** Starting a massive production app without understanding the limitations of the chosen framework.
+
+## 10. Interview Questions
+
+<InterviewQuestion 
+  question="Why might a company choose Flutter over React Native for a new project?"
+  answer="A company might choose Flutter if they want highly customized, pixel-perfect UIs that look completely identical on both iOS and Android. Because Flutter renders its own pixels, it doesn't suffer from OEM widget inconsistencies across different OS versions."
+  bestPractice="Evaluate your team's existing skill set. If you have 50 web developers, React Native is much faster to adopt than Flutter."
+  commonFollowUp="What are the downsides of Flutter's rendering approach?"
+/>
+
+<InterviewQuestion 
+  question="Explain the architectural differences between React Native's bridge and Flutter's Skia engine."
+  answer="React Native uses a bridge to serialize messages between the JavaScript thread and the Native UI thread, telling the OS to render native buttons. Flutter avoids native OEM buttons entirely and instead uses the Skia (or Impeller) C++ engine to draw raw pixels directly onto the screen, much like a game engine."
+  commonFollowUp="How does React Native's new JSI (JavaScript Interface) change this?"
+/>
+
+## 11. Knowledge Check
+
+<QuizWidget 
+  question="Which framework draws its own pixels using a 2D rendering engine instead of using the OEM's native UI components?"
+  options={["React Native", "Native Android", "Flutter", "Ionic"]}
+  correctAnswer="Flutter"
+  explanation="Flutter ships with the Skia/Impeller engine which draws every pixel itself, bypassing iOS and Android native buttons."
+  takeaway="Flutter trades native OEM widget access for guaranteed visual consistency across all platforms."
+/>
+
+## 12. Summary
+
+There is no "best" framework. Each tool has trade-offs regarding development speed, performance, and hardware access. By the end of this course, you will be able to confidently build apps in any of them.

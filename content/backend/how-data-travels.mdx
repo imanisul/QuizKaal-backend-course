@@ -1,0 +1,141 @@
+---
+title: "How Data Travels"
+description: "Understand packets, routers, and the physical journey of data across the globe."
+phase: "Internet & How It Works"
+time: "20 min"
+difficulty: "beginner"
+xp: 50
+---
+
+<LearningObjectives 
+  objectives={[
+    "Understand the concept of Packet Switching and data fragmentation.",
+    "Learn the structure of a packet (Header and Payload).",
+    "Identify the role of Routers in directing traffic.",
+    "Comprehend how missing or out-of-order packets are handled."
+  ]}
+/>
+
+## 1. The Journey of a Byte
+
+<ConceptBlock type="idea" title="Overview">
+  When you download a 5MB song, it doesn't travel through the internet as one giant 5MB file. It is shredded into thousands of tiny pieces, sent individually across the globe, and reassembled on your device.
+</ConceptBlock>
+
+The internet relies on **Packet Switching**. Instead of keeping a dedicated line open between two computers, data is chopped up into small chunks called **Packets** (typically around 1500 bytes each).
+
+<AnalogyCard title="Mailing a Bicycle">
+  Imagine trying to mail a bicycle to your friend, but the post office only accepts small envelopes. You would have to disassemble the bike, put each piece in a separate envelope, number them (1 of 50, 2 of 50, etc.), and mail them all. They might arrive on different days, but your friend can use the numbers to rebuild it.
+</AnalogyCard>
+
+---
+
+## 2. Interactive Packet Visualizer
+
+Let's see this in action. The interactive visualization below simulates sending an image over the network, breaking it down into separate sequence numbers (`SEQ:1`, `SEQ:2`, etc.).
+
+<PacketFlowVisualizer />
+
+<WarningCard title="Packets Take Different Routes!">
+  Do not assume packets all travel the exact same path. Packet #1 and Packet #2 might take entirely different routes to reach the destination depending on network traffic, which is why they often arrive out of order!
+</WarningCard>
+
+---
+
+## 3. The Role of Routers
+
+If packets are envelopes, **Routers** are the post offices.
+
+When a packet leaves your laptop, it goes to your home Wi-Fi router. That router looks at the "Destination IP" on the packet and says: *"I don't know where this specific computer is, but I know it's in Europe. Let me pass this to a bigger router that handles transatlantic traffic."*
+
+This process (called "routing") happens over and over again, bouncing the packet through 10-20 different routers across the world until it reaches its final destination.
+
+---
+
+## 4. Node.js Implementation: Data Chunks
+
+In Node.js, we don't usually deal with raw network "packets" directly (the OS handles that). However, we deal with the exact same concept using **Streams** and **Buffers** (chunks of data). 
+
+When a user uploads a large file to your Node.js server, Node.js doesn't wait for the entire file to arrive. It processes it in small "chunks"—just like packets!
+
+<CodeTabs>
+  <div label="uploadServer.js">
+    ```javascript
+    const http = require('http');
+    const fs = require('fs');
+
+    const server = http.createServer((req, res) => {
+      if (req.method === 'POST') {
+        let chunkCount = 0;
+        
+        // As packets (chunks) arrive over the network, this event fires
+        req.on('data', (chunk) => {
+          chunkCount++;
+          console.log(`📦 Received chunk ${chunkCount}: ${chunk.length} bytes`);
+        });
+
+        // When all packets have arrived and been reassembled
+        req.on('end', () => {
+          console.log('✅ File transfer complete!');
+          res.writeHead(200);
+          res.end('Upload successful!');
+        });
+      }
+    });
+
+    server.listen(3000, () => console.log('Listening on port 3000...'));
+    ```
+  </div>
+</CodeTabs>
+
+<ConceptBlock type="tip" title="Why is this important?">
+  Because data travels in chunks, your Node.js server can start processing a 5GB video upload instantly (e.g., streaming it to AWS S3) without needing 5GB of RAM to hold the entire file in memory first!
+</ConceptBlock>
+
+---
+
+## 5. Real World Practice
+
+<PracticeExercise title="Trace a Route to Netflix">
+  Let's trace the physical path your data takes to reach a popular website. Run the following command in your terminal and count the number of "hops" (routers) it takes for your data to reach Netflix's servers.
+</PracticeExercise>
+
+<CodeTabs>
+  <div label="Mac / Linux">
+    ```bash
+    traceroute netflix.com
+    ```
+  </div>
+  <div label="Windows">
+    ```cmd
+    tracert netflix.com
+    ```
+  </div>
+</CodeTabs>
+
+
+---
+
+## 7. Knowledge Check
+
+<Quiz 
+  question="If Packet A and Packet B are sent to the same destination at the same time, will they take the exact same route?"
+  options={[
+    "Yes, the route is locked in before the transfer begins.",
+    "No, they might take different routes depending on network congestion.",
+    "Yes, packets are always tethered together."
+  ]}
+  correctAnswerIndex={1}
+  explanation="Packet switching allows dynamic routing. If a router detects that one path is congested or a cable is cut, it can send subsequent packets through a different route. This is why packets often arrive out of order!"
+/>
+
+<LessonSummary 
+  takeaways={[
+    "Data travels the internet by being chopped into tiny packets.",
+    "Each packet contains a Header (with destination address/sequence number) and a Payload.",
+    "Routers act as post offices, directing packets closer to their destination.",
+    "Packets often arrive out of order and must be reassembled by the receiver."
+  ]}
+  nextLessonTitle="Client vs Server"
+  nextLessonUrl="/lessons/client-vs-server"
+/>

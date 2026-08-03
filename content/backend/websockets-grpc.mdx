@@ -96,12 +96,7 @@ wss.on('connection', function connection(ws) {
 - **WSS instead of WS:** Just like HTTP has HTTPS, WebSockets have `wss://`. Never use `ws://` in production, or the real-time data will be sent in plain text.
 - **Cross-Site WebSocket Hijacking (CSWSH):** WebSockets do not strictly enforce CORS. You must explicitly verify the `Origin` header during the initial upgrade handshake to ensure a malicious website isn't silently connecting to your server.
 
-## 15. Interview questions
 
-1. **"What is the difference between WebSockets and Server-Sent Events (SSE)?"**
-   *Answer:* WebSockets are bi-directional (client and server can both send data). SSE is strictly uni-directional (only the server can push data to the client, like a live news feed).
-2. **"Why is gRPC faster than REST?"**
-   *Answer:* gRPC uses HTTP/2 (allowing multiplexing) and Protocol Buffers (a binary format that is much smaller and faster to parse than text-based JSON).
 
 ## 16. Quiz
 

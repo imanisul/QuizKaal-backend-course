@@ -1,0 +1,87 @@
+# Specialization & Interview Prep
+
+You understand the fundamentals. Now, what does it take to get hired as a Senior Mobile Engineer?
+
+## 1. Introduction
+
+The mobile engineering landscape is vast. No one knows everything. Senior engineers specialize in specific domains while maintaining a broad understanding of the rest of the stack.
+
+## 2. Why this concept exists
+
+Companies do not hire "generic programmers" for senior roles. They hire experts to solve specific problems. A FinTech app needs a Security specialist. A 3D game needs a Graphics specialist.
+
+## 3. Visual Explanation
+
+<ConceptCard 
+  title="The T-Shaped Engineer" 
+  description="You should have a broad understanding of the entire mobile stack (the horizontal bar), but you must have deep, specialized knowledge in at least one specific area like animations, networking, or CI/CD (the vertical bar)."
+/>
+
+## 4. Internal Working: Specializations
+
+Here are common specializations in Mobile Engineering:
+- **UI/UX & Animations:** Creating complex, 120fps gesture-driven animations (e.g., Tinder swipe, Snapchat camera).
+- **Core Architecture & CI/CD:** Designing the multi-module code structure and managing the Fastlane/Jenkins deployment pipelines.
+- **Offline & Sync:** Managing complex local databases (SQLite/Realm) and syncing massive amounts of data in the background (e.g., Spotify, Netflix).
+
+## 5. Interactive Animation: System Design
+
+When you interview for a Senior role, you won't be asked to center a button. You will be asked to architect a system.
+
+<NetworkFlowDiagram />
+
+## 6. Code Examples: The Specialized Details
+
+While junior developers use high-level components, senior engineers dig into the specialized architecture underneath. For example, rendering 100,000 items requires specialized knowledge in each framework:
+
+<MultiLangCodeBlock rnCodeBase64="Ly8gUmVhY3QgTmF0aXZlOiBVSSBUaHJlYWQgT3B0aW1pemF0aW9uCi8vIEEgc2VuaW9yIFJOIGVuZ2luZWVyIGtub3dzIHRvIHVzZSAnaW5pdGlhbE51bVRvUmVuZGVyJyAKLy8gYW5kICd3aW5kb3dTaXplJyB0byBwcmV2ZW50IEpTIEJyaWRnZSBib3R0bGVuZWNrcy4KPEZsYXRMaXN0CiAgZGF0YT17bWFzc2l2ZURhdGFzZXR9CiAgaW5pdGlhbE51bVRvUmVuZGVyPXsxMH0KICB3aW5kb3dTaXplPXs1fQogIHJlbW92ZUNsaXBwZWRTdWJ2aWV3cz17dHJ1ZX0KICByZW5kZXJJdGVtPXsoeyBpdGVtIH0pID0+IDxIaWdobHlPcHRpbWl6ZWRSb3cgaXRlbT17aXRlbX0gLz59Ci8+" flutterCodeBase64="Ly8gRmx1dHRlcjogU2tpYSBDYW52YXMgT3B0aW1pemF0aW9uCi8vIEEgc2VuaW9yIEZsdXR0ZXIgZW5naW5lZXIga25vd3MgdG8gdXNlICdjb25zdCcgCi8vIHRvIHByZXZlbnQgdGhlIHJlbmRlcmluZyBlbmdpbmUgZnJvbSByZXBhaW50aW5nIHRoZSB3aWRnZXQuCkxpc3RWaWV3LmJ1aWxkZXIoCiAgaXRlbUNvdW50OiBtYXNzaXZlRGF0YXNldC5sZW5ndGgsCiAgaXRlbUJ1aWxkZXI6IChjb250ZXh0LCBpbmRleCkgewogICAgcmV0dXJuIGNvbnN0IEhpZ2hseU9wdGltaXplZFJvdygpOyAvLyBDT05TVCBpcyBjcml0aWNhbCBoZXJlCiAgfQop" androidCodeBase64="Ly8gQW5kcm9pZDogQ29tcG9zZSBNZW1vcnkgTWFuYWdlbWVudAovLyBBIHNlbmlvciBOYXRpdmUgZW5naW5lZXIga25vd3MgdG8gdXNlICdrZXknIGluIExhenlDb2x1bW4KLy8gc28gdGhlIGNvbXBpbGVyIGNhbiBlZmZpY2llbnRseSByZWN5Y2xlIHZpZXdzLgpMYXp5Q29sdW1uIHsKICAgIGl0ZW1zKAogICAgICAgIGl0ZW1zID0gbWFzc2l2ZURhdGFzZXQsCiAgICAgICAga2V5ID0geyBpdGVtIC0+IGl0ZW0udW5pcXVlSWQgfSAvLyBQcmV2ZW50cyByZWFsbG9jYXRpb24KICAgICkgeyBpdGVtIC0+CiAgICAgICAgSGlnaGx5T3B0aW1pemVkUm93KGl0ZW0pCiAgICB9Cn0=" />
+
+**Explanation:**  
+Each framework has advanced APIs to manage memory and performance. Specialization means knowing exactly which props, keywords, or architectural patterns prevent the app from dropping frames when pushed to its limits.
+
+## 7. Real-world Examples
+
+- In massive companies like Facebook or Uber, there are engineers whose *entire job* is simply reducing the app startup time by 0.2 seconds. They don't build UI; they profile C++ memory heaps all day.
+
+## 8. Best Practices for Interviews
+
+- **Think out loud:** When given a system design problem (e.g. "Design WhatsApp"), talk through your decisions. "I would choose a WebSocket for real-time messaging, and SQLite for local caching."
+- **Mention edge cases:** A junior engineer says, "I will fetch the data." A senior engineer says, "I will fetch the data, but if the user goes through a tunnel and the network drops, I will catch the timeout and show a cached UI."
+
+## 9. Common Mistakes
+
+- **Trying to learn everything:** You do not need to be an expert in React Native, Flutter, Kotlin, Swift, and C++. Pick one track and master it deeply.
+- **Ignoring the backend:** You must understand how REST APIs and databases work to be an effective mobile engineer.
+
+## 10. Interview Questions
+
+<InterviewQuestion 
+  question="Design Instagram's offline feed architecture."
+  answer="When the app is online, fetch the latest JSON from the API and instantly save it to a local SQLite database using an ORM like Room or WatermelonDB. Bind the UI solely to the local database via reactive observers. When the app goes offline, the UI simply continues to read from the local database, completely unaware that the network died."
+  bestPractice="This is called the 'Offline-First' pattern. The network syncs the database, and the database drives the UI."
+/>
+
+<InterviewQuestion 
+  question="How do you handle a scenario where an API request fails?"
+  answer="First, wrap the fetch in a try/catch. If it catches an error, check the error type. If it's a 401 Unauthorized, trigger a token refresh. If it's a 500 Server Error or Network Timeout, update the local state to show a friendly Error UI component to the user with a 'Tap to Retry' button, rather than failing silently or crashing."
+/>
+
+<InterviewQuestion 
+  question="Describe a time you found a memory leak in a mobile app and how you fixed it."
+  answer="(Example) We noticed the app crashed with an OutOfMemoryError after navigating through the feed 50 times. Using Xcode Instruments (or Android Profiler), I saw that a static event listener was not being removed when the component unmounted. By adding a teardown function in the useEffect cleanup (or onDestroy), the memory graph flattened out."
+  commonFollowUp="What tools do you use to profile memory usage on physical devices?"
+/>
+
+## 11. Knowledge Check
+
+<QuizWidget 
+  question="What is the most important trait of a Senior Mobile Engineer during a technical interview?"
+  options={["Knowing the exact syntax for a Button component", "Memorizing every API endpoint", "Communicating architectural trade-offs and handling edge cases", "Writing code instantly without bugs"]}
+  correctAnswer="Communicating architectural trade-offs and handling edge cases"
+  explanation="Seniors are hired for their judgment, not just their syntax knowledge. Knowing that a network request MIGHT fail and designing a graceful fallback is what separates a senior from a junior."
+  takeaway="Don't just write code that works on the happy path. Design resilient systems."
+/>
+
+## 12. Summary
+
+Mobile engineering is a rapidly evolving, incredibly rewarding field. You have the tools, the architectural knowledge, and the framework fundamentals to build world-class applications. Go build something amazing!

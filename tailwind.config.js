@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./app/**/*.{js,jsx}", "./components/**/*.{js,jsx}"],
+  content: ["./app/**/*.{js,jsx}", "./components/**/*.{js,jsx}", "./data/**/*.{js,jsx}"],
   theme: {
     extend: {
       colors: {
@@ -26,6 +26,14 @@ module.exports = {
         error: "#EF4444",
         errorDim: "rgba(239,68,68,0.15)",
         brandRed: "#e53e3e",
+        // System Design Semantic Colors
+        sysClient: "#3b82f6", // blue-500
+        sysServer: "#10b981", // emerald-500
+        sysDb: "#f97316", // orange-500
+        sysCache: "#a855f7", // purple-500
+        sysLb: "#eab308", // yellow-500
+        sysQueue: "#ef4444", // red-500
+        sysMonitor: "#94a3b8", // slate-400
       },
       fontFamily: {
         ui: ["var(--font-inter)", "system-ui", "sans-serif"],

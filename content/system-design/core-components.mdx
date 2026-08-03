@@ -1,0 +1,133 @@
+---
+title: "Core Components of a System"
+description: "The 7 building blocks that every distributed system is made of — Client, Server, Database, Load Balancer, Cache, Message Queue, and Monitoring."
+order: 2
+module: "foundations"
+---
+
+## 🧠 Concept — The 7 Building Blocks
+
+Every system — from a tiny todo app to Google Search — is assembled from the same fundamental building blocks. Learn these seven, and you can read (and design) any architecture diagram in the world.
+
+### 🟦 1. Client
+The **entry point**. This is the user-facing application — a web browser, mobile app, smart TV, or even an API consumer. The client sends **requests** and receives **responses**.
+
+- **Examples:** Chrome browser, Netflix iOS app, Postman, a React frontend
+- **Key concern:** Latency — how fast can we show the user a response?
+
+### 🟩 2. Server / Backend
+The **brain**. Servers receive requests from clients, execute business logic, talk to databases, and return responses. In modern systems, we often have many **microservices** instead of one big server.
+
+- **Examples:** Node.js API, Spring Boot service, Go microservice
+- **Key concern:** Throughput — how many requests can we handle per second?
+
+### 🟧 3. Database
+The **memory**. Databases store and retrieve data persistently. The choice between SQL and NoSQL is one of the most important architectural decisions.
+
+- **SQL:** PostgreSQL, MySQL — structured data, strong consistency, ACID transactions
+- **NoSQL:** MongoDB, DynamoDB, Cassandra — flexible schema, massive horizontal scale
+- **Key concern:** Durability — data must not be lost, ever
+
+### 🟪 4. Cache
+The **shortcut**. A cache stores frequently accessed data in fast memory (RAM) so we don't hit the database for every request. A well-placed cache can reduce database load by **90%** and cut response times from 100ms to 1ms.
+
+- **Examples:** Redis, Memcached, CDN edge cache
+- **Key concern:** Staleness — cached data can become outdated
+
+### 🟨 5. Load Balancer
+The **traffic cop**. When you have multiple servers, the load balancer distributes incoming requests across them evenly. If one server crashes, the load balancer routes traffic to healthy ones.
+
+- **Examples:** Nginx, AWS ALB, HAProxy
+- **Key concern:** Even distribution — no server should be overwhelmed while others are idle
+
+### 🟥 6. Message Queue
+The **buffer**. Message queues decouple producers (things that create work) from consumers (things that do work). Instead of processing everything synchronously, you put tasks in a queue and workers process them at their own pace.
+
+- **Examples:** Apache Kafka, RabbitMQ, AWS SQS
+- **Key concern:** Ordering and delivery guarantees — messages shouldn't be lost or processed twice
+
+### ⬜ 7. Monitoring / Observability
+The **eyes and ears**. You can't fix what you can't see. Monitoring tracks metrics like latency, error rates, CPU usage, and memory. Observability goes deeper with logs, traces, and alerts.
+
+- **Examples:** Prometheus, Grafana, Datadog, PagerDuty
+- **Key concern:** Early detection — catch problems before users notice
+
+---
+
+## 🎬 Animation — Request Lifecycle
+
+Here's what happens when a user opens Instagram and scrolls their feed:
+
+```
+📱 Client (Instagram App)
+    │
+    ▼
+🌐 DNS → resolves "api.instagram.com" to IP 52.84.xx.xx
+    │
+    ▼
+🟨 Load Balancer → picks Server #3 (least connections)
+    │
+    ▼
+🟩 Server #3 → "GET /feed for user_id=42"
+    │
+    ├──▶ 🟪 Cache (Redis) → HIT! Feed was pre-computed 30s ago
+    │         │
+    │         ▼
+    │     📱 Response → 200 OK + feed JSON (took 8ms)
+    │
+    └──▶ 🟧 Database (if cache MISS)
+              │
+              ▼
+          🟥 Queue → "Recompute feed for user_id=42" (async job)
+              │
+              ▼
+          ⬜ Monitor → logs latency=8ms, status=200, cache=HIT
+```
+
+Notice: The cache saves a database query. The queue handles heavy work asynchronously. The monitor logs everything. All 7 components working together.
+
+---
+
+## 🧩 Real System Diagram — How They Connect
+
+Every real system uses these 7 components in different combinations:
+
+| System | Primary DB | Cache | Queue | Why? |
+|--------|-----------|-------|-------|------|
+| **Netflix** | Cassandra (NoSQL) | EVCache | Kafka | Massive read scale for video catalog |
+| **Rapido** | PostgreSQL + MongoDB | Redis | RabbitMQ | Geo queries need fast writes + strong consistency for payments |
+| **Uber** | MySQL (sharded) | Redis | Kafka | Real-time location needs low-latency cache |
+| **WhatsApp** | Mnesia (Erlang) | In-memory | Custom | 2 billion users, extreme message throughput |
+
+---
+
+## 🛠️ Example — Scaling a Startup
+
+You're building a food delivery app. Day 1 architecture:
+
+**Single Server → Single Database → Done.**
+
+This works for 100 users. But what happens as you grow?
+
+| Users | What Breaks | What You Add |
+|-------|------------|--------------|
+| 1,000 | DB gets slow on reads | 🟪 Add Redis cache |
+| 10,000 | Single server maxes out CPU | 🟨 Add load balancer + 3 servers |
+| 100,000 | Order processing is slow | 🟥 Add message queue for order pipeline |
+| 1,000,000 | Database can't handle writes | 🟧 Shard database by city |
+| 10,000,000 | Hard to debug issues in prod | ⬜ Add observability stack |
+
+**Key insight:** You don't design for 10M users on Day 1. You evolve the architecture as requirements change. Over-engineering early kills startups.
+
+---
+
+## 🎯 Quick Check
+
+**Question:** Your e-commerce app is handling 50,000 product page views per minute, but the same 500 products account for 80% of views. The database is at 90% CPU. What's the best immediate fix?
+
+- A) Add more database replicas
+- B) Shard the database by product category
+- C) Add a cache layer (Redis) for the top 500 products  ✅
+- D) Switch from SQL to NoSQL
+
+**Answer:** **C — Cache the hot products.** When a small subset of data accounts for most reads, caching is the highest-impact, lowest-risk fix. You could cache those 500 products in Redis and instantly drop database load by 80%. Replicas (A) would also help but are more expensive and complex. Sharding (B) is overkill for this problem. Switching databases (D) is a massive migration for a problem that caching solves.

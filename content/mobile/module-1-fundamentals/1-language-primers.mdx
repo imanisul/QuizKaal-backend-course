@@ -1,0 +1,80 @@
+# Language Primers (JS, Dart, Kotlin)
+
+Before we start building UI layouts, we must establish a strong foundation in the primary languages powering mobile engineering.
+
+## 1. Introduction
+
+Each mobile track utilizes a specific programming language. React Native uses JavaScript (or TypeScript), Flutter uses Dart, and Native Android uses Kotlin (or Java). Modern languages share many paradigms, making it surprisingly easy to learn the others once you master one.
+
+## 2. Why this concept exists
+
+Languages are just tools to execute logic. However, features like asynchronous programming, static typing, and null safety drastically affect how stable your mobile application will be in production.
+
+## 3. Visual Explanation
+
+<ConceptCard 
+  title="The Compilation Target" 
+  description="JavaScript runs in a Virtual Machine (JSC or Hermes) inside the app. Dart and Kotlin are compiled ahead-of-time (AOT) down to machine code (ARM) for maximum performance before the user even downloads the app."
+/>
+
+## 4. Internal Working: Async Operations
+
+Mobile apps are inherently asynchronous. While rendering the UI on the Main Thread (Thread 1), you might need to fetch data from the internet. If you do this on the Main Thread, the app will freeze and crash. 
+
+## 5. Interactive Animation: Background Execution
+
+Observe how data flows asynchronously.
+
+<NetworkFlowDiagram />
+
+## 6. Code Examples: Async/Await
+
+Here is how you execute a background task without freezing the UI across all three languages. Notice the striking similarities.
+
+<MultiLangCodeBlock rnCodeBase64="Ly8gSmF2YVNjcmlwdAphc3luYyBmdW5jdGlvbiBmZXRjaFVzZXJEYXRhKCkgewogIHRyeSB7CiAgICBjb25zdCByZXNwb25zZSA9IGF3YWl0IGZldGNoKCdodHRwczovL2FwaS5leGFtcGxlLmNvbS91c2VyJyk7CiAgICBjb25zdCBkYXRhID0gYXdhaXQgcmVzcG9uc2UuanNvbigpOwogICAgY29uc29sZS5sb2coZGF0YSk7CiAgfSBjYXRjaCAoZXJyb3IpIHsKICAgIGNvbnNvbGUuZXJyb3IoZXJyb3IpOwogIH0KfQ==" flutterCodeBase64="Ly8gRGFydApGdXR1cmU8dm9pZD4gZmV0Y2hVc2VyRGF0YSgpIGFzeW5jIHsKICB0cnkgewogICAgZmluYWwgcmVzcG9uc2UgPSBhd2FpdCBodHRwLmdldChVcmkucGFyc2UoJ2h0dHBzOi8vYXBpLmV4YW1wbGUuY29tL3VzZXInKSk7CiAgICBmaW5hbCBkYXRhID0ganNvbkRlY29kZShyZXNwb25zZS5ib2R5KTsKICAgIHByaW50KGRhdGEpOwogIH0gY2F0Y2ggKGVycm9yKSB7CiAgICBwcmludChlcnJvcik7CiAgfQp9" androidCodeBase64="Ly8gS290bGluIChDb3JvdXRpbmVzKQpzdXNwZW5kIGZ1biBmZXRjaFVzZXJEYXRhKCkgewogICAgdHJ5IHsKICAgICAgICB2YWwgcmVzcG9uc2UgPSBodHRwQ2xpZW50LmdldCgiaHR0cHM6Ly9hcGkuZXhhbXBsZS5jb20vdXNlciIpCiAgICAgICAgdmFsIGRhdGEgPSByZXNwb25zZS5ib2R5PFVzZXJEYXRhPigpCiAgICAgICAgcHJpbnRsbihkYXRhKQogICAgfSBjYXRjaCAoZTogRXhjZXB0aW9uKSB7CiAgICAgICAgcHJpbnRsbihlKQogICAgfQp9" />
+
+**Explanation:**  
+All three languages support modern asynchronous programming syntax. By using `async/await` (or `suspend` in Kotlin), you instruct the compiler to execute the network request on a background thread and resume execution only when the response is ready, keeping the Main UI Thread completely unblocked.
+
+## 7. Real-world Examples
+
+- When you open the **Instagram** app, the UI immediately loads from the local cache while an `async` function silently fetches new posts in the background.
+
+## 8. Best Practices
+
+- **Always Handle Errors:** Always use `try/catch` when dealing with asynchronous code. If a network request fails and is unhandled, your app will crash.
+- **Type Safety:** Prefer TypeScript over JavaScript in React Native. Catching type errors during compilation saves hours of mobile debugging.
+- **Null Safety:** Leverage Kotlin and Dart's strict null-safety to avoid the dreaded Null Pointer Exceptions at runtime.
+
+## 9. Common Mistakes
+
+- **Blocking the Main Thread:** Running heavy mathematical computations (like image processing) directly on the UI thread without offloading it to a background worker.
+- **Ignoring API Timeouts:** Failing to handle cases where the server takes longer than expected to respond, leaving the user staring at an infinite loading spinner.
+
+## 10. Interview Questions
+
+<InterviewQuestion 
+  question="What is the difference between a Promise in JS, a Future in Dart, and a Coroutine in Kotlin?"
+  answer="Conceptually, they all solve the same problem: representing a value that will be available eventually. Promises and Futures are eager objects that wrap a deferred result. Coroutines in Kotlin are conceptually lightweight threads that can be suspended and resumed, making async code look purely sequential without wrapping results in objects."
+  bestPractice="Understanding how your language handles the event loop under the hood is critical for optimizing performance."
+/>
+
+<InterviewQuestion 
+  question="Explain Null Safety in Dart and Kotlin."
+  answer="Null Safety is a language feature where variables cannot contain 'null' unless you explicitly declare them as nullable (e.g., String?). The compiler checks this at compile-time, eliminating entire classes of runtime crashes (Null Pointer Exceptions) that plague older languages like Java and JS."
+  commonFollowUp="How do you handle a nullable variable when you are absolutely sure it is not null? (e.g. using the '!' operator)."
+/>
+
+## 11. Knowledge Check
+
+<QuizWidget 
+  question="Why must network requests be asynchronous in mobile apps?"
+  options={["To save battery", "To prevent blocking the Main (UI) Thread", "To bypass security checks", "Because REST APIs are asynchronous"]}
+  correctAnswer="To prevent blocking the Main (UI) Thread"
+  explanation="If you block the main thread waiting for a network response, the UI completely freezes. The OS will detect this and show an 'App Not Responding' dialog."
+  takeaway="Rule #1 of mobile engineering: Never block the Main UI Thread."
+/>
+
+## 12. Summary
+
+Modern mobile languages are powerful and share many concepts like `async/await` and null safety. The core engineering principle remains the same: Keep heavy work off the Main UI Thread to ensure smooth 60fps scrolling.

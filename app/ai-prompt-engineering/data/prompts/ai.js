@@ -1,0 +1,122 @@
+export const aiPrompts = [
+  {
+    id: "ai-cot",
+    title: "Chain of Thought (CoT)",
+    category: "AI & Prompt Engineering",
+    difficulty: "Intermediate",
+    bestTool: "Any LLM",
+    description: "Force the AI to reason step-by-step before answering, drastically reducing hallucinations.",
+    prompt: "[Your complex question or math problem here]\n\nBefore providing the final answer, please think step-by-step. Show your reasoning logic clearly.",
+    exampleOutput: "Step 1: First, we need to determine the value of X...\nStep 2: Since X is 5, we can substitute...\nFinal Answer: ...",
+    whenToUse: "When asking complex logic, math, or coding questions.",
+    proTips: ["This is the single most important prompt engineering technique. Adding 'Think step-by-step' forces the model to allocate compute to reasoning."]
+  },
+  {
+    id: "ai-few-shot",
+    title: "Few-Shot Prompting",
+    category: "AI & Prompt Engineering",
+    difficulty: "Intermediate",
+    bestTool: "Any LLM",
+    description: "Provide examples to teach the AI exactly what format or tone you want.",
+    prompt: "Classify the sentiment of the following reviews as POSITIVE, NEGATIVE, or NEUTRAL.\n\nExample 1: \"The food was cold and terrible.\" -> NEGATIVE\nExample 2: \"I had an okay time, nothing special.\" -> NEUTRAL\nExample 3: \"Absolutely incredible service!\" -> POSITIVE\n\nNow classify this review: \"[Paste new review here]\" ->",
+    exampleOutput: "POSITIVE",
+    whenToUse: "When you need the AI to strictly adhere to a specific output format or classification system.",
+    proTips: ["Providing 3 to 5 examples drastically improves the AI's accuracy over Zero-Shot (0 examples)."]
+  },
+  {
+    id: "ai-role",
+    title: "Expert Persona (Role Prompting)",
+    category: "AI & Prompt Engineering",
+    difficulty: "Beginner",
+    bestTool: "ChatGPT / Claude",
+    description: "Assign a specific persona to the AI to change its behavior and knowledge access.",
+    prompt: "Act as an expert [Profession, e.g., SEO Copywriter] with 20 years of experience at a top firm. Your tone is [Tone, e.g., authoritative but accessible]. Based on your deep expertise, analyze the following [Topic/Text] and provide actionable advice.",
+    exampleOutput: "As an SEO expert, looking at your H1 tags, I immediately see an issue...",
+    whenToUse: "To stop the AI from giving generic, robotic answers and instead sound like a professional.",
+    proTips: ["You can combine personas! 'Act as a mix between a strict drill sergeant and a supportive therapist.'"]
+  },
+  {
+    id: "ai-json",
+    title: "Strict JSON Output",
+    category: "AI & Prompt Engineering",
+    difficulty: "Advanced",
+    bestTool: "ChatGPT (GPT-4o)",
+    description: "Force the AI to output machine-readable JSON for integration into applications.",
+    prompt: "Extract the names, ages, and occupations from the following text. \nYou MUST output the response strictly as a JSON array of objects. \nDo not include any markdown formatting (like ```json), introduction, or conversational text. Output ONLY valid JSON.\n\nText: [Paste Text]",
+    exampleOutput: "[\n  {\"name\": \"John\", \"age\": 34, \"occupation\": \"Engineer\"}\n]",
+    whenToUse: "When building an AI feature in your code (like parsing unstructured text into a database).",
+    proTips: ["Modern APIs (like OpenAI's) have a 'JSON Mode' flag you can pass in the code, but this prompt helps standard web interfaces do it too."]
+  },
+  {
+    id: "ai-rag",
+    title: "RAG Context Injection",
+    category: "AI & Prompt Engineering",
+    difficulty: "Advanced",
+    bestTool: "Claude",
+    description: "Simulate Retrieval-Augmented Generation by strictly binding the AI to provided context.",
+    prompt: "You are a helpful assistant answering questions based strictly on the provided Context. \nIf the answer cannot be found in the Context, you must reply: 'I do not have enough information to answer that.' Do not use outside knowledge.\n\n<context>\n[Paste your internal docs, wiki, or article here]\n</context>\n\nQuestion: [Ask question]",
+    exampleOutput: "Based on the provided context, the company policy states that...",
+    whenToUse: "When you need to query internal company documents without the AI hallucinating facts.",
+    proTips: ["Using XML tags like `<context>` helps Claude isolate and understand instructions better."]
+  },
+  {
+    id: "ai-midjourney",
+    title: "Midjourney Image Prompt Builder",
+    category: "AI & Prompt Engineering",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT",
+    description: "Generate highly detailed prompts for AI image generators like Midjourney or DALL-E.",
+    prompt: "I want to generate an AI image of [Subject, e.g., a futuristic cyberpunk city]. Please write a highly detailed Midjourney prompt for this. Include the subject, environment, lighting, camera angle, camera lens (e.g., 35mm, f/1.8), color palette, and artistic style. Format it as a comma-separated list of keywords ending with --ar 16:9.",
+    exampleOutput: "A futuristic cyberpunk city, neon glowing signs in rain puddles, bustling market, cinematic lighting, volumetric fog, shot on 35mm lens, f/1.8, unreal engine 5 render, highly detailed, vivid colors --ar 16:9",
+    whenToUse: "When you need a specific aesthetic for an AI image but don't know photography terms.",
+    proTips: ["Ask the AI to generate 5 distinct variations of the prompt (e.g., one photorealistic, one anime style, one oil painting)."]
+  },
+  {
+    id: "ai-meta",
+    title: "The Prompt Optimizer",
+    category: "AI & Prompt Engineering",
+    difficulty: "Advanced",
+    bestTool: "Claude 3.5 Sonnet",
+    description: "Use the AI to write a better prompt for you.",
+    prompt: "I want to ask an AI to do [Task, e.g., write a sales email]. Here is my current prompt: '[Your bad prompt]'. \nCritique my prompt. Why is it bad? Then, write a vastly improved, highly detailed prompt that uses best practices (persona, context, constraints, output format) to achieve my goal.",
+    exampleOutput: "Critique: Your prompt lacks context about the target audience and output format.\nImproved Prompt: 'Act as a B2B SaaS Sales Executive...'",
+    whenToUse: "When you aren't getting the results you want from an LLM.",
+    proTips: ["This is called 'Meta-Prompting'. LLMs are exceptionally good at prompt engineering themselves."]
+  },
+  {
+    id: "ai-tree",
+    title: "Tree of Thoughts (ToT)",
+    category: "AI & Prompt Engineering",
+    difficulty: "Advanced",
+    bestTool: "ChatGPT (GPT-4o)",
+    description: "Force the AI to brainstorm multiple solutions before picking the best one.",
+    prompt: "I have a complex problem: [Problem]. \nFirst, brainstorm 3 completely different approaches to solving this problem. \nSecond, evaluate the pros and cons of each approach. \nFinally, based on your evaluation, select the best approach and explain why.",
+    exampleOutput: "Approach 1: ... Pros: ... Cons: ...\nApproach 2: ...\nEvaluation: Approach 2 is the most robust because...\nConclusion: We should proceed with Approach 2.",
+    whenToUse: "For strategic decision making, architecture choices, or complex problem-solving.",
+    proTips: ["This mimics how humans think—evaluating branches of a decision tree before acting."]
+  },
+  {
+    id: "ai-agents",
+    title: "AI Agent Persona Simulator",
+    category: "AI & Prompt Engineering",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT",
+    description: "Create an interactive, conversational agent that follows strict rules.",
+    prompt: "You are 'DebugBot', a strict but helpful AI coding assistant. \nRules:\n1. You must only answer questions related to programming.\n2. If asked about anything else, reply: 'Bloop. I only know code.'\n3. Always provide code in a markdown block.\n4. End every response with a random coding tip.\nDo you understand? If so, introduce yourself.",
+    exampleOutput: "I understand. I am DebugBot. How can I assist your codebase today?\n\n*Tip: Always use const over let in JavaScript unless the variable needs to change!*",
+    whenToUse: "To test system prompts before deploying them to a real application.",
+    proTips: ["Provide 'Negative Prompts' (what NOT to do) as they are critical for securing AI agents."]
+  },
+  {
+    id: "ai-critique",
+    title: "Self-Correction & Critique",
+    category: "AI & Prompt Engineering",
+    difficulty: "Advanced",
+    bestTool: "Claude",
+    description: "Ask the AI to review its own previous output for flaws.",
+    prompt: "[Paste the AI's previous answer to a complex question]\n\nReview your answer above. Act as a harsh critic. Point out any logical fallacies, factual inaccuracies, or areas where the reasoning is weak. Then, rewrite the answer to fix these flaws.",
+    exampleOutput: "Critique: In my previous answer, I assumed X was true, but under condition Y, it is false. \nRevised Answer: ...",
+    whenToUse: "When the AI's answer seems plausible but you suspect it might be hallucinating.",
+    proTips: ["Claude is naturally better at acknowledging its own mistakes compared to older ChatGPT models."]
+  }
+];

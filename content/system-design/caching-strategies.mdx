@@ -1,0 +1,157 @@
+---
+title: "Caching Strategies"
+description: "Master cache hit/miss, TTL, read-through, write-through, write-back, write-around, and eviction policies (LRU, LFU, FIFO)."
+order: 8
+module: "data-layer"
+---
+
+## 🧠 Concept — Why Caching Matters
+
+A database query might take **50–200ms**. A cache lookup takes **0.5–2ms**. That's **100x faster**.
+
+**Caching** is storing a copy of frequently accessed data in fast memory (RAM) so you don't have to fetch it from the slower source (database/disk) every time.
+
+### Cache Hit vs Cache Miss
+
+- **Cache Hit ✅** — Data is found in the cache. Return it immediately. Fast.
+- **Cache Miss ❌** — Data is NOT in the cache. Fetch from the database, store it in cache for next time. Slow this time, fast next time.
+
+**Hit Rate** = (Cache Hits) / (Cache Hits + Cache Misses) × 100%
+
+A good cache hit rate is **95%+**. Netflix achieves **99%+** hit rates on their metadata cache.
+
+### TTL (Time to Live)
+
+Every cached item has a **TTL** — after this time, the cache entry expires and gets deleted. This prevents serving infinitely stale data.
+
+- **Short TTL (10s–60s):** For data that changes often (stock prices, live scores)
+- **Medium TTL (5m–30m):** For data that changes occasionally (user profiles, product pages)
+- **Long TTL (1h–24h):** For data that rarely changes (configuration, static content)
+
+---
+
+## 🎬 Animation — Cache Read Flow
+
+When a user requests their profile:
+
+```
+📱 Client → "GET /profile/42"
+    │
+    ▼
+🟩 Server checks 🟪 Cache first
+    │
+    ├── HIT ✅ → Return cached profile (2ms) ← 95% of the time!
+    │
+    └── MISS ❌ → Query 🟧 Database (150ms)
+                    │
+                    ▼
+                Store in 🟪 Cache (TTL: 15min)
+                    │
+                    ▼
+                Return profile to client
+```
+
+---
+
+## 🧩 Caching Strategies — The Big 4
+
+### 1. Cache-Aside (Lazy Loading)
+The **most common** strategy. The application manages the cache manually.
+
+**Read:** App checks cache → if miss, reads from DB → stores result in cache.  
+**Write:** App writes to DB → invalidates (deletes) the cache entry.
+
+```
+Read:  App → Cache (miss?) → DB → Cache (store)
+Write: App → DB → Cache (delete key)
+```
+
+✅ Simple to implement  
+✅ Only caches data that's actually requested  
+❌ First request is always a cache miss (cold start)  
+❌ Data can be stale between DB write and cache invalidation  
+
+**Used by:** Most web applications, including Netflix for user profiles.
+
+---
+
+### 2. Read-Through Cache
+Similar to cache-aside, but the **cache itself** is responsible for loading data from the DB on a miss.
+
+```
+Read:  App → Cache (miss?) → Cache loads from DB → returns to App
+Write: App → DB (cache is not involved)
+```
+
+✅ Cleaner application code  
+✅ Cache handles its own loading logic  
+❌ Library/framework must support it  
+
+---
+
+### 3. Write-Through Cache
+Every write goes to **both** the cache and the database **synchronously**.
+
+```
+Write: App → Cache → DB (both updated atomically)
+Read:  App → Cache (always a hit for recently written data)
+```
+
+✅ Cache is always up-to-date  
+✅ Zero staleness  
+❌ Write latency increases (writing to two places)  
+❌ Caches data that may never be read  
+
+**Used by:** Banking systems, payment records where consistency is critical.
+
+---
+
+### 4. Write-Back (Write-Behind) Cache
+Writes go to the cache **only**. The cache asynchronously flushes to the DB in batches.
+
+```
+Write: App → Cache (immediate) → DB (async, batched later)
+Read:  App → Cache (always a hit for recent writes)
+```
+
+✅ Extremely fast writes  
+✅ Reduces DB write load  
+❌ **Risk of data loss** if cache crashes before flushing to DB  
+❌ Complex to implement correctly  
+
+**Used by:** Gaming leaderboards, social media like counters (where occasional loss is acceptable).
+
+---
+
+## 🛠️ Example — Eviction Policies
+
+When the cache is full and a new item needs to be stored, which existing item do you remove?
+
+| Policy | How It Works | Best For |
+|--------|-------------|----------|
+| **LRU** (Least Recently Used) | Evict the item that hasn't been accessed for the longest time | General purpose — most popular choice |
+| **LFU** (Least Frequently Used) | Evict the item with the fewest total accesses | When some items are "always hot" (e.g., trending products) |
+| **FIFO** (First In, First Out) | Evict the oldest item regardless of access pattern | Simple use cases, event logs |
+| **Random** | Evict a random item | When access patterns are truly uniform |
+
+### Real Numbers
+
+A Redis cache for an e-commerce product catalog:
+- **Cache size:** 10 GB (RAM)
+- **Database size:** 500 GB (disk)
+- **Top 5,000 products** account for 80% of page views
+- **LRU policy** ensures these hot products always stay cached
+- **Result:** 96% hit rate, database load drops from 50,000 QPS to 2,000 QPS
+
+---
+
+## 🎯 Quick Check
+
+**Question:** Your app uses cache-aside strategy with a 5-minute TTL. A product's price changes from ₹999 to ₹799. What's the worst case for how long users might see the OLD price?
+
+- A) 0 seconds (cache is instantly updated)
+- B) Up to 5 minutes ✅
+- C) Up to 10 minutes
+- D) Forever
+
+**Answer:** **B — Up to 5 minutes.** With cache-aside, the app writes the new price to the DB but only *invalidates* the cache. If the cache entry was just refreshed a moment before the price change, it could serve the stale ₹999 price for up to the full TTL of 5 minutes before expiring and loading the new ₹799 price. This is the classic "staleness window" trade-off of caching.

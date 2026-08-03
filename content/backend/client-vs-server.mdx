@@ -1,0 +1,166 @@
+---
+title: "Client vs Server"
+description: "The fundamental architecture of the web: who asks for data, and who provides it?"
+phase: "Internet & How It Works"
+time: "15 min"
+difficulty: "beginner"
+xp: 50
+---
+
+<LearningObjectives 
+  objectives={[
+    "Understand the distinction between a Client and a Server.",
+    "Learn why modern applications separate the frontend from the backend.",
+    "Recognize why Clients must never communicate directly with Databases.",
+    "Identify common examples of Clients in daily life."
+  ]}
+/>
+
+## 1. The Core Architecture
+
+<ConceptBlock type="idea" title="Overview">
+  Every modern web application is divided into two distinct halves that talk to each other over the internet. The Client asks for data, and the Server processes the request and provides the data.
+</ConceptBlock>
+
+<AnalogyCard title="The Restaurant Analogy">
+  The Client-Server model is exactly like dining at a restaurant. 
+  - **You (The Client):** Look at the menu and place an order.
+  - **The Kitchen (The Server):** Receives the order, prepares the food (data) according to business logic, and makes sure you get what you asked for.
+  - **The Waiter (The Network/API):** Transports the order to the kitchen and brings the food back to you.
+</AnalogyCard>
+
+---
+
+## 2. Defining the Roles
+
+Let's look at what each side actually does.
+
+<StepByStep 
+  steps={[
+    {
+      title: "The Client (Frontend)",
+      description: "The device or software that requests data and displays it to the user. This is your web browser (Chrome, Safari), your mobile app (iOS, Android), or even an Apple Watch."
+    },
+    {
+      title: "The Server (Backend)",
+      description: "A powerful computer sitting in a data center that listens for requests, processes business logic, queries the database, and sends data back."
+    }
+  ]}
+/>
+
+<WarningCard title="Servers are just computers">
+  Don't assume a server looks like a magical glowing cube. A server is literally just a normal computer (running Linux, usually) running software that listens for incoming network traffic on a specific port.
+</WarningCard>
+
+---
+
+## 3. Interactive Flow
+
+Click "Fetch Data" on the Client below to see exactly how these three components (Client, Server, Database) interact in a real application.
+
+<ClientServerVisualizer />
+
+Notice how the Server acts as the "Middleman". The Client **never** talks directly to the Database. This is crucial for security!
+
+---
+
+## 4. Why Not Just One Computer?
+
+Why do we separate the Client and the Server? Why doesn't your phone just store all of Netflix's movies and run all the logic?
+
+1. **Storage:** Netflix has petabytes of video data. Your phone has 128GB of storage.
+2. **Security:** If your phone talked directly to the database, hackers could easily steal other users' data. The Server acts as a bouncer, enforcing authentication.
+3. **Compute Power:** Running heavy AI models or processing millions of transactions requires massive CPU power that a phone battery cannot support.
+
+---
+
+## 5. Node.js Implementation: Express Server
+
+Let's look at exactly how a Server (backend) and a Client (frontend) interact using Node.js and Express.
+
+<CodeTabs>
+  <div label="server.js (Backend)">
+    ```javascript
+    // 1. Import Express (The most popular Node.js web framework)
+    const express = require('express');
+    const app = express();
+
+    // 2. Define a "Route" (The Waiter taking an order)
+    // When the Client asks for '/api/menu', the Server runs this function
+    app.get('/api/menu', (req, res) => {
+      
+      // 3. The Server fetches data (Pretend this comes from a Database)
+      const data = {
+        item: "Margherita Pizza",
+        price: 12.99,
+        inStock: true
+      };
+
+      // 4. The Server sends the data back to the Client as JSON
+      res.json(data);
+    });
+
+    // 5. Start the Server on port 3000
+    app.listen(3000, () => {
+      console.log("🍳 Kitchen (Server) is open on port 3000");
+    });
+    ```
+  </div>
+  <div label="app.js (Frontend)">
+    ```javascript
+    // 1. The Client (Browser) places an order to the Server
+    console.log("Placing order...");
+
+    fetch('http://localhost:3000/api/menu')
+      .then(response => response.json()) // 2. Wait for the Server to reply
+      .then(data => {
+        // 3. Display the food (data) to the user!
+        console.log(`The server replied: We have ${data.item} for $${data.price}`);
+      })
+      .catch(error => console.error("The server is down!", error));
+    ```
+  </div>
+</CodeTabs>
+
+<ConceptBlock type="tip" title="Notice the separation?">
+  The frontend code (`app.js`) has absolutely no idea *how* the pizza was made, or what database it came from. It simply asks the URL for data and trusts the Server to handle the complex logic.
+</ConceptBlock>
+
+---
+
+## 6. Real World Practice
+
+<PracticeExercise title="Identify the Client and Server">
+  Think about applications in your daily life:
+  - When you play a multiplayer game like *Fortnite*, what is the Client? (Your PS5/PC). What is the Server? (Epic Games' data centers).
+  - When you use Spotify offline, are you using a Client-Server model? (No, until it needs to sync data or stream a new song!)
+  
+  *Hint: If you turn on Airplane Mode and an app stops working, it relies heavily on a Server!*
+</PracticeExercise>
+
+
+---
+
+## 8. Knowledge Check
+
+<Quiz 
+  question="In the Client-Server model, which component is responsible for safely verifying a user's password?"
+  options={[
+    "The Client (Frontend)",
+    "The Server (Backend)",
+    "The Internet Router"
+  ]}
+  correctAnswerIndex={1}
+  explanation="The Server handles authentication. The Client simply sends the raw password, and the Server hashes it and securely compares it against the Database."
+/>
+
+<LessonSummary 
+  takeaways={[
+    "The Client requests data and displays it to the user.",
+    "The Server processes requests, queries databases, and enforces security.",
+    "Clients never connect directly to Databases to protect sensitive credentials.",
+    "This architecture allows apps to scale infinitely and run complex logic off-device."
+  ]}
+  nextLessonTitle="HTTP & HTTPS"
+  nextLessonUrl="/lessons/http-https"
+/>

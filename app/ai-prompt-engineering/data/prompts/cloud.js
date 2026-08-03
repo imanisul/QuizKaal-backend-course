@@ -1,0 +1,122 @@
+export const cloudPrompts = [
+  {
+    id: "cloud-terraform",
+    title: "Terraform Module Generator",
+    category: "Cloud & DevOps",
+    difficulty: "Advanced",
+    bestTool: "Claude 3.5 Sonnet",
+    description: "Generate infrastructure as code (IaC) for AWS/GCP/Azure.",
+    prompt: "Write a Terraform module for [Cloud Provider, e.g., AWS]. The module should provision [Resource, e.g., an S3 bucket with versioning and server-side encryption enabled, restricted to a specific IAM role]. Follow HashiCorp best practices. Include `variables.tf`, `main.tf`, and `outputs.tf`.",
+    exampleOutput: "```hcl\n# variables.tf\nvariable \"bucket_name\" {...}\n# main.tf\nresource \"aws_s3_bucket\" \"this\" {...}\n```",
+    whenToUse: "When setting up new cloud resources and you want reproducible infrastructure.",
+    proTips: ["Always specify the cloud provider version you want it to target, as Terraform providers change rapidly."]
+  },
+  {
+    id: "cloud-docker",
+    title: "Optimized Dockerfile Builder",
+    category: "Cloud & DevOps",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT",
+    description: "Create a highly optimized, multi-stage Dockerfile.",
+    prompt: "I have a [Language/Framework, e.g., Node.js Express] application. Write a highly optimized, production-ready Dockerfile. It MUST use multi-stage builds to keep the final image size as small as possible. It must not run as the root user for security. Include comments explaining the purpose of each stage.",
+    exampleOutput: "```dockerfile\n# Build Stage\nFROM node:18-alpine AS builder...\n# Production Stage\nFROM node:18-alpine...\nUSER node...\n```",
+    whenToUse: "When containerizing an app for production deployment.",
+    proTips: ["Mention any native dependencies your app needs (like Python or C++) so the AI installs them in the build stage."]
+  },
+  {
+    id: "cloud-k8s",
+    title: "Kubernetes YAML Generator",
+    category: "Cloud & DevOps",
+    difficulty: "Advanced",
+    bestTool: "Claude",
+    description: "Generate K8s manifests for Deployments, Services, and Ingress.",
+    prompt: "I need to deploy a [App Type] to Kubernetes. Generate the YAML manifests for:\n1. A Deployment with 3 replicas, resource limits (CPU/Memory), and a liveness probe.\n2. A ClusterIP Service to expose it.\n3. An Ingress resource mapping to `api.myapp.com`.\nOutput only valid YAML.",
+    exampleOutput: "```yaml\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: myapp...\n```",
+    whenToUse: "When you need boilerplate Kubernetes manifests quickly.",
+    proTips: ["Specify if you are using an Ingress Controller like NGINX so the AI adds the correct annotations."]
+  },
+  {
+    id: "cloud-github-actions",
+    title: "CI/CD Pipeline Creator",
+    category: "Cloud & DevOps",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT",
+    description: "Generate a GitHub Actions workflow file.",
+    prompt: "Create a GitHub Actions workflow file (`.yml`) for a [Language, e.g., Python/Django] project. The pipeline should trigger on pushes to the `main` branch. It needs to:\n1. Checkout the code.\n2. Set up [Language].\n3. Install dependencies.\n4. Run the linter.\n5. Run the test suite.\n6. Only if tests pass, build a Docker image and push it to [Registry, e.g., GitHub Container Registry].",
+    exampleOutput: "```yaml\nname: CI/CD Pipeline\non:\n  push:\n    branches: [ \"main\" ]\njobs:\n  build-and-test:...\n```",
+    whenToUse: "When automating your testing and deployment process.",
+    proTips: ["Be careful with secrets! Ask the AI how to securely pass `secrets.DOCKER_PASSWORD` into the pipeline."]
+  },
+  {
+    id: "cloud-linux",
+    title: "Linux Bash Scripting",
+    category: "Cloud & DevOps",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT",
+    description: "Write bash scripts to automate server tasks.",
+    prompt: "Write a bash script that does the following: [Describe task, e.g., Finds all .log files in /var/log older than 30 days, zips them into an archive, moves the archive to an S3 bucket using the AWS CLI, and deletes the original files]. Ensure the script is robust, includes error handling (set -e), and logs its progress.",
+    exampleOutput: "```bash\n#!/bin/bash\nset -euo pipefail\necho \"Starting log rotation...\"\nfind /var/log -name \"*.log\" -mtime +30...\n```",
+    whenToUse: "When automating cron jobs or server maintenance tasks.",
+    proTips: ["Always ask the AI to explain what the script does before you run it on your machine!"]
+  },
+  {
+    id: "cloud-architecture",
+    title: "AWS Architecture Design",
+    category: "Cloud & DevOps",
+    difficulty: "Advanced",
+    bestTool: "Claude / ChatGPT (GPT-4o)",
+    description: "Design a scalable, highly available cloud architecture.",
+    prompt: "I need to design a highly available architecture on AWS for a [App Type, e.g., global video streaming platform]. We expect [Traffic, e.g., 100k concurrent users]. We have a budget of [Budget]. Please outline the architecture. Which AWS services should we use for Compute, Database, Storage, and CDN? Explain how the system handles failover if an Availability Zone goes down.",
+    exampleOutput: "Architecture:\n- Edge: AWS CloudFront + Route53\n- Compute: ECS Fargate across 3 AZs...\nFailover Strategy...",
+    whenToUse: "When planning a cloud migration or a new greenfield project.",
+    proTips: ["Ask the AI to generate Mermaid.js code to visualize the architecture diagram it proposes!"]
+  },
+  {
+    id: "cloud-nginx",
+    title: "NGINX Reverse Proxy Config",
+    category: "Cloud & DevOps",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT",
+    description: "Generate a secure NGINX configuration block.",
+    prompt: "Write an NGINX configuration block that acts as a reverse proxy for a Node.js app running on port 3000. The server block should listen on port 443 (HTTPS) for the domain `example.com`. Include standard security headers, SSL certificate paths (Let's Encrypt), and enable gzip compression.",
+    exampleOutput: "```nginx\nserver {\n  listen 443 ssl;\n  server_name example.com;\n  ssl_certificate /etc/letsencrypt/...\n  location / {\n    proxy_pass http://localhost:3000;\n```",
+    whenToUse: "When setting up a web server or load balancer.",
+    proTips: ["Always run `nginx -t` to test the configuration syntax before reloading the service!"]
+  },
+  {
+    id: "cloud-incident",
+    title: "Post-Incident Report (RCA)",
+    category: "Cloud & DevOps",
+    difficulty: "Advanced",
+    bestTool: "Claude",
+    description: "Generate a professional Root Cause Analysis document.",
+    prompt: "We just had a production incident. Here are the rough notes: [Paste incident timeline, e.g., 2:00 PM API latency spiked, 2:15 PM DB CPU hit 100%, 2:30 PM restarted DB instance, 2:45 PM resolved]. \nPlease generate a formal Post-Incident Report / Root Cause Analysis (RCA). Include sections for: Executive Summary, Timeline, Root Cause, Resolution, and Action Items to prevent recurrence.",
+    exampleOutput: "# Post-Incident Report\n## Executive Summary\nOn [Date], a severe latency spike occurred...\n## Root Cause\nA missing database index caused a full table scan...",
+    whenToUse: "After fixing a major bug or outage, for documentation and team review.",
+    proTips: ["Keep the tone objective and blameless. The AI is great at removing emotional language from incident notes."]
+  },
+  {
+    id: "cloud-cost",
+    title: "Cloud Cost Optimization",
+    category: "Cloud & DevOps",
+    difficulty: "Advanced",
+    bestTool: "ChatGPT",
+    description: "Analyze architecture for cost-saving opportunities.",
+    prompt: "Our AWS bill is too high. We are currently using: [List services, e.g., On-demand EC2 t3.xlarge for web servers, RDS Multi-AZ for staging, Nat Gateways in 3 AZs, 5TB of unversioned S3 data]. Provide 5 specific, high-impact strategies to reduce our cloud costs without sacrificing production availability.",
+    exampleOutput: "1. Switch Staging RDS to Single-AZ (Saves ~50% on staging DB costs).\n2. Move to EC2 Reserved Instances or Savings Plans...\n3. Implement S3 Lifecycle policies...",
+    whenToUse: "When finance yells at engineering.",
+    proTips: ["Ask the AI to roughly estimate the percentage of savings for each strategy."]
+  },
+  {
+    id: "cloud-iam",
+    title: "Least Privilege IAM Policy",
+    category: "Cloud & DevOps",
+    difficulty: "Intermediate",
+    bestTool: "Claude",
+    description: "Generate secure, restricted AWS IAM JSON policies.",
+    prompt: "Write an AWS IAM Policy in JSON format for an application. The app ONLY needs permission to:\n1. Read and Write objects to a specific S3 bucket named `my-app-uploads`.\n2. Send emails via Amazon SES.\nEnsure this policy follows the Principle of Least Privilege (no `*` wildcards on resources if possible).",
+    exampleOutput: "```json\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": [\"s3:PutObject\", \"s3:GetObject\"],\n      \"Resource\": \"arn:aws:s3:::my-app-uploads/*\"\n```",
+    whenToUse: "When creating service roles for applications to ensure security compliance.",
+    proTips: ["Never use AI to generate policies containing hardcoded AWS access keys. IAM should be role-based."]
+  }
+];

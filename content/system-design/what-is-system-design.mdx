@@ -1,0 +1,99 @@
+---
+title: "What is System Design?"
+description: "Understand the big picture — why we design systems, what trade-offs matter, and how to think like an architect."
+order: 1
+module: "foundations"
+---
+
+## 🧠 Concept — What is System Design?
+
+Imagine you're building a bank for aliens. Not a small branch — a bank that serves **billions of alien customers** across galaxies, processes **millions of transactions per second**, and **never goes down**. Ever.
+
+That's System Design.
+
+**System Design** is the process of defining the **architecture**, **components**, **modules**, **interfaces**, and **data flow** for a system to satisfy specified requirements.
+
+It's not about writing code. It's about deciding:
+
+- **Where** does the code run?
+- **How** do different parts talk to each other?
+- **What happens** when something breaks?
+- **How** do we handle 10x more users tomorrow?
+
+### Why does it matter?
+
+Every tech company — from a 5-person startup to Google — makes system design decisions daily. Bad decisions lead to:
+
+- 💥 Outages (your app goes down during a sale)
+- 🐌 Slowness (users wait 10 seconds for a page to load)
+- 💸 Wasted money (over-provisioning servers you don't need)
+- 🔓 Security breaches (data leaks because of a poor architecture choice)
+
+Good system design prevents all of this.
+
+---
+
+## 🎬 Animation — The Alien Bank
+
+Let's visualize a simple system. A user opens the **Alien Bank** app on their phone:
+
+1. **Client (📱)** — The user's phone sends a request: "Show me my balance"
+2. **DNS (🌐)** — The request first hits a DNS server to find out *where* the bank's servers live
+3. **Load Balancer (⚖️)** — The request arrives at a load balancer, which picks the least-busy server
+4. **Server (🖥️)** — The chosen server processes the request
+5. **Cache (⚡)** — The server checks: "Do I already have this user's balance cached?" If yes, instant response!
+6. **Database (🗄️)** — If not cached, the server queries the database for the balance
+7. **Response (📱)** — The balance travels back the same path to the user's phone
+
+This entire journey takes **~200 milliseconds**. That's faster than you can blink.
+
+> Every single concept in this course — DNS, load balancers, caching, databases, queues — is a piece of this puzzle. By the end, you'll be able to design the entire puzzle yourself.
+
+---
+
+## 🧩 Real System Diagram — Mapping to Netflix
+
+The Alien Bank flow above isn't hypothetical. It's *exactly* how Netflix works when you press play:
+
+| Step | Alien Bank | Netflix |
+|------|-----------|---------|
+| Client | Phone app | TV / Browser / Mobile app |
+| DNS | Find bank servers | Find Netflix edge servers |
+| Load Balancer | Pick least-busy server | Route to nearest CDN node |
+| Server | Process balance request | Serve video metadata + stream URL |
+| Cache | Cached balance | Cached video metadata |
+| Database | Account records | User profiles, watch history |
+
+See? Same bones, different skin. Learn the pattern once, apply it everywhere.
+
+---
+
+## 🛠️ Example — Think in Trade-Offs
+
+System design is all about **trade-offs**. There is no perfect system. Every choice has a cost.
+
+**Scenario:** Your app has 10,000 users. Everything works fine on a single server.
+
+Now you get featured on Product Hunt. Suddenly, **1 million users** hit your app.
+
+| Option | Pro | Con |
+|--------|-----|-----|
+| **Vertical Scaling** (bigger server) | Simple, no code changes | There's a ceiling — servers can only get so big |
+| **Horizontal Scaling** (more servers) | Virtually unlimited scale | Need a load balancer, shared state management |
+| **Caching** (store frequent data in memory) | 100x faster reads | Cache can become stale (show old data) |
+| **CDN** (serve static files from edge) | Global speed improvement | Costs money, adds complexity |
+
+A great system designer doesn't pick one — they pick the **right combination** for their constraints.
+
+---
+
+## 🎯 Quick Check
+
+**Question:** A social media app with 50 million users needs to display each user's feed in under 200ms. The feed is read-heavy (99% reads, 1% writes). Which is the MOST impactful first optimization?
+
+- A) Switch from SQL to NoSQL
+- B) Add a caching layer for feed data  ✅
+- C) Use a message queue for writes
+- D) Add more application servers
+
+**Answer:** **B — Caching.** For read-heavy workloads, caching is the single most impactful optimization. It can reduce database load by 90%+ and serve responses in single-digit milliseconds. The other options help, but caching gives the biggest bang for the effort.

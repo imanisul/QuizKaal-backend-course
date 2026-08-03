@@ -1,23 +1,38 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Lock } from "lucide-react";
-import { isLessonUnlocked } from "@/utils/progress";
+import { useCourseProgress } from "@/utils/progressEngine";
+import { allLessons } from "@/data/roadmap";
+import { COURSE_STRUCTURE as MOBILE_COURSE_STRUCTURE, flattenCourse as flattenMobileCourse } from "@/data/mobile/courseStructure";
 import { motion } from "framer-motion";
 
+const backendLessons = allLessons.filter(l => l.courseId === "backend-engineering").map(l => l.slug);
+const mobileLessons = flattenMobileCourse(MOBILE_COURSE_STRUCTURE).map(l => l.lessonSlug);
+
 export default function ProgressGuard({ lessonSlug, children }) {
-  const [unlocked, setUnlocked] = useState(false);
+  const pathname = usePathname() || "";
+  const isMobileCourse = pathname.includes("/mobile-course/");
+
+  const courseId = isMobileCourse ? "mobile-engineering" : "backend-engineering";
+  const allLessonIds = isMobileCourse ? mobileLessons : backendLessons;
+  const returnPath = isMobileCourse ? "/mobile-course" : "/roadmap";
+
+  const courseStats = useCourseProgress(courseId, allLessonIds);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    if (isLessonUnlocked(lessonSlug)) {
-      setUnlocked(true);
-    }
-  }, [lessonSlug]);
+  }, []);
+
+  const lessonIdx = allLessonIds.indexOf(lessonSlug);
+  const nextLessonSlug = courseStats.currentLessonId || allLessonIds[0];
+  const nextLessonIdx = allLessonIds.indexOf(nextLessonSlug);
+  const unlocked = lessonIdx <= nextLessonIdx;
 
   if (!mounted) {
-    // Prevent hydration mismatch by rendering a skeleton or nothing
+    // Prevent hydration mismatch by rendering a skeleton
     return <div className="min-h-screen animate-pulse bg-surface/5" />;
   }
 
@@ -31,8 +46,8 @@ export default function ProgressGuard({ lessonSlug, children }) {
         <p className="text-textSecondary max-w-md mb-8 leading-relaxed">
           You haven't unlocked this lesson yet. Please complete the previous lessons to unlock this content.
         </p>
-        <Link href="/roadmap" className="px-6 py-3 bg-white text-black font-bold rounded-xl hover:bg-white/90 transition-colors">
-          Return to Roadmap
+        <Link href={returnPath} className="px-6 py-3 bg-white text-black font-bold rounded-xl hover:bg-white/90 transition-colors">
+          Return to Course
         </Link>
       </div>
     );

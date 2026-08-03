@@ -1,0 +1,144 @@
+---
+title: "Load Balancers"
+description: "How load balancers distribute traffic, health checks, algorithms (round robin, least connections, IP hash, geo-routing), and scaling patterns."
+order: 11
+module: "scale-reliability"
+---
+
+## 🧠 Concept — The Traffic Cop
+
+Imagine a toll booth with a single lane. Works fine for 100 cars/hour. But during rush hour with 10,000 cars? Total gridlock.
+
+A **Load Balancer** is a toll booth with intelligence. It:
+1. Receives all incoming traffic
+2. Distributes requests across multiple servers
+3. Monitors server health (removes dead servers)
+4. Ensures no single server is overwhelmed
+
+Without a load balancer, you can't scale horizontally. Period.
+
+### Where Load Balancers Sit
+
+```
+                   Internet
+                      │
+                      ▼
+               🟨 Load Balancer
+              ╱       │       ╲
+          🟩 S1    🟩 S2    🟩 S3
+              ╲       │       ╱
+               🟧 Database
+```
+
+---
+
+## 🎬 Animation — Load Balancing Algorithms
+
+### 1. Round Robin
+The simplest. Requests go to servers in order: S1 → S2 → S3 → S1 → S2 → S3 → ...
+
+```
+Request 1 → 🟩 Server 1
+Request 2 → 🟩 Server 2
+Request 3 → 🟩 Server 3
+Request 4 → 🟩 Server 1  (back to start)
+```
+
+✅ Simple, fair distribution  
+❌ Doesn't account for server capacity or current load  
+
+### 2. Least Connections
+Send the request to the server with the **fewest active connections**.
+
+```
+🟩 Server 1: 45 connections
+🟩 Server 2: 12 connections  ← Next request goes here
+🟩 Server 3: 38 connections
+```
+
+✅ Adapts to real-time server load  
+✅ Prevents overloading slow servers  
+❌ Requires tracking connection counts  
+
+### 3. Weighted Round Robin
+Like round robin, but some servers get more traffic based on their capacity.
+
+```
+🟩 Server 1 (8 CPU): weight 4 → gets 4 of every 7 requests
+🟩 Server 2 (4 CPU): weight 2 → gets 2 of every 7 requests
+🟩 Server 3 (2 CPU): weight 1 → gets 1 of every 7 requests
+```
+
+✅ Accounts for heterogeneous hardware  
+
+### 4. IP Hash
+Hash the client's IP address to determine which server handles it. The **same client always goes to the same server**.
+
+```
+Client IP 192.168.1.10 → hash → 🟩 Server 2 (always)
+Client IP 192.168.1.20 → hash → 🟩 Server 3 (always)
+```
+
+✅ Session affinity without sticky sessions  
+✅ Great for caching (same server has the user's data cached)  
+❌ Uneven distribution if some IPs generate more traffic  
+
+### 5. Geo-Routing
+Route users to the **geographically closest** data center.
+
+```
+User in Mumbai    → 🟩 ap-south-1 (Mumbai DC)
+User in London    → 🟩 eu-west-1 (London DC)
+User in New York  → 🟩 us-east-1 (Virginia DC)
+```
+
+✅ Lowest possible latency  
+✅ Compliance with data residency laws  
+❌ Requires multi-region deployment  
+
+---
+
+## 🧩 Real System Diagram — Health Checks
+
+Load balancers don't blindly send traffic. They continuously **health check** each server:
+
+```
+🟨 LB sends: GET /health → 🟩 Server 1 → 200 OK ✅ (keep in rotation)
+🟨 LB sends: GET /health → 🟩 Server 2 → 200 OK ✅ (keep in rotation)
+🟨 LB sends: GET /health → 🟩 Server 3 → ⏱️ Timeout ❌ (remove from rotation!)
+```
+
+If a server fails **3 consecutive health checks** (configurable), the LB removes it. When it recovers, the LB adds it back. Users never see the failure.
+
+**Netflix** runs health checks every **10 seconds** across thousands of servers. If latency exceeds 500ms, the server is marked unhealthy even if it's technically "up."
+
+---
+
+## 🛠️ Example — Scaling an Indian Food Delivery App
+
+Your app handles orders across India. Here's how load balancing evolves:
+
+| Stage | Users | LB Strategy | Why |
+|-------|-------|-------------|-----|
+| MVP | 5,000 | Single Nginx (Round Robin) | Simple, works for small scale |
+| Growth | 100,000 | AWS ALB (Least Connections) | Handles uneven request sizes |
+| Scale | 5,000,000 | Regional LBs (Geo-Routing) | Mumbai users → Mumbai servers |
+| Mega Scale | 50,000,000 | Multi-tier: DNS LB → Regional LB → Service LB | Different LBs at different layers |
+
+**Key numbers:**
+- A single Nginx can handle **~50,000 concurrent connections**
+- AWS ALB can handle **millions of requests/second**
+- Google's Maglev LB handles **10+ million packets/second per machine**
+
+---
+
+## 🎯 Quick Check
+
+**Question:** Your e-commerce app has 3 servers behind a round-robin load balancer. Server 1 handles image resizing (slow, CPU-heavy), while Servers 2 and 3 handle simple API calls (fast). Users complain about slow responses every 3rd request. What's the best fix?
+
+- A) Add more servers behind round robin
+- B) Switch to least-connections algorithm ✅
+- C) Use IP hash instead
+- D) Remove Server 1 from the rotation
+
+**Answer:** **B — Least Connections.** Round robin blindly sends every 3rd request to the slow image-processing Server 1, even though it's already overloaded. Least Connections would naturally send fewer requests to Server 1 (since its connections stay open longer) and more to the faster Servers 2 and 3. Better yet: separate the image processing into its own service with its own load balancer.

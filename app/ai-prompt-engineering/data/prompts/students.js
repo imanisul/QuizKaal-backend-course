@@ -1,0 +1,122 @@
+export const studentPrompts = [
+  {
+    id: "student-summary",
+    title: "Chapter Concept Summarizer",
+    category: "Students",
+    difficulty: "Beginner",
+    bestTool: "Claude 3.5 Sonnet",
+    description: "Summarize a dense textbook chapter into easily digestible notes.",
+    prompt: "I am studying [Subject, e.g., Biology] in [Grade/College Year]. I just read a chapter on [Topic]. Please summarize the core concepts into a structured outline. Use headings, bullet points, and highlight 5 key vocabulary terms with their definitions. Do not include unnecessary fluff.",
+    exampleOutput: "# Core Concepts\n## 1. Photosynthesis\n...\n**Key Terms**\n- Chlorophyll: ...",
+    whenToUse: "Right after reading a chapter, to solidify your understanding before an exam.",
+    proTips: ["Upload a PDF of your notes and ask the AI to summarize based ONLY on your uploaded notes."]
+  },
+  {
+    id: "student-flashcards",
+    title: "Anki Flashcard Generator",
+    category: "Students",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT",
+    description: "Automatically generate Q&A flashcards formatted for Anki or Quizlet.",
+    prompt: "I need to memorize facts about [Topic]. Create a list of 20 high-yield flashcards. Format the output exactly as 'Question,Answer' on each line so I can easily import it into Anki/Quizlet as a CSV file. Keep the answers concise (under 2 sentences).",
+    exampleOutput: "What is the powerhouse of the cell?,Mitochondria.\nWhat is the formula for force?,F = ma.",
+    whenToUse: "When you need to memorize a large volume of facts for a test.",
+    proTips: ["You can paste your syllabus and ask it to generate flashcards covering only those topics."]
+  },
+  {
+    id: "student-mcqs",
+    title: "Practice MCQ Test",
+    category: "Students",
+    difficulty: "Intermediate",
+    bestTool: "Claude / ChatGPT",
+    description: "Generate a custom multiple-choice test to check your knowledge.",
+    prompt: "Act as a strict but fair professor. Create a 15-question multiple-choice test on [Topic] at a [Difficulty Level, e.g., AP High School, University] level. Ask all the questions first without providing the answers. Wait for my response, grade me, and then explain why my incorrect answers were wrong.",
+    exampleOutput: "Question 1: Which of the following is true about...\nA) ... B) ... C) ... D) ...",
+    whenToUse: "A few days before an exam to find gaps in your knowledge.",
+    proTips: ["Ask for 'application-based' questions rather than simple memorization questions for harder exams."]
+  },
+  {
+    id: "student-essay",
+    title: "Essay Outline Architect",
+    category: "Students",
+    difficulty: "Advanced",
+    bestTool: "Claude 3.5 Sonnet",
+    description: "Build a strong, logical skeleton for your essay before you start writing.",
+    prompt: "I need to write a [Word Count] word essay on the topic: '[Essay Prompt]'. The main thesis I want to argue is '[Your Thesis]'. Please generate a detailed, logical outline for this essay. Include an introduction structure, 3 main body paragraphs (with topic sentences and suggested evidence types), and a conclusion structure.",
+    exampleOutput: "I. Introduction\n- Hook:\n- Background:\n- Thesis Statement:\nII. Body Paragraph 1...",
+    whenToUse: "When you have writer's block and don't know how to structure your essay.",
+    proTips: ["Never ask the AI to write the essay for you (plagiarism). Use it strictly for the outline and brainstorming."]
+  },
+  {
+    id: "student-planner",
+    title: "Exam Study Planner",
+    category: "Students",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT",
+    description: "Create a reverse-engineered study schedule leading up to exam day.",
+    prompt: "I have an exam in [Subject] on [Date]. Today is [Today's Date]. I need to cover [Number] chapters: [List the chapters/topics]. I can study for [Number] hours a day. Please create a day-by-day study schedule that covers all material, includes 2 days for review/mock exams, and ensures I don't burn out.",
+    exampleOutput: "Monday, Oct 1: Chapter 1 (2 hours)\nTuesday, Oct 2: Chapter 2 (2 hours)\...",
+    whenToUse: "3-4 weeks before a major exam like finals, NEET, or JEE.",
+    proTips: ["Include your extracurricular activities in the prompt so the AI plans around them."]
+  },
+  {
+    id: "student-doubts",
+    title: "Socratic Tutor (Doubt Solving)",
+    category: "Students",
+    difficulty: "Advanced",
+    bestTool: "ChatGPT (GPT-4o)",
+    description: "An AI tutor that guides you to the answer instead of just giving it to you.",
+    prompt: "Act as a Socratic tutor. I am struggling with [Specific Problem or Concept]. Do NOT just give me the answer. Instead, ask me guiding questions one at a time to help me figure out the answer on my own. Wait for my reply before asking the next question.",
+    exampleOutput: "I'd be happy to help! Let's start from the beginning. What do you already know about the variables in this equation?",
+    whenToUse: "When you are stuck on a math or physics problem and want to actually learn how to solve it.",
+    proTips: ["This is the single most powerful prompt for deep learning. Stick with it even if it's frustrating!"]
+  },
+  {
+    id: "student-mindmap",
+    title: "Text-to-Mindmap",
+    category: "Students",
+    difficulty: "Advanced",
+    bestTool: "Claude",
+    description: "Generate a structured markdown format that can be pasted into mindmap software.",
+    prompt: "Read the following notes on [Topic]. Convert the relationships between these concepts into a Markdown format that represents a mind map structure (using nested bullet points). Group related sub-topics logically under major branches. [Paste Notes]",
+    exampleOutput: "- Central Idea\n  - Branch 1\n    - Sub-branch A\n    - Sub-branch B\n  - Branch 2...",
+    whenToUse: "When you are a visual learner and need to see how concepts connect.",
+    proTips: ["You can paste the markdown output into tools like Markmap.js or Obsidian to instantly visualize it."]
+  },
+  {
+    id: "student-competitive",
+    title: "JEE / NEET / UPSC Strategy",
+    category: "Students",
+    difficulty: "Advanced",
+    bestTool: "Perplexity AI",
+    description: "Get data-backed strategies and weightage for competitive Indian exams.",
+    prompt: "I am preparing for the [JEE/NEET/UPSC] exam in [Year]. Based on the previous 5 years' question papers, what are the top 10 most high-weightage chapters I must focus on? Provide a strategic breakdown of how many questions typically come from these chapters, and suggest a prioritized order of study.",
+    exampleOutput: "Based on recent trends, here are the high-weightage chapters:\n1. Thermodynamics (Average 3-4 questions)...\nStrategy...",
+    whenToUse: "At the beginning of your competitive exam preparation to study smart.",
+    proTips: ["Use an AI connected to the internet (like Perplexity or ChatGPT with Web Search) for this to get accurate, up-to-date trends."]
+  },
+  {
+    id: "student-project",
+    title: "Project Idea Generator",
+    category: "Students",
+    difficulty: "Beginner",
+    bestTool: "ChatGPT",
+    description: "Brainstorm unique ideas for school/college projects or practical files.",
+    prompt: "I need to submit a final project for my [Subject] class. I am in [Grade/College Year]. The requirements are: [List requirements]. Can you give me 5 unique, impressive, but highly feasible project ideas? For each idea, list the core materials/software needed and the estimated time to complete.",
+    exampleOutput: "Idea 1: Smart Plant Waterer using Arduino\nMaterials: Arduino Uno, Soil Moisture Sensor...\nTime: 1 week...",
+    whenToUse: "When you are assigned an open-ended project and want to stand out.",
+    proTips: ["Tell the AI what tools or skills you ALREADY have so it tailors the ideas to you."]
+  },
+  {
+    id: "student-viva",
+    title: "Mock Viva / Oral Exam",
+    category: "Students",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT Voice Mode",
+    description: "Simulate a high-pressure Viva Voce environment.",
+    prompt: "I have a Viva/Oral exam on [Topic or Project Name] tomorrow. Act as an examiner. Ask me 10 sequential questions, ranging from basic definitions to deep conceptual applications. Ask them ONE at a time. After I answer, briefly critique my answer, give me a score out of 10 for that answer, and then ask the next question.",
+    exampleOutput: "Examiner: Let's begin. Can you explain the fundamental principle behind your project?\nYou: [Your Answer]\nExaminer: Good (8/10). However, you missed... Next question...",
+    whenToUse: "The night before a practical exam or thesis defense.",
+    proTips: ["Use the mobile app's Voice mode for this prompt to simulate a real conversation!"]
+  }
+];

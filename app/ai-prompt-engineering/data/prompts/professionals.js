@@ -1,0 +1,122 @@
+export const professionalPrompts = [
+  {
+    id: "pro-email",
+    title: "The Perfect Cold Email",
+    category: "Working Professionals",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT",
+    description: "Write a high-converting cold email to a potential client or partner.",
+    prompt: "I need to write a cold email to [Name], who is the [Job Title] at [Company Name]. My goal is to [Goal, e.g., schedule a 15-minute intro call to pitch our new SaaS tool]. We have a mutual connection: [Mutual Connection/Interest]. Keep the email under 150 words. Make the subject line punchy and curiosity-driven. Tone should be professional but not overly stiff.",
+    exampleOutput: "Subject: Quick question regarding [Topic] at [Company]...\nHi [Name],\nI noticed we both know...",
+    whenToUse: "When doing B2B sales or networking on LinkedIn.",
+    proTips: ["A/B test subject lines by asking the AI to provide 5 different subject line options."]
+  },
+  {
+    id: "pro-meeting",
+    title: "Actionable Meeting Minutes",
+    category: "Working Professionals",
+    difficulty: "Beginner",
+    bestTool: "Claude",
+    description: "Turn messy meeting transcripts into structured action items.",
+    prompt: "Here is the raw transcript from our weekly sync meeting. Please extract the key decisions made and create a list of Action Items. Format the Action Items as a markdown table with columns for: Task, Owner, and Deadline. If a deadline wasn't mentioned, put 'TBD'.\n\n[Paste Transcript/Notes]",
+    exampleOutput: "| Task | Owner | Deadline |\n| Update Q3 projections | Sarah | EOD Friday |",
+    whenToUse: "Immediately after a Zoom call or team sync.",
+    proTips: ["Claude is exceptional at handling massive transcripts (up to a 1-hour meeting) accurately."]
+  },
+  {
+    id: "pro-excel",
+    title: "Excel/Google Sheets Wizard",
+    category: "Working Professionals",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT",
+    description: "Generate complex Excel formulas instantly.",
+    prompt: "I am using Excel. In Column A, I have [e.g., Dates]. In Column B, I have [e.g., Sales Amounts]. I need a formula that will [Describe goal, e.g., sum all sales amounts that occurred in Q3 of 2023]. Please provide the exact formula and briefly explain how it works.",
+    exampleOutput: "`=SUMIFS(B:B, A:A, \">=2023-07-01\", A:A, \"<=2023-09-30\")`\nExplanation: SUMIFS allows multiple criteria...",
+    whenToUse: "When you are stuck trying to write VLOOKUP, XLOOKUP, or nested IF statements.",
+    proTips: ["You can also ask it to generate an AppScript (Google Sheets) or VBA Macro to automate repetitive tasks."]
+  },
+  {
+    id: "pro-proposal",
+    title: "Client Proposal Draft",
+    category: "Working Professionals",
+    difficulty: "Advanced",
+    bestTool: "Claude 3.5 Sonnet",
+    description: "Write a professional business proposal outline.",
+    prompt: "I need to write a business proposal for a client in the [Industry] sector. The project is [Project Description]. Our proposed budget is [Budget] and the timeline is [Timeline]. Create a formal proposal outline including an Executive Summary, Scope of Work, Deliverables, Timeline, and Pricing Structure. Write the Executive Summary in full.",
+    exampleOutput: "1. Executive Summary\nOur firm proposes to...\n2. Scope of Work...",
+    whenToUse: "When trying to close a freelance or B2B contract.",
+    proTips: ["Upload your company's previous proposals to Claude so it matches your brand's specific tone and formatting."]
+  },
+  {
+    id: "pro-review",
+    title: "Performance Review Writer",
+    category: "Working Professionals",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT",
+    description: "Write professional self-evaluations or peer reviews.",
+    prompt: "I need to write a [Self-Evaluation / Peer Review] for [Myself / Coworker Name] for Q3. Key achievements include: [List 2-3 wins]. Areas for improvement include: [List 1-2 areas]. Please write a professional, constructive 3-paragraph review. Emphasize the positive impact of the achievements on the company's bottom line.",
+    exampleOutput: "During Q3, [Name] consistently demonstrated excellence in...\nWhile there is room to grow in...",
+    whenToUse: "During annual or quarterly performance review cycles.",
+    proTips: ["Use the 'Compliment Sandwich' prompt to ensure critical feedback lands softly."]
+  },
+  {
+    id: "pro-resume",
+    title: "Tailored Resume Bullet Points",
+    category: "Working Professionals",
+    difficulty: "Advanced",
+    bestTool: "Claude",
+    description: "Rewrite your resume to perfectly match a specific job description.",
+    prompt: "I am applying for the [Job Title] role at [Company]. Here is the job description: [Paste JD]. \nHere is my current resume: [Paste Resume]. \nPlease rewrite my work experience bullet points to directly align with the keywords and requirements in the job description. Quantify my achievements wherever possible (e.g., 'Increased sales by X%'). Do not invent fake experience.",
+    exampleOutput: "- Spearheaded the deployment of [Keyword from JD], resulting in a 20% efficiency increase...",
+    whenToUse: "When applying for jobs to beat the ATS (Applicant Tracking System).",
+    proTips: ["Ask the AI to list the top 5 keywords from the JD so you know exactly what the recruiter is looking for."]
+  },
+  {
+    id: "pro-negotiation",
+    title: "Salary Negotiation Script",
+    category: "Working Professionals",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT",
+    description: "Draft a polite but firm salary negotiation email.",
+    prompt: "I just received a job offer for [Job Title]. They offered [Current Offer Amount]. Based on my research and experience, I want to ask for [Desired Amount]. Write a professional, appreciative email negotiating the salary. Mention my [Specific Skill/Experience] as justification, but reiterate how excited I am to join the team.",
+    exampleOutput: "Dear [Name],\nThank you so much for the offer... I am incredibly excited...\nBased on my 5 years of experience in [Skill]...",
+    whenToUse: "When you receive a job offer and want to counter-offer without sounding greedy.",
+    proTips: ["You can also roleplay the phone negotiation! 'Act as the hiring manager and practice negotiating with me.'"]
+  },
+  {
+    id: "pro-presentation",
+    title: "Executive Presentation Script",
+    category: "Working Professionals",
+    difficulty: "Intermediate",
+    bestTool: "Claude",
+    description: "Write speaker notes for a high-stakes executive presentation.",
+    prompt: "I am presenting our Q4 marketing results to the Executive Board. The main takeaway is that [Takeaway, e.g., we hit our lead targets but CAC increased by 10%]. \nWrite a 5-minute opening script for my presentation. It needs to be confident, concise, and immediately address the elephant in the room (the CAC increase) while pivoting to our solution.",
+    exampleOutput: "Good morning everyone. I'm excited to share that Q4 was our strongest quarter for top-line lead generation. However, you'll notice...",
+    whenToUse: "Before presenting to the C-Suite or Board of Directors.",
+    proTips: ["Ask the AI to include stage directions, like '[Pause for emphasis]' or '[Click to next slide]'."]
+  },
+  {
+    id: "pro-conflict",
+    title: "Workplace Conflict De-escalator",
+    category: "Working Professionals",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT",
+    description: "Draft a diplomatic Slack message or email to resolve tension.",
+    prompt: "I am having a conflict with a coworker named [Name]. They did [Action, e.g., took credit for my idea in a meeting]. I need to address this with them via Slack. Write a message that is assertive, establishes boundaries, but remains professional and avoids sounding aggressively accusatory. The goal is to collaborate better in the future.",
+    exampleOutput: "Hey [Name], I wanted to quickly touch base regarding the meeting today. I noticed that...",
+    whenToUse: "When emotions are high and you need an objective mediator to help you write a message.",
+    proTips: ["If their reply makes you angry, paste it into the AI and ask it to 'write a calm, de-escalating response'."]
+  },
+  {
+    id: "pro-analysis",
+    title: "SWOT Analysis Generator",
+    category: "Working Professionals",
+    difficulty: "Beginner",
+    bestTool: "Claude",
+    description: "Quickly generate a SWOT analysis for a project or company.",
+    prompt: "Act as a Management Consultant. Conduct a SWOT analysis (Strengths, Weaknesses, Opportunities, Threats) for [Company Name or Project Idea]. Provide 3 bullet points for each quadrant. Format the output clearly.",
+    exampleOutput: "**Strengths:**\n- Strong brand recognition...\n**Weaknesses:**...",
+    whenToUse: "During strategic planning sessions or when evaluating a new business venture.",
+    proTips: ["If the company is obscure, provide a 1-paragraph description of what they do before asking for the SWOT."]
+  }
+];

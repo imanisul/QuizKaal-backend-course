@@ -1,18 +1,22 @@
 "use client";
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
-import { ArrowRight, Lock, Trophy, ChevronDown, CheckCircle2 } from "lucide-react";
-import { roadmap, allLessons } from "@/data/roadmap";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, ChevronLeft, ShieldCheck, Zap, Globe, Trophy, Flame, Star, Rocket, BrainCircuit, Cloud, Code } from "lucide-react";
+import { ALL_COURSES } from "@/data/courseHub";
 import { getUnlockedLessons } from "@/utils/progress";
 import AnimatedCounter from "@/components/ui/AnimatedCounter";
-import RenderIcon from "@/components/ui/IconMap";
 import SkillGrid from "@/components/ui/SkillGrid";
+import CourseSlider from "@/components/roadmap/CourseSlider";
+import CourseFlowchart from "@/components/roadmap/CourseFlowchart";
+import ModuleModal from "@/components/roadmap/ModuleModal";
 
 export default function RoadmapContent() {
-  const [filter, setFilter] = useState("all");
-  const [expandedPhase, setExpandedPhase] = useState(null);
+  const router = useRouter();
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [selectedModule, setSelectedModule] = useState(null);
   const [unlockedLessons, setUnlockedLessons] = useState(["how-the-web-works"]);
 
   useEffect(() => {
@@ -24,330 +28,299 @@ export default function RoadmapContent() {
     return () => window.removeEventListener("quizkaal_progress_updated", loadProgress);
   }, []);
 
-  const available = unlockedLessons.length;
-  const total = allLessons.length;
-  const pct = Math.round((available / total) * 100);
+  const handleCourseClick = (course) => {
+    if (course.status === "upcoming") {
+      router.push("/coming-soon");
+    } else {
+      setSelectedCourse(course);
+    }
+  };
 
-  const filterOptions = [
-    { key: "all", label: "All" },
-    { key: "available", label: "Live" },
-    { key: "locked", label: "Upcoming" },
-    { key: "beginner", label: "Beginner" },
-    { key: "intermediate", label: "Intermediate" },
-    { key: "advanced", label: "Advanced" },
-  ];
+  const filters = ["All", "Live", "Available", "Upcoming", "Beginner", "Intermediate", "Advanced"];
 
-  function filterLessons(lessons) {
-    // Map lessons to inject dynamic status based on unlocked state
-    const dynamicLessons = lessons.map(l => ({
-      ...l,
-      status: unlockedLessons.includes(l.slug) ? "available" : "locked"
-    }));
-    
-    if (filter === "all") return dynamicLessons;
-    if (filter === "available") return dynamicLessons.filter((l) => l.status === "available");
-    if (filter === "locked") return dynamicLessons.filter((l) => l.status === "locked");
-    return dynamicLessons.filter((l) => l.difficulty === filter);
-  }
+  const filteredCourses = ALL_COURSES.filter(course => {
+    const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          course.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    if (!matchesSearch) return false;
 
-  const totalFiltered = roadmap.reduce((acc, g) => acc + filterLessons(g.lessons).length, 0);
+    if (activeFilter === "All") return true;
+    if (activeFilter === "Live" || activeFilter === "Available") return course.status === "live";
+    if (activeFilter === "Upcoming") return course.status === "upcoming";
+    return course.difficulty === activeFilter;
+  });
+
+  const totalLessons = ALL_COURSES.reduce((acc, course) => acc + course.lessons, 0);
+
+  // Group courses for sliders
+  const popularCourses = filteredCourses.filter(c => c.isPopular);
+  const beginnerCourses = filteredCourses.filter(c => c.difficulty === "Beginner");
+  const advancedCourses = filteredCourses.filter(c => c.difficulty === "Advanced" || c.difficulty === "Expert");
+  const aiCourses = filteredCourses.filter(c => c.category === "AI" || c.tags.includes("Data Science"));
+  const cloudCourses = filteredCourses.filter(c => c.category === "Architecture" || c.category === "Backend");
+  const languageCourses = filteredCourses.filter(c => c.category === "Languages");
 
   return (
-    <main className="max-w-[1000px] mx-auto px-4 sm:px-8 pt-12 pb-24 relative overflow-hidden">
-      {/* 1. HERO & STATS INTEGRATED */}
-      <section className="relative pt-12 pb-12 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/[0.06] mb-8">
-        {/* Ambient Glows */}
-        <div className="absolute top-0 left-0 w-[400px] md:w-[600px] h-[400px] md:h-[600px] bg-primary/10 rounded-full blur-[120px] opacity-50 pointer-events-none mix-blend-screen" />
+    <main className="min-h-screen bg-[#0a0a0c] text-white relative overflow-hidden font-sans pt-20 md:pt-28 pb-32">
+      
+      {/* Background Ambient Glows */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[150px] opacity-70 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[150px] opacity-70 pointer-events-none" />
+
+      <div className="max-w-[1280px] mx-auto px-6 sm:px-8 relative z-10">
         
-        <div className="relative z-10 max-w-2xl w-full">
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6"
-          >
-            <span className="flex h-2 w-2 rounded-full bg-success animate-pulse" />
-            <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-textTertiary">Course Roadmap</span>
-          </motion.div>
+        {/* Dynamic Header Section */}
+        <AnimatePresence mode="wait">
+          {!selectedCourse ? (
+            <motion.div 
+              key="hub-header"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="mb-12"
+            >
+              <div className="text-center max-w-3xl mx-auto mb-12">
+                <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6">
+                  <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
+                  <span className="text-xs font-bold uppercase tracking-widest text-textTertiary">Course Catalog</span>
+                </div>
+                <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight mb-6 drop-shadow-2xl">
+                  Choose Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent animate-gradient-shift">Destiny</span>
+                </h1>
+                <p className="text-lg text-textSecondary leading-relaxed">
+                  Explore comprehensive roadmaps for every engineering discipline. Track your progress, earn XP, and level up your career.
+                </p>
+              </div>
 
-          <h1 className="text-[clamp(2rem,6vw,4.5rem)] font-black tracking-tighter leading-[1.1] mb-4 text-white drop-shadow-2xl">
-            Master Backend <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary animate-gradient-shift drop-shadow-[0_0_15px_rgba(79,70,229,0.3)]">
-              Engineering
-            </span>
-          </h1>
+              {/* SEARCH & FILTER BAR (All in one horizontal row) */}
+              <div className="flex flex-col md:flex-row items-center gap-4 bg-white/[0.02] p-2 rounded-[2rem] border border-white/10 shadow-xl backdrop-blur-md">
+                
+                {/* Search Bar */}
+                <div className="relative w-full md:w-72 shrink-0">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-textTertiary w-5 h-5" />
+                  <input 
+                    type="text" 
+                    placeholder="Search courses..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-black/40 border border-white/5 rounded-full py-3.5 pl-12 pr-6 text-sm text-white placeholder-textTertiary focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                  />
+                </div>
+                
+                {/* Scrollable Filter Chips */}
+                <div className="w-full overflow-x-auto scrollbar-hide flex items-center gap-2 px-2 pb-2 md:pb-0">
+                  {filters.map(filter => {
+                    const isActive = activeFilter === filter;
+                    return (
+                      <button
+                        key={filter}
+                        onClick={() => setActiveFilter(filter)}
+                        className={`relative px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all duration-300 shrink-0
+                          ${isActive 
+                            ? 'text-white shadow-lg' 
+                            : 'text-textTertiary hover:text-white hover:bg-white/5'
+                          }
+                        `}
+                      >
+                        {isActive && (
+                          <motion.div
+                            layoutId="activeFilter"
+                            className="absolute inset-0 bg-gradient-to-r from-primary/80 to-accent/80 rounded-full z-0"
+                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                          />
+                        )}
+                        <span className="relative z-10">{filter}</span>
+                      </button>
+                    );
+                  })}
+                </div>
 
-          <p className="text-base md:text-lg text-textSecondary max-w-xl leading-relaxed font-medium mx-auto md:mx-0">
-            Stop guessing how the web works. Build, scale, and secure real systems. Follow this chronological path from HTTP to distributed architecture.
-          </p>
-        </div>
-
-        {/* Stats Block (Integrated) */}
-        <motion.div 
-          initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
-          className="relative z-10 flex justify-center md:justify-start gap-8 md:gap-12 pb-2 w-full md:w-auto mt-4 md:mt-0"
-        >
-          <div>
-            <div className="text-3xl md:text-4xl font-black text-white"><AnimatedCounter target={available} /></div>
-            <div className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-textTertiary mt-1 md:mt-2">Live Lessons</div>
-          </div>
-          <div>
-            <div className="text-3xl md:text-4xl font-black text-white"><AnimatedCounter target={total} /></div>
-            <div className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-textTertiary mt-1 md:mt-2">Total Lessons</div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* 2. PROGRESS BAR & FILTERS */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 relative z-10">
-        
-        {/* Modern Segmented Filters */}
-        <div className="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-          <span className="text-[11px] font-bold tracking-widest uppercase text-textTertiary mr-2 hidden md:block">Filter:</span>
-          <LayoutGroup>
-            <div className="flex flex-nowrap md:flex-wrap items-center gap-1 bg-black/40 p-1.5 rounded-xl border border-white/10 shadow-inner min-w-max">
-              {filterOptions.map((opt) => {
-                const isActive = filter === opt.key;
-                return (
-                  <button
-                    key={opt.key}
-                    onClick={() => setFilter(opt.key)}
-                    className={`relative px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-[13px] font-semibold transition-colors duration-300 rounded-lg whitespace-nowrap ${isActive ? "text-white" : "text-textSecondary hover:text-white"}`}
-                  >
-                    {isActive && (
-                      <motion.div
-                        layoutId="filter-pill"
-                        className="absolute inset-0 rounded-lg bg-white/10 shadow-sm border border-white/10"
-                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                      />
-                    )}
-                    <span className="relative z-10">{opt.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </LayoutGroup>
-        </div>
-
-        {/* Mini Progress */}
-        <div className="w-full md:w-64">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-bold text-textSecondary uppercase tracking-wider">Progress</span>
-            <span className="text-xs font-bold text-success font-mono">{pct}%</span>
-          </div>
-          <div className="w-full h-1.5 rounded-full bg-white/5 overflow-hidden border border-black">
-            <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-success/80 to-primary"
-              initial={{ width: 0 }}
-              animate={{ width: `${pct}%` }}
-              transition={{ duration: 1, delay: 0.5 }}
-            />
-          </div>
-        </div>
-
-      </div>
-
-      {/* 3. SINGLE COLUMN TIMELINE */}
-      <div className="relative w-full max-w-4xl mx-auto pl-2 md:pl-0">
-        
-        {/* Continuous Vertical Line */}
-        <div className="absolute left-[27px] md:left-[39px] top-4 bottom-0 w-[2px] bg-gradient-to-b from-primary/40 via-white/10 to-transparent rounded-full" />
-
-        {roadmap.map((group, gi) => {
-          const isStandalone = group.isStandalone;
-          const filtered = isStandalone ? [] : filterLessons(group.lessons);
-          if (filtered.length === 0 && !isStandalone) return null;
-          const isExpanded = expandedPhase === gi || expandedPhase === null;
-          const hasLive = isStandalone ? true : group.lessons.some((l) => l.status === "available");
-
-          return (
-            <div key={group.phase} className="relative w-full mb-6 md:mb-12 flex items-start gap-3 md:gap-10 group/phase">
-              
-              {/* Timeline Node */}
-              <div className="relative z-20 shrink-0 mt-3 md:mt-4">
-                <div 
-                  className={`w-10 h-10 md:w-20 md:h-20 rounded-full flex items-center justify-center border-[3px] md:border-[4px] border-[#030712] transition-colors duration-500 shadow-xl ${hasLive ? 'bg-primary' : 'bg-surface'}`}
-                  style={{ boxShadow: hasLive ? '0 0 20px rgba(79,70,229,0.4)' : 'none' }}
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div 
+              key="course-header"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mb-16 border-b border-white/10 pb-12"
+            >
+              <div>
+                <button 
+                  onClick={() => setSelectedCourse(null)}
+                  className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-textTertiary hover:text-white transition-colors mb-6 group"
                 >
-                  <RenderIcon iconName={group.emoji} size={18} className={`md:w-6 md:h-6 ${hasLive ? 'text-white' : 'text-textTertiary'}`} />
+                  <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                  Back to Catalog
+                </button>
+                <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-4" style={{ color: selectedCourse.gradient.split(',')[1].trim() }}>
+                  {selectedCourse.title}
+                </h1>
+                <p className="text-textSecondary text-lg max-w-2xl">
+                  {selectedCourse.description}
+                </p>
+              </div>
+
+              {/* Course Specific Stats */}
+              <div className="flex gap-6 shrink-0 bg-white/5 p-6 rounded-2xl border border-white/10">
+                <div className="flex flex-col gap-1">
+                  <span className="text-2xl font-black text-white">{selectedCourse.modules}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-textTertiary">Modules</span>
+                </div>
+                <div className="w-px bg-white/10" />
+                <div className="flex flex-col gap-1">
+                  <span className="text-2xl font-black text-white">{selectedCourse.lessons}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-textTertiary">Lessons</span>
+                </div>
+                <div className="w-px bg-white/10" />
+                <div className="flex flex-col gap-1">
+                  <span className="text-2xl font-black text-white text-right">{selectedCourse.duration}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-textTertiary text-right">Est. Time</span>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Content Section */}
+        <AnimatePresence mode="wait">
+          {!selectedCourse ? (
+            <motion.div 
+              key="sliders"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.4 }}
+              className="flex flex-col gap-8"
+            >
+              {searchQuery || activeFilter !== "All" ? (
+                /* Search/Filter Results - Render as slider for consistency if they want, but grid might be better here. We'll use slider if there are enough, else fallback. Using slider for consistency. */
+                <CourseSlider 
+                  title="Search Results" 
+                  icon={Search} 
+                  courses={filteredCourses} 
+                  onCourseClick={handleCourseClick} 
+                />
+              ) : (
+                /* Categorized Sliders */
+                <>
+                  <CourseSlider 
+                    title="Popular Courses" 
+                    subtitle="Most chosen by the QuizKaal community"
+                    icon={Flame}
+                    courses={popularCourses} 
+                    onCourseClick={handleCourseClick} 
+                  />
+                  <CourseSlider 
+                    title="Beginner Friendly" 
+                    subtitle="Start your journey here with zero prerequisites"
+                    icon={Star}
+                    courses={beginnerCourses} 
+                    onCourseClick={handleCourseClick} 
+                  />
+                  <CourseSlider 
+                    title="Advanced Engineering" 
+                    subtitle="Deep dives for senior developers"
+                    icon={Rocket}
+                    courses={advancedCourses} 
+                    onCourseClick={handleCourseClick} 
+                  />
+                  <CourseSlider 
+                    title="AI & Prompt Engineering" 
+                    subtitle="Master the future of technology"
+                    icon={BrainCircuit}
+                    courses={aiCourses} 
+                    onCourseClick={handleCourseClick} 
+                  />
+                  <CourseSlider 
+                    title="Cloud & System Design" 
+                    subtitle="Architect highly scalable distributed systems"
+                    icon={Cloud}
+                    courses={cloudCourses} 
+                    onCourseClick={handleCourseClick} 
+                  />
+                  <CourseSlider 
+                    title="Programming Languages" 
+                    subtitle="Master syntax, internals, and standard libraries"
+                    icon={Code}
+                    courses={languageCourses} 
+                    onCourseClick={handleCourseClick} 
+                  />
+                </>
+              )}
+              
+              {filteredCourses.length === 0 && (
+                <div className="py-20 text-center">
+                  <div className="text-textTertiary mb-4"><Search size={48} className="mx-auto opacity-50" /></div>
+                  <h3 className="text-xl font-bold text-white mb-2">No courses found</h3>
+                  <p className="text-textSecondary">Try adjusting your search or filters.</p>
+                </div>
+              )}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="flowchart"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 40 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <CourseFlowchart 
+                course={selectedCourse} 
+                unlockedLessons={unlockedLessons}
+                onModuleClick={(module) => setSelectedModule(module)}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Global Platform Stats (Only show in hub view) */}
+        <AnimatePresence>
+          {!selectedCourse && (
+            <motion.section 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="mt-20 pt-20 border-t border-white/10"
+            >
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-20 text-center">
+                <div className="flex flex-col items-center">
+                  <Globe className="w-8 h-8 text-primary mb-4" />
+                  <div className="text-4xl font-black text-white mb-2"><AnimatedCounter target={12} /></div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-textTertiary">Tech Stacks</div>
+                </div>
+                <div className="flex flex-col items-center">
+                  <ShieldCheck className="w-8 h-8 text-success mb-4" />
+                  <div className="text-4xl font-black text-white mb-2"><AnimatedCounter target={totalLessons} /></div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-textTertiary">Total Lessons</div>
+                </div>
+                <div className="flex flex-col items-center">
+                  <Zap className="w-8 h-8 text-warning mb-4" />
+                  <div className="text-4xl font-black text-white mb-2"><AnimatedCounter target={250} /></div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-textTertiary">Projects</div>
+                </div>
+                <div className="flex flex-col items-center">
+                  <Trophy className="w-8 h-8 text-accent mb-4" />
+                  <div className="text-4xl font-black text-white mb-2">XP</div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-textTertiary">Global Leveling</div>
                 </div>
               </div>
 
-              {/* Minimalist Phase Card */}
-              <div className="flex-1 mt-1 md:mt-2 w-[calc(100%-3rem)] md:w-auto">
-                {isStandalone ? (
-                  <Link href={group.href} className="block group/link">
-                    <motion.div
-                      className="bg-primary/10 border border-primary/30 hover:border-primary/50 transition-colors duration-500 rounded-[1.5rem] overflow-hidden shadow-2xl relative"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: "-100px" }}
-                    >
-                      <div className="w-full text-left flex flex-row items-start sm:items-center justify-between gap-3 p-5 md:p-8">
-                        <div className="flex-1 min-w-0 pr-2">
-                          <div className="text-[10px] md:text-[11px] font-bold tracking-widest uppercase text-primary mb-1 md:mb-2 flex flex-wrap items-center gap-2">
-                            Phase {gi + 1}
-                            <span className="font-mono text-[9px] md:text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary animate-pulse whitespace-nowrap">
-                              Premium Course
-                            </span>
-                          </div>
-                          <h2 className="text-xl md:text-3xl font-extrabold tracking-tight text-white mb-1.5 md:mb-2">{group.phase}</h2>
-                          {group.description && (
-                            <p className="text-sm md:text-base text-textSecondary leading-relaxed">{group.description}</p>
-                          )}
-                        </div>
-                        <div className="p-1.5 sm:p-2 rounded-full bg-primary/20 text-primary transition-transform duration-500 shrink-0 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 mt-1 sm:mt-0">
-                          <ArrowRight className="w-4 h-4 sm:w-6 sm:h-6" />
-                        </div>
-                      </div>
-                    </motion.div>
-                  </Link>
-                ) : (
-                  <motion.div
-                    className="bg-[#0A0A0A] border border-white/5 hover:border-white/10 transition-colors duration-500 rounded-[1.5rem] overflow-hidden shadow-2xl relative"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                  >
-                  <button
-                    onClick={() => setExpandedPhase(expandedPhase === gi ? null : gi)}
-                    aria-label={isExpanded ? `Collapse ${group.phase}` : `Expand ${group.phase}`}
-                    aria-expanded={isExpanded}
-                    className="w-full text-left flex flex-row items-start sm:items-center justify-between gap-2 sm:gap-3 p-4 md:p-8 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
-                  >
-                    <div className="flex-1 min-w-0 pr-2">
-                      <div className="text-[10px] md:text-[11px] font-bold tracking-widest uppercase text-primary mb-1 md:mb-2 flex flex-wrap items-center gap-2">
-                        Phase {gi + 1}
-                        <span className="font-mono text-[9px] md:text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-textSecondary whitespace-nowrap">
-                          {filtered.length} Lessons
-                        </span>
-                      </div>
-                      <h2 className="text-xl md:text-3xl font-extrabold tracking-tight text-white mb-1.5 md:mb-2 leading-tight">{group.phase}</h2>
-                      {group.description && (
-                         <p className="text-sm md:text-base text-textSecondary leading-relaxed line-clamp-2 md:line-clamp-none">{group.description}</p>
-                      )}
-                    </div>
-                    
-                    <div className={`flex p-1.5 sm:p-2 rounded-full bg-white/5 text-textTertiary transition-transform duration-500 shrink-0 ${isExpanded ? "rotate-180" : ""} mt-1 sm:mt-0`}>
-                      <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </div>
-                  </button>
-
-                  <AnimatePresence initial={false}>
-                    {isExpanded && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                        className="border-t border-white/5"
-                      >
-                        <div className="p-2 md:p-6 flex flex-col gap-2">
-                          {filtered.map((lesson) => {
-                            const locked = lesson.status !== "available";
-                            const Row = (
-                              <div className={`flex items-center gap-3 p-2 md:p-4 rounded-xl md:rounded-2xl transition-all duration-300 ${locked ? "opacity-50 bg-transparent" : "bg-white/[0.03] hover:bg-white/[0.06] hover:scale-[1.01] cursor-pointer shadow-lg"}`}>
-                                <div className={`flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl shrink-0 ${locked ? 'bg-white/5 text-textTertiary' : 'bg-primary/20 text-primary'}`}>
-                                  {locked ? <Lock size={12} className="md:w-4 md:h-4" /> : <CheckCircle2 size={14} className="md:w-[18px] md:h-[18px]" />}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="font-bold text-sm md:text-lg text-white mb-0.5 md:mb-1 truncate flex items-center gap-2 md:gap-3">
-                                    <span className="truncate">{lesson.title}</span>
-                                    {!locked && <span className="px-1.5 py-[1px] md:px-2 md:py-0.5 text-[9px] md:text-[10px] font-bold tracking-widest uppercase bg-success/20 text-success rounded-full shrink-0">Live</span>}
-                                  </div>
-                                  <div className="text-xs md:text-sm text-textSecondary truncate">{lesson.summary}</div>
-                                </div>
-                                {!locked && (
-                                  <div className="shrink-0 text-textTertiary hidden sm:flex items-center gap-2">
-                                    <span className="text-[11px] font-mono font-semibold uppercase tracking-wider">{lesson.time}</span>
-                                    <ArrowRight size={16} className="text-primary group-hover:translate-x-1 transition-transform" />
-                                  </div>
-                                )}
-                              </div>
-                            );
-
-                            const animatedRow = (
-                              <motion.div
-                                initial={{ opacity: 0, y: 15 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, margin: "-40px" }}
-                                transition={{ duration: 0.4, ease: "easeOut" }}
-                              >
-                                {Row}
-                              </motion.div>
-                            );
-
-                            return locked ? (
-                              <div key={lesson.slug} className="opacity-50 cursor-not-allowed pointer-events-none">{animatedRow}</div>
-                            ) : (
-                              <Link key={lesson.slug} href={`/lessons/${lesson.slug}`} className="group block w-full" prefetch={false}>{animatedRow}</Link>
-                            );
-                          })}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-                )}
+              <div className="text-center mb-12">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-textTertiary mb-8">Universal Skills Covered</h3>
+                <SkillGrid />
               </div>
-            </div>
-          );
-        })}
+            </motion.section>
+          )}
+        </AnimatePresence>
+
       </div>
 
-      {/* 4. SKILLS SECTION */}
-      <motion.div
-        className="mt-12 md:mt-20 pt-12 md:pt-20 border-t border-white/[0.06]"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-      >
-        <div className="flex items-center gap-2 md:gap-3 mb-8 md:mb-10 justify-center">
-          <Trophy size={18} className="text-warning md:w-5 md:h-5" />
-          <h3 className="text-xs md:text-sm font-bold uppercase tracking-widest text-textTertiary">Skills you'll master</h3>
-        </div>
-        <SkillGrid />
-      </motion.div>
-
-      {/* Footer & QR Code */}
-      <div className="mt-20 md:mt-32 pb-8 flex flex-col items-center">
-        
-        {/* QR Code Container */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="mb-10 flex flex-col items-center"
-        >
-          <div className="p-3 bg-white rounded-2xl shadow-xl border-4 border-white/10 ring-1 ring-primary/30 transform hover:scale-105 transition-transform duration-300">
-            <Image src="/donate-qr.png" alt="QuizKaal Learn App QR Code" width={140} height={140} className="rounded-xl" />
-          </div>
-          <div className="mt-4 text-[11px] font-bold tracking-widest uppercase text-primary">Scan and Donate</div>
-        </motion.div>
-
-        <motion.div 
-          className="relative rounded-[16px] p-0.5 bg-gradient-to-br from-white/10 to-transparent shadow-[0_0_30px_rgba(255,255,255,0.03)] mb-5 mx-auto"
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.4 }}
-        >
-          <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 hover:opacity-100 transition-opacity duration-500" />
-          <Image src="/logo.png" alt="QuizKaal Learn" width={48} height={48} className="rounded-[14px] relative z-10 linear-glass ring-1 ring-white/10 md:w-14 md:h-14" />
-        </motion.div>
-        
-        <p className="text-textSecondary text-[13px] md:text-sm max-w-[280px] md:max-w-md mx-auto mb-2 text-center leading-relaxed">
-          The journey of a thousand lines begins with a single{" "}
-          <code className="text-[10px] md:text-xs px-1.5 py-0.5 rounded-md bg-white/[0.06] font-mono text-primary">console.log()</code>
-        </p>
-
-        <div className="text-textTertiary text-xs mt-6 mb-2 space-y-2 text-center">
-          <p>
-            For any design issues or bug reports, please contact: <br className="md:hidden" />
-            <a href="mailto:support@quizkaal.in" className="text-primary hover:underline transition-all">support@quizkaal.in</a>
-          </p>
-        </div>
-
-        <p className="text-textTertiary text-[10px] md:text-[11px] uppercase tracking-widest font-bold mt-4 md:mt-6 text-center">
-          &copy; 2026 Copyright <span className="text-white ml-1">QuizKaal</span>. All Rights Reserved.
-        </p>
-      </div>
+      {/* Module Details Modal */}
+      <ModuleModal 
+        module={selectedModule} 
+        course={selectedCourse}
+        onClose={() => setSelectedModule(null)} 
+      />
     </main>
   );
 }

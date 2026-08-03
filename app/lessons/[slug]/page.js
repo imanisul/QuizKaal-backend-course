@@ -15,48 +15,30 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import ProgressiveRenderer from "@/components/lesson/ProgressiveRenderer";
 import MobileLessonNav from "@/components/lesson/MobileLessonNav";
+import LessonHero from "@/components/lesson/LessonHero";
 import { Suspense } from "react";
 
 export function generateStaticParams() {
   return allLessons.map((l) => ({ slug: l.slug }));
 }
 
+import { generateSEOMetadata, generateSchema } from "@/lib/seo";
+
 export function generateMetadata({ params }) {
   const lesson = getLessonBySlug(params.slug);
   if (!lesson) return {};
   
-  const title = `QuizKaal | ${lesson.frontmatter?.title || 'Lesson'}`;
+  const title = `${lesson.frontmatter?.title || 'Lesson'} | QuizKaal`;
   const description = lesson.frontmatter?.description || "Master backend engineering with QuizKaal.";
   const url = `https://quizkaal.in/lessons/${params.slug}`;
 
-  return { 
-    title, 
+  return generateSEOMetadata({
+    title,
     description,
-    alternates: {
-      canonical: url,
-    },
-    openGraph: {
-      title,
-      description,
-      url,
-      type: "article",
-      siteName: "QuizKaal",
-      images: [
-        {
-          url: "/og-image.jpg",
-          width: 1200,
-          height: 630,
-          alt: title,
-        }
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: ["/og-image.jpg"],
-    }
-  };
+    url,
+    type: "article",
+    keywords: [lesson.frontmatter?.title, lesson.frontmatter?.phase, lesson.category, "quizkaal learn", "engineering course"].filter(Boolean)
+  });
 }
 
 // Custom slugify function to match rehype-slug
@@ -77,7 +59,7 @@ export default async function LessonPage({ params }) {
   if (!lesson) {
     // Fallback if MDX doesn't exist yet, to prevent 404 on roadmap items without content
     return (
-      <div className="max-w-[800px] mx-auto pt-32 px-8 text-center">
+      <div className="max-w-[800px] mx-auto px-8 global-page-pt text-center">
         <h1 className="text-4xl font-bold mb-4">Module Coming Soon</h1>
         <p className="text-textSecondary">This advanced deep-dive module is currently being authored.</p>
         <Link href="/roadmap" className="text-primary hover:underline mt-8 inline-block">Back to Roadmap</Link>
@@ -98,6 +80,7 @@ export default async function LessonPage({ params }) {
     });
   }
 
+
   const { prev, next } = getAdjacentLessons(params.slug);
 
   const mdxOptions = {
@@ -110,47 +93,18 @@ export default async function LessonPage({ params }) {
     }
   };
 
-  const articleSchema = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": lesson.frontmatter?.title,
-    "description": lesson.frontmatter?.description,
-    "author": {
-      "@type": "Organization",
-      "name": "QuizKaal"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "QuizKaal",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://quizkaal.in/logo.png"
-      }
-    },
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": `https://quizkaal.in/lessons/${params.slug}`
-    }
-  };
+  const articleSchema = generateSchema("TechArticle", {
+    title: lesson.frontmatter?.title,
+    description: lesson.frontmatter?.description,
+    url: `https://quizkaal.in/lessons/${params.slug}`,
+  });
 
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Roadmap",
-        "item": "https://quizkaal.in/roadmap"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": lesson.frontmatter?.phase || lesson.category,
-        "item": `https://quizkaal.in/lessons/${params.slug}`
-      }
+  const breadcrumbSchema = generateSchema("BreadcrumbList", {
+    items: [
+      { name: "Roadmap", url: "https://quizkaal.in/roadmap" },
+      { name: lesson.frontmatter?.phase || lesson.category, url: `https://quizkaal.in/lessons/${params.slug}` }
     ]
-  };
+  });
 
   return (
     <>
@@ -165,7 +119,7 @@ export default async function LessonPage({ params }) {
         <div className="grid grid-cols-1 xl:grid-cols-[240px_minmax(0,1fr)_240px] gap-10 max-w-[1400px] mx-auto px-6 sm:px-8 relative z-[1]">
           
           {/* Left Sidebar (Global Nav) */}
-          <aside className="hidden xl:block pt-24 pb-32 sticky top-0 h-[100vh] overflow-y-auto border-r border-white/10 pr-2">
+          <aside className="hidden xl:block pb-32 global-sticky-sidebar overflow-y-auto border-r border-white/10 pr-2">
             <h3 className="font-bold text-sm tracking-widest uppercase text-textTertiary mb-6 ml-2">Curriculum</h3>
             <CurriculumSidebar />
           </aside>
@@ -176,7 +130,7 @@ export default async function LessonPage({ params }) {
           </MobileLessonNav>
 
           {/* Main Content (MDX) */}
-          <main className="min-w-0 pt-24 pb-32">
+          <main className="min-w-0 global-page-pt pb-32">
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-textTertiary mb-8">
               <Link href="/roadmap" className="hover:text-white transition-colors">Roadmap</Link>
@@ -184,28 +138,32 @@ export default async function LessonPage({ params }) {
               <span className="text-primary">{lesson.frontmatter?.phase || lesson.category}</span>
             </div>
 
-            <div className="mb-12">
-              <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4 text-white">
-                {lesson.frontmatter?.title}
-              </h1>
-              <p className="text-xl text-textSecondary leading-relaxed">
-                {lesson.frontmatter?.description}
-              </p>
-            </div>
+            <LessonHero 
+              lesson={{
+                title: lesson.frontmatter?.title,
+                summary: lesson.frontmatter?.description,
+                phase: lesson.frontmatter?.phase,
+                difficulty: lesson.frontmatter?.difficulty,
+                time: lesson.frontmatter?.time,
+                xp: lesson.frontmatter?.xp,
+                slug: params.slug,
+                courseId: lesson.courseId || "backend-engineering"
+              }} 
+            />
 
-            <ProgressiveRenderer>
+            <ProgressiveRenderer key={params.slug}>
               <article className="prose prose-invert max-w-none prose-headings:scroll-mt-24">
                 <MDXRemote source={lesson.content} components={MdxComponents} options={mdxOptions} />
               </article>
             </ProgressiveRenderer>
 
             <div className="mt-20 pt-10 border-t border-white/10">
-              <CourseNavigation prev={prev} next={next} />
+              <CourseNavigation prev={prev} next={next} lessonSlug={params.slug} />
             </div>
           </main>
 
           {/* Right Sidebar (TOC) */}
-          <aside className="hidden xl:block pt-24 pb-32 sticky top-0 h-[100vh] overflow-y-auto pl-6">
+          <aside className="hidden xl:block pb-32 global-sticky-sidebar overflow-y-auto pl-6">
             <h3 className="font-bold text-sm tracking-widest uppercase text-textTertiary mb-6">On This Page</h3>
             <TableOfContents headings={headings} />
           </aside>

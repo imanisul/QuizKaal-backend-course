@@ -14,7 +14,7 @@ export default function Step5_Build({ playbackSpeed = 1 }) {
     { type: "output", text: "\nPackaging distribution...", delay: 1600 },
     { type: "output", text: "Creating minified bundle...", delay: 2000 },
     { type: "output", text: "dist/main.js          1.2 MB\ndist/main.js.map      4.5 MB", className: "text-blue-400 mt-2", delay: 2400 },
-    { type: "output", text: "✨ Build completed successfully.", className: "text-success font-bold mt-2", delay: 2800 }
+    { type: "output", text: "Build completed successfully.", className: "text-success font-bold mt-2", delay: 2800 }
   ];
 
   return (

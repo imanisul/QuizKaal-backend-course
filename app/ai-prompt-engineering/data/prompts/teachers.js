@@ -1,0 +1,122 @@
+export const teacherPrompts = [
+  {
+    id: "teacher-lesson",
+    title: "Dynamic Lesson Planner",
+    category: "Teachers",
+    difficulty: "Beginner",
+    bestTool: "ChatGPT",
+    description: "Create an engaging, standard-aligned lesson plan in seconds.",
+    prompt: "I am teaching [Subject] to [Grade Level] students. The topic is [Topic]. The class is [Duration] minutes long. Please generate a highly engaging lesson plan. Include a 5-minute hook, a 15-minute direct instruction phase, a 20-minute interactive group activity, and a 5-minute exit ticket. Ensure the plan accommodates visual and kinesthetic learners.",
+    exampleOutput: "Objective: Students will be able to...\nHook (5 min): Show a short video of...\nActivity: ...",
+    whenToUse: "When prepping for a new week and needing fresh activity ideas.",
+    proTips: ["Mention the specific educational standards (like Common Core or CBSE) you need to hit."]
+  },
+  {
+    id: "teacher-rubric",
+    title: "Custom Grading Rubric",
+    category: "Teachers",
+    difficulty: "Intermediate",
+    bestTool: "Claude",
+    description: "Generate a detailed, objective grading rubric for any assignment.",
+    prompt: "I am assigning a [Type of Project, e.g., History Research Paper] to my [Grade Level] students. Please create a comprehensive grading rubric formatted as a markdown table. Include the following categories: [List categories, e.g., Thesis Clarity, Use of Evidence, Grammar, Formatting]. Provide descriptors for 4 levels of mastery: Excellent (4), Proficient (3), Developing (2), and Needs Improvement (1).",
+    exampleOutput: "| Category | Excellent (4) | Proficient (3) | ...\n| Thesis | Clear, arguable... | ...",
+    whenToUse: "Before handing out a major project so students know exactly how they will be graded.",
+    proTips: ["Claude is exceptionally good at formatting tables. You can copy the markdown table right into Word/Google Docs."]
+  },
+  {
+    id: "teacher-blooms",
+    title: "Bloom's Taxonomy Questions",
+    category: "Teachers",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT",
+    description: "Generate questions that hit all cognitive levels of Bloom's Taxonomy.",
+    prompt: "I am teaching a unit on [Topic/Book/Concept]. Please generate 2 questions for each of the 6 levels of Bloom's Taxonomy (Remember, Understand, Apply, Analyze, Evaluate, Create). Ensure the questions are age-appropriate for [Grade Level].",
+    exampleOutput: "Remember: What year did...?\nAnalyze: How does X compare to Y...?",
+    whenToUse: "When creating discussion guides or test questions to ensure you are assessing deep thinking, not just memorization.",
+    proTips: ["You can feed it an article and ask it to base the questions entirely on that article."]
+  },
+  {
+    id: "teacher-feedback",
+    title: "Constructive Parent Feedback",
+    category: "Teachers",
+    difficulty: "Beginner",
+    bestTool: "ChatGPT",
+    description: "Write professional, empathetic feedback for report cards or parent emails.",
+    prompt: "I need to write an email to the parents of a student named [Student Name]. The student is doing well in [Positive Trait, e.g., participation and creativity], but is struggling with [Issue, e.g., turning in homework on time and chatting during quiet time]. Write a professional, empathetic email that uses the 'compliment sandwich' method. Keep the tone collaborative rather than accusatory.",
+    exampleOutput: "Dear Parents,\nI wanted to reach out and share how much I appreciate [Name]'s creativity in class...\nLately, I've noticed...",
+    whenToUse: "During grading season or when addressing behavioral/academic issues with parents.",
+    proTips: ["Never put real, sensitive student PII (Personally Identifiable Information) into AI. Use placeholders."]
+  },
+  {
+    id: "teacher-games",
+    title: "Classroom Game Brainstormer",
+    category: "Teachers",
+    difficulty: "Beginner",
+    bestTool: "ChatGPT",
+    description: "Turn boring revision into fun classroom games.",
+    prompt: "My [Grade Level] class needs to review [Subject/Topic] for an upcoming test. They are very energetic and get bored by traditional worksheets. Suggest 3 fun, interactive classroom games we can play that require minimal prep and materials. Explain the rules of each game clearly.",
+    exampleOutput: "Game 1: 4-Corners Trivia\nRules: Label the corners A, B, C, D...\nGame 2: Whiteboard Relay...",
+    whenToUse: "The day before a test to keep engagement high.",
+    proTips: ["Tell the AI if you have specific resources (like individual mini-whiteboards or iPads)."]
+  },
+  {
+    id: "teacher-differentiation",
+    title: "Content Differentiator",
+    category: "Teachers",
+    difficulty: "Advanced",
+    bestTool: "Claude 3.5 Sonnet",
+    description: "Rewrite a complex text for different reading levels simultaneously.",
+    prompt: "Here is a reading passage about [Topic]. I have a mixed-ability classroom. Please rewrite this text into three different versions: \n1. Advanced (Grade [X+2] reading level, complex vocab)\n2. On-Level (Grade [X] reading level)\n3. Accessible (Grade [X-2] reading level, simplified vocab, shorter sentences).\n[Paste Text]",
+    exampleOutput: "Version 1 (Advanced): The socio-economic ramifications of...\nVersion 2 (On-Level): The economic effects of...\nVersion 3 (Accessible): How money changed...",
+    whenToUse: "When using primary sources or complex articles that not all students can decode.",
+    proTips: ["This is a massive time-saver for inclusive classrooms and ELL (English Language Learner) students."]
+  },
+  {
+    id: "teacher-case-study",
+    title: "Real-World Case Study Creator",
+    category: "Teachers",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT",
+    description: "Create engaging, fictional case studies to apply theoretical knowledge.",
+    prompt: "I am teaching [Subject, e.g., Business/Biology] to [Grade]. We are learning about [Specific Concept]. Please create a realistic, fictional case study story (about 3 paragraphs) that involves a protagonist facing a problem related to this concept. Then, provide 4 discussion questions that require students to apply what they've learned to solve the protagonist's problem.",
+    exampleOutput: "Case Study: Sarah's Bakery is struggling with...\nQuestions: 1. How should Sarah adjust her supply chain?",
+    whenToUse: "To shift from passive learning to active, problem-based learning.",
+    proTips: ["Ask the AI to make the protagonist relate to your students' interests (e.g., a YouTuber, a gamer)."]
+  },
+  {
+    id: "teacher-mcq",
+    title: "Worksheet & Quiz Generator",
+    category: "Teachers",
+    difficulty: "Beginner",
+    bestTool: "ChatGPT",
+    description: "Generate quizzes with answer keys instantly.",
+    prompt: "Create a 10-question multiple-choice quiz on the topic of [Topic]. The difficulty should be [Difficulty]. \nFormat it clearly for printing. At the very bottom of the response, separated by a line of dashes, provide the Answer Key with a brief 1-sentence explanation for why each answer is correct.",
+    exampleOutput: "1. What is the main function of... \nA) ... B) ...\n---\nAnswer Key:\n1. A - Because...",
+    whenToUse: "When you need a quick formative assessment or pop quiz.",
+    proTips: ["Paste the specific text they read so the quiz is perfectly aligned with the material."]
+  },
+  {
+    id: "teacher-substitute",
+    title: "Substitute Teacher Plan",
+    category: "Teachers",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT",
+    description: "Write emergency sub plans quickly.",
+    prompt: "I am sick and need to write an emergency substitute plan for my [Grade] [Subject] class. The class is [Duration] long. They have [List of materials/books available]. Please write a foolproof, step-by-step lesson plan for the substitute that keeps the students quiet, busy, and productive without requiring the sub to have deep subject knowledge.",
+    exampleOutput: "8:00 - 8:15 AM: Attendance and Silent Reading...\n8:15 - 8:45 AM: Hand out Worksheet A...",
+    whenToUse: "When you have an unexpected absence.",
+    proTips: ["Save this prompt and just change the topic/worksheet names each time."]
+  },
+  {
+    id: "teacher-ppt",
+    title: "Presentation Outline to Slides",
+    category: "Teachers",
+    difficulty: "Intermediate",
+    bestTool: "Claude",
+    description: "Generate the exact text to put on PPT slides and what to say out loud.",
+    prompt: "I need to make a [Number]-slide PowerPoint presentation about [Topic] for my [Grade] students. Please outline the presentation. For each slide, provide:\n1. The Slide Title\n2. The bullet points (keep text minimal, max 4 bullets)\n3. Speaker Notes (what I should actually say to explain the slide).\n4. A suggestion for an image or graphic to include.",
+    exampleOutput: "Slide 1: Introduction\nBullets: ...\nSpeaker Notes: 'Welcome everyone, today...'\nImage: A map of...",
+    whenToUse: "When you need to build a slide deck but don't know how to organize the information.",
+    proTips: ["You can import the output directly into tools like Gamma.app or Canva for instant slide creation!"]
+  }
+];

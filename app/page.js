@@ -1,351 +1,270 @@
 "use client";
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { motion } from "framer-motion";
-import { BookOpen, Layers, Zap, Target, ArrowRight, ChevronDown, Code2, Shield, Database, Globe, Server, Lock } from "lucide-react";
-import { roadmap, allLessons } from "@/data/roadmap";
-import { getUnlockedLessons } from "@/utils/progress";
-import GSAPTextReveal from "@/components/ui/GSAPTextReveal";
-import GlassCard from "@/components/ui/GlassCard";
-import MagneticButton from "@/components/ui/MagneticButton";
-import AnimatedCounter from "@/components/ui/AnimatedCounter";
-import ParticleField from "@/components/ui/ParticleField";
-import StaggerReveal, { StaggerItem } from "@/components/ui/StaggerReveal";
-import RenderIcon from "@/components/ui/IconMap";
 
-const floatingIcons = [
-  { Icon: Globe, x: "8%", y: "18%", delay: 0, color: "var(--primary)" },
-  { Icon: Server, x: "85%", y: "12%", delay: 0.5, color: "var(--secondary)" },
-  { Icon: Database, x: "78%", y: "65%", delay: 1, color: "var(--accent)" },
-  { Icon: Shield, x: "12%", y: "70%", delay: 1.5, color: "var(--success)" },
-  { Icon: Code2, x: "50%", y: "8%", delay: 0.8, color: "var(--warning)" },
-  { Icon: Lock, x: "92%", y: "42%", delay: 1.2, color: "var(--error)" },
+import React from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { 
+  Server, Code2, Smartphone, Cloud, Database, Play, 
+  BrainCircuit, ArrowRight, Star, Globe, GitMerge, 
+  Sparkles, Layers, Terminal, Coffee, Gamepad2, 
+  FileCode2, UserCheck, MessageSquare, ShieldCheck, 
+  Zap, Box, Award, Lightbulb, Rocket 
+} from "lucide-react";
+import Reveal from "@/components/ui/Reveal";
+import StaggerReveal, { StaggerItem } from "@/components/ui/StaggerReveal";
+import HeroParallax from "@/components/home/HeroParallax";
+import LearningPathRoadmap from "@/components/home/LearningPathRoadmap";
+import Footer from "@/components/home/Footer";
+
+// Updated Courses Data Structure
+const COURSES = [
+  { id: "backend-engineering", title: "Backend Engineering", desc: "Flagship backend course", color: "from-green-400 to-emerald-600", icon: Rocket, link: "/backend-engineering", featured: true, complete: true },
+  { id: "system-design", title: "System Design", desc: "Master large scale systems", color: "from-blue-500 to-cyan-500", icon: Database, link: "/system-design", complete: true },
+  { id: "mobile-course", title: "Mobile Engineering", desc: "Build iOS & Android apps", color: "from-emerald-500 to-teal-500", icon: Smartphone, link: "/mobile-course", complete: true },
+  { id: "ai-prompt-engineering", title: "AI & Prompt Eng.", desc: "Master LLMs & prompting", color: "from-violet-500 to-fuchsia-500", icon: BrainCircuit, link: "/ai-prompt-engineering", complete: true },
+  { id: "react-course", title: "React Mastery", desc: "Modern frontend development", color: "from-sky-400 to-blue-500", icon: Code2, link: "/react-course", complete: true },
+
+  { id: "cicd", title: "CI/CD Pipelines", desc: "Automate your deployments", color: "from-orange-500 to-red-500", icon: GitMerge, link: "/cicd", complete: true },
+  { id: "genai", title: "GenAI Mastery", desc: "Build Generative AI apps", color: "from-pink-500 to-rose-500", icon: Sparkles, link: "/genai", complete: true },
+  { id: "oop", title: "OOP Concepts", desc: "Object-Oriented design", color: "from-gray-500 to-gray-600", icon: Layers, link: "#", disabled: true },
+  { id: "python-course", title: "Python Engineering", desc: "Python for Backend", color: "from-yellow-400 to-amber-500", icon: Terminal, link: "/python-course", complete: true },
+  { id: "java-course", title: "Java Engineering", desc: "Core Java to Spring", color: "from-orange-600 to-red-600", icon: Coffee, link: "/java-course", complete: true },
 ];
 
-export default function Home() {
-  const [unlockedLessons, setUnlockedLessons] = useState(["how-the-web-works"]);
+const PLAYGROUNDS = [
+  { title: "System Design Simulator", desc: "Drag & drop components to build scalable architectures.", icon: Database, link: "/playground/system-design", color: "from-blue-500 to-indigo-600" },
+  { title: "Python Jungle", desc: "Learn Python syntax through interactive visual puzzles.", icon: Terminal, link: "/playground/python-jungle", color: "from-yellow-400 to-amber-500" },
+  { title: "Prompt Builder", desc: "Construct perfect LLM prompts with block-based variables.", icon: Lightbulb, link: "/ai-prompt-engineering/builder", color: "from-violet-500 to-purple-600" },
+  { title: "Prompt Library", desc: "Discover and test production-ready AI prompt templates.", icon: FileCode2, link: "/ai-prompt-engineering/prompt-library", color: "from-fuchsia-500 to-pink-600" },
+  { title: "Interview Simulator", desc: "Practice real technical interview questions.", icon: UserCheck, link: "/interview", color: "from-emerald-400 to-teal-500" },
+];
 
-  useEffect(() => {
-    const loadProgress = () => {
-      setUnlockedLessons(getUnlockedLessons());
-    };
-    loadProgress();
-    window.addEventListener("quizkaal_progress_updated", loadProgress);
-    return () => window.removeEventListener("quizkaal_progress_updated", loadProgress);
-  }, []);
+const FEATURES = [
+  { title: "Interactive Learning", desc: "Stop reading. Start interacting with visual models.", icon: Gamepad2, color: "text-blue-400" },
+  { title: "Visual Animations", desc: "Complex systems explained through beautiful motion.", icon: Play, color: "text-purple-400" },
+  { title: "Real Projects", desc: "Build production-ready applications from scratch.", icon: Code2, color: "text-emerald-400" },
+  { title: "Interview Prep", desc: "Ace the systems design & backend interviews.", icon: UserCheck, color: "text-orange-400" },
+  { title: "Progress Tracking", desc: "Save your state and resume anytime, anywhere.", icon: Zap, color: "text-yellow-400" },
+  { title: "Real Engineering", desc: "Learn what senior engineers actually do daily.", icon: Server, color: "text-cyan-400" },
+  { title: "Hands-on Labs", desc: "No local setup required. Code directly in the browser.", icon: Box, color: "text-rose-400" },
+  { title: "Certificates", desc: "Earn proof of your technical mastery.", icon: Award, color: "text-amber-400" },
+];
 
-  const available = unlockedLessons.length;
-  const total = allLessons.length;
-  const pct = Math.round((available / total) * 100);
-  const phases = roadmap.length;
+export default function PlatformHomepage() {
+  const featuredCourse = COURSES.find(c => c.featured);
+  const otherCourses = COURSES.filter(c => !c.featured);
 
   return (
-    <main className="relative">
-      {/* ═══════════ HERO ═══════════ */}
-      <section className="relative min-h-[100vh] flex flex-col items-center justify-center px-6 sm:px-8 overflow-hidden">
-        <ParticleField count={10} />
-
-        {/* Floating Lucide Icons */}
-        {floatingIcons.map(({ Icon, x, y, delay, color }, i) => (
+    <div className="min-h-screen bg-[#060608] text-white selection:bg-primary/30 font-sans overflow-hidden">
+      
+      {/* 1. Premium Hero Section */}
+      <section className="relative pt-32 pb-24 md:pt-48 md:pb-40 px-6 min-h-[90vh] flex items-center justify-center">
+        <HeroParallax />
+        <div className="max-w-7xl mx-auto text-center relative z-10 pointer-events-auto">
           <motion.div
-            key={i}
-            className="absolute pointer-events-none hidden md:block"
-            style={{ left: x, top: y }}
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 0.15, scale: 1, y: [0, -12, 0] }}
-            transition={{
-              opacity: { delay, duration: 0.8 },
-              scale: { delay, duration: 0.8 },
-              y: { delay, duration: 6, repeat: Infinity, ease: "easeInOut" },
-            }}
-          >
-            <Icon size={32} style={{ color }} aria-hidden="true" />
-          </motion.div>
-        ))}
-
-        <div className="relative z-10 text-center max-w-[800px] mx-auto px-4 mt-20 flex flex-col items-center justify-center min-h-[70vh]">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 backdrop-blur-md text-primary text-sm font-semibold tracking-wide uppercase shadow-[0_0_20px_rgba(79,70,229,0.2)]"
           >
-            <Zap size={14} className="animate-pulse" />
-            The Future of Backend Engineering
-          </motion.div>
-          
-          <h1 className="text-[clamp(2.5rem,8vw,5rem)] font-black tracking-tighter leading-[1.05] mb-6 drop-shadow-2xl flex flex-wrap justify-center gap-x-4 gap-y-2">
-            {["QuizKaal Learn:", "Backend", "Systems", "from", "Zero", "to", "Production"].map((word, i) => (
-              <motion.span 
-                key={i} 
-                initial={{ opacity: 0, y: 30, rotateX: 30 }}
-                animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                transition={{ 
-                  duration: 0.8, 
-                  delay: i * 0.1,
-                  type: "spring",
-                  stiffness: 150,
-                  damping: 15
-                }}
-                className={`inline-block ${
-                  word === "Backend" || word === "Production"
-                  ? "text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary drop-shadow-[0_0_15px_rgba(79,70,229,0.3)]" 
-                  : word === "QuizKaal Learn:" 
-                  ? "text-white"
-                  : "text-white"
-                }`}
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-8">
+              Become a <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-emerald-400 to-blue-500">Backend Engineer</span><br />
+              <span className="text-3xl md:text-5xl lg:text-6xl text-white/90">Zero to Production level</span>
+            </h1>
+            <p className="text-lg md:text-2xl text-textSecondary max-w-3xl mx-auto mb-12 leading-relaxed">
+              The world-class platform for engineers who want to build scalable systems, master AI integrations, and ace their technical interviews.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link 
+                href="/backend-engineering"
+                className="group relative bg-primary text-black font-bold py-4 px-10 rounded-full flex items-center justify-center gap-3 overflow-hidden shadow-[0_0_40px_rgba(45,212,191,0.3)] w-full sm:w-auto hover:shadow-[0_0_60px_rgba(45,212,191,0.5)] transition-all"
               >
-                {word}
-              </motion.span>
-            ))}
-          </h1>
-          
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="text-lg md:text-xl text-textSecondary max-w-[600px] mb-10 leading-relaxed"
-          >
-            Welcome to <strong className="text-white font-bold">QuizKaal Learn</strong>. Stop copying boilerplate. Learn how HTTP, databases, and servers actually work. Build scalable backend systems that handle millions of requests.
-          </motion.p>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
-            className="flex items-center gap-4 flex-col sm:flex-row"
-          >
-            <MagneticButton href="/roadmap" variant="primary">
-              <Layers size={16} /> View Roadmap <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform duration-300" />
-            </MagneticButton>
-            <MagneticButton href="/lessons/how-the-web-works" variant="secondary">
-              <Target size={16} /> Start Lesson 01
-            </MagneticButton>
+                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                <Play fill="currentColor" size={20} className="relative z-10" />
+                <span className="relative z-10">Start Learning</span>
+              </Link>
+              <Link 
+                href="#courses"
+                className="group bg-white/5 hover:bg-white/10 text-white font-bold py-4 px-10 rounded-full flex items-center justify-center gap-3 transition-colors border border-white/10 w-full sm:w-auto"
+              >
+                <span>Explore Courses</span>
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* ═══════════ STATS BENTO ═══════════ */}
-      <section className="max-w-[1120px] mx-auto px-6 sm:px-8 py-24">
-        <StaggerReveal className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { icon: BookOpen, label: "Lessons", value: total, color: "var(--primary)", dim: "var(--primary-dim)" },
-            { icon: Layers, label: "Phases", value: phases, color: "var(--secondary)", dim: "var(--secondary-dim)" },
-            { icon: Zap, label: "Live Now", value: available, color: "var(--success)", dim: "var(--success-dim)" },
-            { icon: Target, label: "Completion", value: pct, suffix: "%", color: "var(--warning)", dim: "var(--warning-dim)" },
-          ].map((s) => (
-            <StaggerItem key={s.label}>
-              <GlassCard className="p-6 text-center">
-                <div
-                  className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4"
-                  style={{ background: s.dim }}
-                >
-                  <s.icon size={22} style={{ color: s.color }} />
-                </div>
-                <div className="text-3xl font-extrabold mb-1" style={{ color: s.color }}>
-                  <AnimatedCounter target={s.value} suffix={s.suffix || ""} />
-                </div>
-                <div className="text-xs font-semibold uppercase tracking-widest text-textTertiary">
-                  {s.label}
-                </div>
-              </GlassCard>
-            </StaggerItem>
-          ))}
-        </StaggerReveal>
-
-        {/* Progress */}
-        <motion.div
-          className="mt-8 glass-card p-6"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="relative z-[1]">
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-sm font-semibold text-textSecondary">Course progress</span>
-              <span className="font-mono text-sm font-bold" style={{ color: "var(--success)" }}>{pct}%</span>
-            </div>
-            <div className="w-full h-2.5 rounded-full bg-white/[0.06] overflow-hidden">
-              <motion.div
-                className="h-full rounded-full"
-                style={{ background: "linear-gradient(90deg, var(--primary), var(--secondary), var(--accent))" }}
-                initial={{ width: 0 }}
-                whileInView={{ width: `${pct}%` }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-              />
-            </div>
-          </div>
-        </motion.div>
+      {/* 2. Featured Learning Path */}
+      <section className="py-24 px-6 bg-white/[0.02] border-t border-white/5 relative">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+        <div className="max-w-7xl mx-auto text-center mb-16">
+          <Reveal>
+            <h2 className="text-4xl md:text-5xl font-black mb-4">The Engineering Roadmap</h2>
+            <p className="text-textSecondary text-lg max-w-2xl mx-auto">From Internet fundamentals to designing planet-scale distributed architectures.</p>
+          </Reveal>
+        </div>
+        <LearningPathRoadmap />
       </section>
 
-      {/* ═══════════ SVG DIVIDER ═══════════ */}
-      <svg className="section-divider" viewBox="0 0 1440 80" preserveAspectRatio="none">
-        <path d="M0,40 C360,80 720,0 1080,40 C1260,60 1380,50 1440,40 L1440,80 L0,80 Z" fill="rgba(79,70,229,0.03)" />
-      </svg>
+      {/* 3. Featured Courses */}
+      <section id="courses" className="py-24 px-6 relative">
+        <div className="max-w-7xl mx-auto">
+          <Reveal>
+            <h2 className="text-4xl md:text-5xl font-black mb-12 text-center">Premium Course Catalog</h2>
+          </Reveal>
+          
+          {/* Flagship Course */}
+          {featuredCourse && (
+            <Reveal>
+              <Link href={featuredCourse.link} className="group block mb-8">
+                <div className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-bgCard to-bgElevated p-8 md:p-12 transition-all hover:border-primary/50 hover:shadow-[0_0_50px_rgba(45,212,191,0.15)]">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${featuredCourse.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+                  
+                  <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <featuredCourse.icon size={250} />
+                  </div>
+                  
+                  <div className="relative z-10 max-w-3xl">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-bold mb-6 border border-primary/20">
+                      <Star size={16} fill="currentColor" /> Flagship Course
+                    </div>
+                    <h3 className="text-4xl md:text-5xl font-black mb-4 group-hover:text-primary transition-colors">{featuredCourse.title}</h3>
+                    <p className="text-textSecondary text-lg md:text-xl mb-8 leading-relaxed">
+                      A comprehensive journey from HTTP basics to building scalable microservices. Learn Node.js, databases, caching, load balancing, and production deployment through interactive visualizers.
+                    </p>
+                    <div className="flex items-center bg-primary text-black font-bold px-6 py-3 rounded-xl w-max gap-2 group-hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
+                      Start Full Course <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </Reveal>
+          )}
 
-      {/* ═══════════ COURSE OUTLINE ═══════════ */}
-      <section className="max-w-[1120px] mx-auto px-6 sm:px-8 py-24">
-        <div className="text-center max-w-[700px] mx-auto mb-16">
-          <span className="text-primary font-bold tracking-widest uppercase text-sm mb-3 block drop-shadow-md">The Path</span>
-          <GSAPTextReveal as="h2" text="A Roadmap That Actually Makes Sense" className="text-[40px] md:text-[56px] font-extrabold tracking-tight leading-[1.1] mb-6" />
-          <p className="text-textSecondary text-lg leading-relaxed">We don&apos;t just throw a list of tools at you. We build from the HTTP level up to distributed architectures.</p>
-        </div>
+          {/* Grid Courses */}
+          <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {otherCourses.map((course) => {
+              const Icon = course.icon;
+              const Component = course.disabled ? "div" : Link;
+              return (
+                <StaggerItem key={course.id}>
+                  <Component 
+                    href={course.disabled ? undefined : course.link} 
+                    className={`block group h-full ${course.disabled ? "cursor-not-allowed" : ""}`}
+                  >
+                    <div className={`relative h-full rounded-3xl border ${course.disabled ? "border-white/5 bg-white/[0.01]" : "border-white/10 bg-bgCard hover:bg-bgElevated hover:-translate-y-2 hover:border-white/20"} p-8 transition-all duration-300 overflow-hidden flex flex-col`}>
+                      
+                      {!course.disabled && (
+                        <div className={`absolute inset-0 bg-gradient-to-br ${course.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+                      )}
 
-        <StaggerReveal className="flex flex-col gap-8" stagger={0.1}>
-          {roadmap.map((group, gi) => (
-            <StaggerItem key={group.phase}>
-              {group.isStandalone ? (
-                <Link href={group.href} className="block group/link">
-                  <div className="phase-glass border-primary/40 hover:border-primary/60 transition-colors duration-300 relative overflow-hidden bg-primary/5">
-                    <div className="phase-glass-gradient" style={{ background: group.gradient }} />
-                    <div className="flex items-center gap-4 mb-2">
-                      <motion.div
-                        className="w-[52px] h-[52px] rounded-2xl flex items-center justify-center text-[24px] flex-shrink-0 bg-primary/20 shadow-[0_0_15px_rgba(79,70,229,0.2)]"
-                        style={{ border: "1px solid rgba(79,70,229,0.3)", color: "var(--primary)" }}
-                        whileHover={{ scale: 1.03 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                      >
-                        <RenderIcon iconName={group.emoji} size={28} />
-                      </motion.div>
-                      <div className="flex-1">
-                        <div className="text-[11px] font-bold tracking-widest uppercase text-primary mb-2 flex items-center gap-2">
-                          Phase {gi + 1}
-                          <span className="font-mono text-[10px] px-2 py-0.5 rounded-md bg-primary/20 text-primary border border-primary/30 animate-pulse">
-                            Premium Course
-                          </span>
+                      <div className="flex justify-between items-start mb-8 relative z-10">
+                        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg border ${course.disabled ? "bg-white/5 border-white/10" : `bg-gradient-to-br ${course.color} border-white/10`}`}>
+                          <Icon size={32} className={course.disabled ? "text-gray-500" : "text-white"} />
                         </div>
-                        <h3 className="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
-                          {group.phase} <ArrowRight size={18} className="text-primary group-hover/link:translate-x-1 transition-transform" />
+                        {course.disabled && (
+                          <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-white/10 text-gray-400 bg-white/5">
+                            Coming Soon
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="relative z-10 mt-auto">
+                        <h3 className={`text-2xl font-bold mb-3 transition-colors ${course.disabled ? "text-gray-500" : "text-gray-100 group-hover:text-white"}`}>
+                          {course.title}
                         </h3>
+                        <p className={`text-sm leading-relaxed ${course.disabled ? "text-gray-600" : "text-textSecondary"}`}>
+                          {course.desc}
+                        </p>
                       </div>
                     </div>
-                    {group.description && (
-                      <p className="text-[13px] text-textTertiary mt-2 md:mt-0 md:ml-[68px]">{group.description}</p>
-                    )}
-                  </div>
-                </Link>
-              ) : (
-              <div className="phase-glass">
-                <div className="phase-glass-gradient" style={{ background: group.gradient }} />
-
-                <div className="flex items-center gap-4 mb-2">
-                  <motion.div
-                    className="w-[52px] h-[52px] rounded-2xl flex items-center justify-center text-[24px] flex-shrink-0"
-                    style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--primary)" }}
-                    whileHover={{ scale: 1.03 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                  >
-                    <RenderIcon iconName={group.emoji} size={28} />
-                  </motion.div>
-                  <div className="flex-1">
-                    <div className="text-[11px] font-bold tracking-widest uppercase text-textTertiary flex items-center gap-2">
-                      Phase {gi + 1}
-                      <span className="font-mono text-[10px] px-2 py-0.5 rounded-md bg-white/[0.04] text-textTertiary border border-white/[0.06]">
-                        {group.lessons.length} lessons
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-extrabold tracking-tight">{group.phase}</h3>
-                  </div>
-                </div>
-
-                {group.description && (
-                  <p className="text-[13px] text-textTertiary mb-5 md:ml-[68px] mt-2 md:mt-0">{group.description}</p>
-                )}
-
-                <div className="grid gap-1">
-                  {group.lessons.map((lesson) => {
-                    const locked = !unlockedLessons.includes(lesson.slug);
-                    const Row = (
-                      <motion.div
-                        className={`lesson-row ${locked ? "locked" : ""}`}
-                        whileHover={locked ? {} : { x: 4 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                      >
-                        <span className="lesson-icon" style={{ color: locked ? "var(--text-3)" : "inherit" }}>
-                          <RenderIcon iconName={lesson.emoji} size={20} />
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-[14px] flex items-center gap-2 flex-wrap">
-                            <span className="font-mono text-textTertiary text-xs">
-                              {String(lesson.id).padStart(2, "0")}
-                            </span>
-                            {lesson.title}
-                            {!locked && <span className="text-[10px]" style={{ color: "var(--success)" }}>●</span>}
-                            {lesson.difficulty && (
-                              <span className={`diff-badge ${lesson.difficulty}`}>{lesson.difficulty}</span>
-                            )}
-                          </div>
-                          <div className="text-[13px] text-textSecondary mt-0.5 flex items-center gap-3">
-                            <span>{lesson.summary}</span>
-                            {lesson.time && <span className="text-textTertiary text-[11px]">{lesson.time}</span>}
-                          </div>
-                          {lesson.tags && (
-                            <div className="flex gap-1.5 mt-1.5">
-                              {lesson.tags.map(tag => <span key={tag} className="tag-pill">{tag}</span>)}
-                            </div>
-                          )}
-                        </div>
-                        <span className="text-textTertiary text-sm flex-shrink-0">
-                          {locked ? "○" : <ArrowRight size={16} style={{ color: "var(--primary)" }} />}
-                        </span>
-                      </motion.div>
-                    );
-                    return locked ? (
-                      <div key={lesson.slug}>{Row}</div>
-                    ) : (
-                      <Link key={lesson.slug} href={`/lessons/${lesson.slug}`} prefetch={false}>{Row}</Link>
-                    );
-                  })}
-                </div>
-              </div>
-              )}
-            </StaggerItem>
-          ))}
-        </StaggerReveal>
+                  </Component>
+                </StaggerItem>
+              );
+            })}
+          </StaggerReveal>
+        </div>
       </section>
 
-      {/* ═══════════ FOOTER ═══════════ */}
-      <div className="max-w-[1120px] mx-auto px-6 sm:px-8">
-        <footer className="mt-32 pb-12 border-t border-white/[0.06] pt-12 text-center">
-        {/* QR Code Container */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="mb-10 flex flex-col items-center"
-        >
-          <div className="p-3 bg-white rounded-2xl shadow-xl border-4 border-white/10 ring-1 ring-primary/30 transform hover:scale-105 transition-transform duration-300">
-            <Image src="/donate-qr.png" alt="QuizKaal Learn App QR Code" width={140} height={140} className="rounded-xl" />
+      {/* 4. Interactive Playground */}
+      <section className="py-24 px-6 bg-[#0a0a0c] border-y border-white/5 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[100px] -z-10 pointer-events-none" />
+        <div className="max-w-7xl mx-auto">
+          <Reveal>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-black mb-4">Interactive Playgrounds</h2>
+              <p className="text-textSecondary text-lg max-w-2xl mx-auto">Learn by doing. Experiment with live tools and simulators directly in your browser.</p>
+            </div>
+          </Reveal>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {PLAYGROUNDS.map((play, idx) => (
+              <Reveal key={idx} delay={idx * 0.1}>
+                <Link href={play.link} className="block group h-full">
+                  <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/10 hover:bg-white/[0.04] transition-all duration-300 h-full flex flex-col relative overflow-hidden">
+                    <div className={`absolute -right-10 -top-10 w-32 h-32 bg-gradient-to-br ${play.color} blur-[50px] opacity-20 group-hover:opacity-40 transition-opacity`} />
+                    <play.icon size={40} className="mb-6 text-gray-300 group-hover:text-white transition-colors" />
+                    <h3 className="text-2xl font-bold mb-3">{play.title}</h3>
+                    <p className="text-textSecondary mb-6 flex-grow">{play.desc}</p>
+                    <div className="flex items-center gap-2 text-sm font-bold text-gray-400 group-hover:text-white transition-colors mt-auto">
+                      Launch Playground <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </Link>
+              </Reveal>
+            ))}
           </div>
-          <div className="mt-4 text-[11px] font-bold tracking-widest uppercase text-primary">Scan and Donate</div>
-        </motion.div>
-
-        <motion.div 
-          className="relative rounded-[16px] p-0.5 bg-gradient-to-br from-white/10 to-transparent shadow-[0_0_30px_rgba(255,255,255,0.03)] mb-6 mx-auto inline-block"
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.4 }}
-        >
-          <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 hover:opacity-100 transition-opacity duration-500" />
-          <Image src="/logo.png" alt="QuizKaal Learn" width={48} height={48} className="rounded-[14px] relative z-10 linear-glass ring-1 ring-white/10" />
-        </motion.div>
-        <p className="text-textSecondary text-sm max-w-md mx-auto mb-2 font-medium">
-          Built for engineers who learn by building.
-        </p>
-        
-        <div className="text-textTertiary text-xs mt-6 mb-4 space-y-2">
-          <p>
-            For any design issues or bug reports, please contact: <a href="mailto:support@quizkaal.in" className="text-primary hover:underline transition-all">support@quizkaal.in</a>
-          </p>
         </div>
+      </section>
 
-        <p className="text-textTertiary text-[11px] uppercase tracking-widest font-bold mt-4">
-          &copy; 2026 Copyright <span className="text-white ml-1">QuizKaal</span>. All Rights Reserved.
-        </p>
-      </footer>
-      </div>
-    </main>
+      {/* 5. Why QuizKaal Features */}
+      <section className="py-24 px-6">
+        <div className="max-w-7xl mx-auto">
+          <Reveal>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-black mb-4">Why QuizKaal?</h2>
+              <p className="text-textSecondary text-lg max-w-2xl mx-auto">Built by senior engineers, for aspiring senior engineers.</p>
+            </div>
+          </Reveal>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {FEATURES.map((feature, idx) => (
+              <Reveal key={idx} delay={idx * 0.05}>
+                <div className="p-6 rounded-3xl bg-bgCard border border-white/5 flex flex-col h-full hover:-translate-y-1 hover:border-white/10 transition-all">
+                  <feature.icon size={28} className={`mb-4 ${feature.color}`} />
+                  <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
+                  <p className="text-textSecondary text-sm">{feature.desc}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
+
+      {/* 8. Final CTA */}
+      <section className="py-32 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-primary/10 -z-10" />
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <Reveal>
+            <h2 className="text-5xl md:text-7xl font-black tracking-tight mb-8">
+              Stop watching.<br />Start building.
+            </h2>
+            <p className="text-xl text-textSecondary mb-10">Join thousands of engineers upgrading their careers through interactive visual learning.</p>
+            <Link 
+              href="/backend-engineering"
+              className="inline-flex bg-white text-black font-black text-lg py-5 px-12 rounded-full items-center gap-3 transition-transform hover:scale-105 shadow-[0_0_40px_rgba(255,255,255,0.2)]"
+            >
+              Start Learning Today
+            </Link>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 9. Footer */}
+      <Footer />
+      
+    </div>
   );
 }

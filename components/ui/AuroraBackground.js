@@ -12,11 +12,11 @@ export default function AuroraBackground() {
   }, []);
 
   return (
-    <div ref={containerRef} className="aurora-container" aria-hidden="true">
-      <div className="aurora-blob aurora-blob-1" />
-      <div className="aurora-blob aurora-blob-2" />
-      <div className="aurora-blob aurora-blob-3" />
-      <div className="aurora-mesh" />
+    <div ref={containerRef} className="aurora-container" aria-hidden="true" suppressHydrationWarning>
+      <div className="aurora-blob aurora-blob-1" suppressHydrationWarning />
+      <div className="aurora-blob aurora-blob-2" suppressHydrationWarning />
+      <div className="aurora-blob aurora-blob-3" suppressHydrationWarning />
+      <div className="aurora-mesh" suppressHydrationWarning />
     </div>
   );
 }

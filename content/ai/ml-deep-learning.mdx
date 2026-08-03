@@ -1,151 +1,165 @@
 ---
 title: "ML & Deep Learning"
-description: "Demystify Artificial Intelligence. Understand how Neural Networks learn from data using weights, biases, and backpropagation."
-phase: "AI Foundations"
+description: "Neural networks, weights, backpropagation, and the math behind modern AI."
+time: "45 min"
 difficulty: "intermediate"
+xp: 75
+phase: "AI Foundations"
 ---
 
-## 1. Simple Explanation
-
-Traditional programming is giving a computer **Rules** and **Data** to get **Answers**. (e.g., Rule: `if x > 5 return true`, Data: `x = 10`, Answer: `true`).
-**Machine Learning (ML)** flips this backward. You give the computer **Data** and **Answers**, and it figures out the **Rules**.
-**Deep Learning** is a specific type of ML that uses "Neural Networks"—layers of artificial neurons loosely inspired by the human brain—to figure out incredibly complex rules, like how to recognize a cat in a photo or translate English to French.
-
-## 2. Why this technology exists
-
-Some problems are too complex to write rules for. How do you write an `if` statement to detect if a photo contains a dog? 
-`if (pixel(x,y) == brown && ...)`? It's impossible. 
-Deep Learning exists because we realized it is much easier to just show a computer 10,000 pictures of dogs and 10,000 pictures of cats, and let it mathematically adjust its own internal "filters" until it can tell the difference. 
-
-## 3. What problem it solves
-
-- **Pattern Recognition:** Image classification (identifying tumors in X-rays), speech recognition (Siri/Alexa), and natural language processing.
-- **Unstructured Data:** Deep learning thrives on messy, unstructured data (pixels, audio waves, raw text) that traditional SQL databases and standard algorithms cannot parse.
-
-## 4. Real-life analogy
-
-**Deep Learning is like learning to ride a bike.**
-You don't learn to ride a bike by reading a physics textbook containing the exact mathematical rules of balance and momentum.
-Instead, you get on the bike (Input). You lean too far left and fall (Error/Loss). Your brain makes a tiny adjustment (Backpropagation). You try again. You fall right. You adjust again. After 100 falls, your brain has subconsciously figured out the exact "weights" of how hard to push the pedals and pull the handlebars. You figured out the rules through trial and error!
-
----
-
-## 5. Internal working
-
-<AIVisualizer />
-
----
-
-## 6. Architecture & Data Flow
-
-<AnimatedWorkflow 
-  title="The Neural Network Training Loop"
-  steps={[
-    { title: "Forward Pass", description: "Input data (an image) is multiplied by current Weights to make a prediction.", icon: "➡️" },
-    { title: "Loss Function", description: "Compare the prediction ('Cat') to the actual truth ('Dog'). Calculate the Error.", icon: "📉" },
-    { title: "Backpropagation", description: "Calculate the gradient (direction) to fix the error using calculus.", icon: "⬅️" },
-    { title: "Gradient Descent", description: "Update the Weights slightly to make a better prediction next time.", icon: "⚙️" },
-    { title: "Repeat", description: "Repeat 1,000,000 times until the Error is near zero.", icon: "🔄" }
+<LearningObjectives
+  objectives={[
+    "Understand the difference between AI, ML, and Deep Learning",
+    "Learn how a neural network processes data through layers",
+    "Understand forward propagation and backpropagation",
+    "Know what weights, biases, and activation functions do"
   ]}
 />
 
-## 7. Step-by-step process explanation
+## What is Machine Learning?
 
-1. **Neurons & Weights:** A neural network is just a series of nodes (neurons). Each connection between nodes has a "Weight" (a number).
-2. **Input Layer:** You feed raw data (like pixel brightness values) into the first layer.
-3. **Hidden Layers:** The data flows forward. Each neuron multiplies the incoming data by its Weight, adds a Bias, and passes it through an Activation Function (like ReLU) to decide if it should "fire".
-4. **Output Layer:** The final layer spits out a probability (e.g., 90% sure this is a hotdog).
-5. **Training:** During training, the network uses Backpropagation to tweak millions of Weights simultaneously so the output gets closer and closer to the right answer.
+Machine Learning is a subset of Artificial Intelligence where computers **learn patterns from data** instead of being explicitly programmed with rules.
 
-## 8. Code examples
+<AnalogyCard
+  title="The Chef Analogy"
+  description="Imagine teaching someone to cook. Traditional programming is like giving them a recipe (step-by-step instructions). Machine Learning is like giving them 1,000 meals to taste and letting them figure out the recipe themselves. The more meals they taste, the better they get at cooking."
+/>
 
-*Note: In the real world, you use Python (PyTorch/TensorFlow) for training models, but we can consume them easily in Node.js/JavaScript.*
+### Three Types of ML
 
-**Python (PyTorch) - Defining a simple Neural Network:**
-```python
-import torch.nn as nn
+- **Supervised Learning:** You give the model labeled data (input → expected output). It learns the mapping. Example: "This email is spam" / "This email is not spam."
+- **Unsupervised Learning:** You give the model unlabeled data and it finds hidden patterns. Example: Grouping customers by shopping behavior.
+- **Reinforcement Learning:** The model learns through trial and error, receiving rewards for correct actions. Example: Training an AI to play chess.
 
-class SimpleNet(nn.Module):
-    def __init__(self):
-        super(SimpleNet, self).__init__()
-        # Input: 784 pixels (28x28 image). Hidden: 128 neurons. Output: 10 classes (digits 0-9)
-        self.fc1 = nn.Linear(784, 128) 
-        self.relu = nn.ReLU()
-        self.fc2 = nn.Linear(128, 10)
+## What is Deep Learning?
 
-    def forward(self, x):
-        x = self.fc1(x)
-        x = self.relu(x)
-        x = self.fc2(x)
-        return x
+Deep Learning is a subset of ML that uses **neural networks with many layers** (hence "deep"). It powers everything from ChatGPT to self-driving cars.
+
+### The Neuron (Perceptron)
+
+A single artificial neuron does three things:
+
+1. **Receives inputs** (numbers), each multiplied by a **weight**
+2. **Sums them up** and adds a **bias**
+3. **Passes the result through an activation function** to produce output
+
+```javascript
+// A single neuron in JavaScript
+function neuron(inputs, weights, bias) {
+  let sum = 0;
+  for (let i = 0; i < inputs.length; i++) {
+    sum += inputs[i] * weights[i];
+  }
+  sum += bias;
+  
+  // ReLU activation function
+  return Math.max(0, sum);
+}
+
+// Example: Is this email spam?
+const features = [0.8, 0.2, 0.9]; // [hasLinks, isFromContact, hasSpamWords]
+const weights  = [0.5, -0.7, 0.9]; // learned weights
+const bias     = -0.3;
+
+const output = neuron(features, weights, bias);
+console.log(output > 0.5 ? "SPAM" : "NOT SPAM");
 ```
 
-## 9. Common Use Cases
+## Neural Network Architecture
 
-- **Computer Vision:** Self-driving cars detecting pedestrians, facial recognition, medical imaging.
-- **Natural Language Processing (NLP):** Sentiment analysis, spam filters, machine translation.
-- **Recommender Systems:** YouTube and TikTok algorithms predicting exactly what video will keep you watching.
+A neural network stacks neurons into **layers**:
 
-## 10. Best practices
+- **Input Layer:** Receives raw data (e.g., pixel values of an image)
+- **Hidden Layers:** Transform the data through learned patterns (the "deep" in deep learning)
+- **Output Layer:** Produces the final prediction
 
-- **Data is King:** A simple model trained on a massive, high-quality dataset will almost always beat a state-of-the-art model trained on garbage data. "Garbage In, Garbage Out."
-- **Overfitting:** If you train a model too long, it will just memorize the training data and fail miserably in the real world. Use Techniques like Dropout and Early Stopping to prevent this.
+## Forward Propagation
 
-## 11. Common mistakes
+Data flows **forward** through the network, layer by layer. Each neuron computes its weighted sum, applies an activation function, and passes the result to the next layer.
 
-- **Ignoring the Baseline:** Before building a massive Neural Network, see if a simple traditional ML algorithm (like Random Forest or Linear Regression) solves the problem. Deep learning is overkill for many simple tabular datasets.
-- **Bias in Data:** If you train a resume-screening AI only on resumes from men, the model will learn to penalize women's resumes. Models are incredibly lazy; they will exploit any bias in your data to minimize the loss function.
+```javascript
+// Simple 2-layer neural network (forward pass)
+function forwardPass(input) {
+  // Layer 1: 3 inputs → 2 hidden neurons
+  const hidden1 = relu(dot(input, weightsLayer1) + biasLayer1);
+  const hidden2 = relu(dot(input, weightsLayer2) + biasLayer2);
+  
+  // Layer 2: 2 hidden → 1 output
+  const output = sigmoid(
+    hidden1 * weightOutput1 + hidden2 * weightOutput2 + biasOutput
+  );
+  
+  return output; // probability between 0 and 1
+}
+```
 
-## 12. Performance tips
+## Backpropagation: How Networks Learn
 
-- **Use GPUs:** CPUs have ~8 extremely fast cores. GPUs have ~4,000 slower cores. Because Neural Networks are just millions of simultaneous, simple matrix multiplications, GPUs can train models 100x faster than CPUs.
+After a forward pass, the network compares its prediction to the actual answer. The difference is called the **loss**. Backpropagation calculates how much each weight contributed to the error and adjusts them accordingly.
 
-## 13. Security considerations
+1. **Calculate Loss:** How wrong was the prediction?
+2. **Compute Gradients:** How much did each weight contribute to the error? (using calculus — chain rule)
+3. **Update Weights:** Nudge each weight in the direction that reduces the error
 
-- **Adversarial Attacks:** Attackers can subtly alter a few pixels in a stop sign image. To a human, it still looks like a stop sign. To the Neural Network, the altered pixels completely flip the math, causing the self-driving car to classify it as a "Speed Limit 65" sign.
-- **Data Privacy:** If you train a model on sensitive user data, that data is mathematically baked into the weights. Researchers have successfully extracted raw credit card numbers and SSNs out of trained models.
+This process repeats thousands of times. Each full pass through the data is called an **epoch**.
 
-## 14. Scalability & Deployment
+> **Pro Tip:** The "learning rate" controls how big each weight adjustment is. Too high → overshoots. Too low → takes forever to converge.
 
-- **Training vs. Inference:** *Training* a model requires massive supercomputers and weeks of time. *Inference* (using the trained model to make a prediction) is very fast and can often run on a smartphone. Usually, you train in the cloud and deploy the static model file to Edge devices or standard API servers.
+## Activation Functions
 
-## 15. Interview questions
+Activation functions introduce **non-linearity**, allowing networks to learn complex patterns:
 
-**Q: What is the difference between AI, Machine Learning, and Deep Learning?**
-A: **AI** is the broad concept of machines acting intelligently. **Machine Learning** is a subset of AI where machines learn from data instead of explicit rules. **Deep Learning** is a subset of ML that uses multi-layered artificial Neural Networks to learn from massive amounts of unstructured data.
+| Function | Formula | Use Case |
+|----------|---------|----------|
+| **ReLU** | max(0, x) | Hidden layers (most common) |
+| **Sigmoid** | 1/(1+e^-x) | Binary classification output |
+| **Softmax** | e^xi / Σe^xj | Multi-class classification output |
+| **Tanh** | (e^x - e^-x)/(e^x + e^-x) | Hidden layers (centered at 0) |
 
-**Q: What is an Activation Function (like ReLU or Sigmoid)?**
-A: If a neural network only used multiplication and addition, it would just be one giant linear equation, completely unable to learn complex patterns. Activation functions introduce "Non-Linearity", allowing the network to curve and bend its understanding to match complex, real-world data.
+## Real-World Applications
 
-## 16. MCQs
+| Application | What ML Does |
+|-------------|-------------|
+| **ChatGPT** | Predicts the next token given a sequence of tokens |
+| **YouTube Recommendations** | Predicts which video you'll click on next |
+| **Tesla Autopilot** | Classifies objects in camera images in real-time |
+| **Google Translate** | Maps sequences in one language to another |
+| **Spotify Discover Weekly** | Clusters users by listening patterns |
 
-1. What algorithm is used to adjust the weights of a neural network during training?
-   - A) Binary Search
-   - B) Backpropagation
-   - C) QuickSort
-   - D) A* Pathfinding
-   **Answer: B**
+<InterviewPrep
+  questions={[
+    {
+      question: "Explain the difference between AI, Machine Learning, and Deep Learning.",
+      answer: "AI is the broadest concept — any system that mimics human intelligence. Machine Learning is a subset where systems learn patterns from data without explicit programming. Deep Learning is a subset of ML that uses multi-layered neural networks, enabling it to learn extremely complex patterns from large datasets (images, text, audio).",
+      difficulty: "beginner",
+      commonMistake: "Treating the three terms as interchangeable. They are nested subsets, not synonyms."
+    },
+    {
+      question: "What is backpropagation and why is it important?",
+      answer: "Backpropagation is the algorithm that trains neural networks. After a forward pass produces a prediction, backprop calculates the gradient of the loss function with respect to each weight using the chain rule of calculus. These gradients tell us which direction to adjust each weight to reduce the error. Without backpropagation, we'd have no efficient way to train deep networks.",
+      difficulty: "intermediate",
+      commonMistake: "Confusing backpropagation with gradient descent. Backprop computes the gradients; gradient descent uses them to update the weights."
+    }
+  ]}
+/>
 
-2. Why are GPUs preferred over CPUs for training Deep Learning models?
-   - A) GPUs have faster clock speeds.
-   - B) GPUs are designed to handle thousands of parallel matrix multiplications simultaneously.
-   - C) GPUs have built-in datasets.
-   - D) CPUs cannot perform floating-point math.
-   **Answer: B**
+<PracticeExercise
+  title="Build a Single Neuron"
+  description="Implement a single perceptron in Node.js that classifies points as above or below a line."
+  steps={[
+    "Create a function that takes 2 inputs (x, y coordinates)",
+    "Initialize random weights and a bias",
+    "Implement the step activation function (output 1 if sum > 0, else 0)",
+    "Train it on 100 random points using the perceptron learning rule"
+  ]}
+/>
 
-## 17. Assignments
-
-**Play with Neural Networks:**
-1. Go to the [TensorFlow Playground](https://playground.tensorflow.org/).
-2. It runs a real neural network directly in your browser.
-3. Try changing the dataset (on the left) to the "Spiral" pattern.
-4. Add more Hidden Layers and Neurons. Click "Play".
-5. Watch how the network slowly adjusts its weights (the background colors) to perfectly separate the orange dots from the blue dots!
-
-## 18. Summary
-
-Deep Learning has revolutionized technology over the past decade. By shifting from writing explicit logic to defining network architectures that "learn" through calculus and massive datasets, we have solved problems that were deemed impossible just 20 years ago.
-
-## 19. Next lesson progression
-
-Now that we understand how basic neural networks learn, we can explore the specific breakthrough architecture that powers ChatGPT and modern AI: **Transformers & Attention Mechanisms**.
+<LessonSummary
+  keyPoints={[
+    "ML learns patterns from data instead of following explicit rules",
+    "Deep Learning uses multi-layered neural networks",
+    "Forward propagation passes data through layers to make a prediction",
+    "Backpropagation adjusts weights to minimize prediction errors",
+    "Activation functions (ReLU, Sigmoid, Softmax) introduce non-linearity"
+  ]}
+/>

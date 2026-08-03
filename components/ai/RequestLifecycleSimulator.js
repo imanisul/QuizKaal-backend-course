@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Laptop, Globe, Box, ShieldCheck, Server, Layers, Database, 
@@ -44,7 +44,37 @@ export default function RequestLifecycleSimulator() {
   const [framework, setFramework] = useState("express"); // "express" or "nestjs"
   const [scenario, setScenario] = useState("success"); // "success" or "failure"
 
-  const ActiveComponent = STEPS.find(s => s.id === activeStep)?.Component || Step1_ReactFrontend;
+  const ActiveComponent = useMemo(() => STEPS.find(s => s.id === activeStep)?.Component || Step1_ReactFrontend, [activeStep]);
+
+  const timelineContent = useMemo(() => {
+    return STEPS.map((step) => {
+      const isActive = activeStep === step.id;
+      const isPast = activeStep > step.id;
+      const Icon = step.icon;
+
+      return (
+        <button
+          key={step.id}
+          onClick={() => setActiveStep(step.id)}
+          className={`relative z-10 flex items-center xl:items-start gap-2 xl:gap-4 p-2 xl:p-3 rounded-xl transition-all text-left whitespace-nowrap xl:whitespace-normal shrink-0 ${isActive ? 'bg-white/5 border border-white/10' : 'hover:bg-white/[0.02]'}`}
+        >
+          <div className={`w-6 h-6 xl:w-8 xl:h-8 shrink-0 rounded-full flex items-center justify-center border transition-colors
+            ${isActive ? `bg-background ${step.color} border-current shadow-[0_0_15px_currentColor]` : isPast ? 'bg-white/5 border-white/10 text-white/40' : 'bg-black/50 border-white/5 text-white/20'}
+          `}>
+            <Icon size={12} className="xl:hidden" />
+            <Icon size={14} className="hidden xl:block" />
+          </div>
+          <div>
+            <h5 className={`text-xs xl:text-sm font-bold transition-colors ${isActive ? 'text-white' : isPast ? 'text-textSecondary' : 'text-textTertiary'}`}>
+              <span className="xl:hidden">{step.id}. {step.title}</span> 
+              <span className="hidden xl:inline">{step.id}. {step.title}</span>
+            </h5>
+            <p className={`hidden xl:block text-[10px] mt-0.5 transition-colors ${isActive ? step.color : 'text-textTertiary'}`}>{step.desc}</p>
+          </div>
+        </button>
+      );
+    });
+  }, [activeStep]);
 
   return (
     <div className="flex flex-col xl:flex-row gap-6 mt-12 bg-background border border-white/10 rounded-3xl p-4 lg:p-6 w-full max-w-[1400px] mx-auto min-h-[800px]">
@@ -94,34 +124,7 @@ export default function RequestLifecycleSimulator() {
           <div className="flex flex-row xl:flex-col relative gap-2 xl:gap-0 pb-2 xl:pb-0">
             {/* The vertical line only on xl */}
             <div className="hidden xl:block absolute left-4 top-4 bottom-4 w-px bg-white/5 z-0" />
-            
-            {STEPS.map((step, idx) => {
-              const isActive = activeStep === step.id;
-              const isPast = activeStep > step.id;
-              const Icon = step.icon;
-
-              return (
-                <button
-                  key={step.id}
-                  onClick={() => setActiveStep(step.id)}
-                  className={`relative z-10 flex items-center xl:items-start gap-2 xl:gap-4 p-2 xl:p-3 rounded-xl transition-all text-left whitespace-nowrap xl:whitespace-normal shrink-0 ${isActive ? 'bg-white/5 border border-white/10' : 'hover:bg-white/[0.02]'}`}
-                >
-                  <div className={`w-6 h-6 xl:w-8 xl:h-8 shrink-0 rounded-full flex items-center justify-center border transition-colors
-                    ${isActive ? `bg-background ${step.color} border-current shadow-[0_0_15px_currentColor]` : isPast ? 'bg-white/5 border-white/10 text-white/40' : 'bg-black/50 border-white/5 text-white/20'}
-                  `}>
-                    <Icon size={12} className="xl:hidden" />
-                    <Icon size={14} className="hidden xl:block" />
-                  </div>
-                  <div>
-                    <h5 className={`text-xs xl:text-sm font-bold transition-colors ${isActive ? 'text-white' : isPast ? 'text-textSecondary' : 'text-textTertiary'}`}>
-                      <span className="xl:hidden">{step.id}. {step.title}</span> 
-                      <span className="hidden xl:inline">{step.id}. {step.title}</span>
-                    </h5>
-                    <p className={`hidden xl:block text-[10px] mt-0.5 transition-colors ${isActive ? step.color : 'text-textTertiary'}`}>{step.desc}</p>
-                  </div>
-                </button>
-              );
-            })}
+            {timelineContent}
           </div>
         </div>
       </div>

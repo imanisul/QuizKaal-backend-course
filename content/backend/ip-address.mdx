@@ -1,0 +1,257 @@
+---
+title: "IP Address"
+description: "Discover how every device on the internet is assigned a unique address, and learn the difference between IPv4, IPv6, and NAT."
+phase: "Internet & How It Works"
+time: "25 min"
+difficulty: "beginner"
+---
+
+<LessonHero 
+  title="IP Address (IPv4 & IPv6)" 
+  module="Internet & How It Works" 
+  difficulty="Beginner" 
+  time="25 min" 
+  xp="50" 
+/>
+
+## 1. Introduction
+
+**What is this lesson?**
+In this lesson, we will explore the **Internet Protocol (IP) Address**—the fundamental identification system of the internet. We'll learn how computers find each other globally and the difference between public, private, static, dynamic, IPv4, and IPv6 addresses.
+
+**Why are we learning it?**
+Without an IP address, your computer cannot send or receive data over the internet. It is the core routing mechanism of the web.
+
+**Why should a backend engineer know this?**
+Backend engineers bind their servers to specific IP addresses (`0.0.0.0` vs `127.0.0.1`), whitelist IPs for database access, block malicious IPs, and configure VPCs (Virtual Private Clouds) on AWS. A strong grasp of IPs is non-negotiable.
+
+---
+
+## 2. Why This Exists
+
+**What problem existed before?**
+If two computers are plugged into each other with a wire, they can talk directly. But what happens when a million computers are connected? How does a packet of data know exactly which computer to go to without getting lost in the maze of cables?
+
+**Why was this technology created?**
+The IP Address was created to give every single connected device a globally unique numerical identifier. Just like every house in the world has a unique street address, every computer gets a unique IP address.
+
+**How did companies solve this problem?**
+The Internet Engineering Task Force (IETF) standardized **IPv4** (Internet Protocol version 4). It assigned a 32-bit number (like `192.168.1.1`) to every device, allowing routers to pass data from one node to the next until it reaches its final destination.
+
+---
+
+## 3. Problems It Solves
+
+**Without IP Addresses, data delivery is impossible.**
+Imagine dropping a letter in the mail with just the name "Rahul" on it, with no street address, city, or zip code. The post office would instantly throw it away. Without an IP address, routers drop network packets because they don't know where to send them.
+
+**Without NAT (Network Address Translation), we would have broken the internet.**
+IPv4 only has 4.3 billion unique addresses. We ran out of them years ago. If every smartphone, laptop, and smart TV needed a unique global IP, the internet would have collapsed. We solved this by creating Private IPs and NAT (more on this below).
+
+---
+
+## 4. Real Life Analogy
+
+<AnalogyCard title="The Office Building & Extension Numbers">
+  Think of an **IP Address** like a giant corporate office building.
+
+  **Public IP:** This is the main street address of the building (e.g., `203.0.113.45`). The post office (the internet) only knows how to find the building itself.
+
+  **Private IP:** Once inside the building, there are hundreds of employees. They each have an internal extension number (e.g., `Extension 101`, `Extension 102`). These are Private IPs (like `192.168.1.10`).
+
+  **NAT (The Receptionist):** If an employee wants to make an outside call, the call goes to the Receptionist (your home Router). The Receptionist masks the internal extension, dials out using the building's main phone number (Public IP), and routes the response back to the correct employee!
+</AnalogyCard>
+
+---
+
+## 5. Interactive Visualization
+
+Toggle between **IPv4** (to see how NAT shares a single Public IP among many home devices) and **IPv6** (the modern protocol where every device gets a globally unique public IP).
+
+<IpVisualizer />
+
+Notice how with IPv4, the Router must rewrite the IP headers (NAT) to send the request to the internet. With IPv6, NAT is no longer needed!
+
+---
+
+## 6. Step-by-Step Explanation
+
+Let's break down how IP addresses are assigned and used in your home network:
+
+**Step 1: The ISP assigns a Public IP**
+↓
+When you pay for internet, your Internet Service Provider (ISP) leases a single **Public IP Address** (e.g., `8.8.8.8`) to your home modem/router. This is the only address visible to the outside world.
+
+**Step 2: The Router assigns Private IPs**
+↓
+Your phone, laptop, and smart TV connect to your router. The router has a built-in DHCP server that assigns a **Private IP Address** (e.g., `192.168.1.5`) to each device.
+
+**Step 3: A device makes a request**
+↓
+Your laptop (`192.168.1.5`) tries to fetch a YouTube video. It sends a request to the Router.
+
+**Step 4: NAT Translation**
+↓
+The Router receives the request. It swaps out the laptop's Private IP for the Router's Public IP (`8.8.8.8`) and sends it to YouTube. It remembers this mapping in a NAT Table.
+
+**Step 5: The Response**
+↓
+YouTube sends the video data back to `8.8.8.8`. The Router receives it, checks its NAT table, realizes the data was requested by `192.168.1.5`, and forwards the video to your laptop!
+
+---
+
+## 7. Deep Explanation: IPv4 vs IPv6
+
+<ConceptBlock type="info" title="The IPv4 Exhaustion Crisis">
+  **IPv4 (Internet Protocol version 4)** is a 32-bit address.
+  *Format:* Four numbers from 0 to 255.
+  *Example:* `192.168.0.1`
+  *Total limit:* `2^32` = **4.3 billion addresses**.
+
+  Because the Earth has 8 billion people, and billions of smart devices, we mathematically ran out of IPv4 addresses.
+
+  **IPv6 (Internet Protocol version 6)** is a 128-bit address.
+  *Format:* Eight groups of hexadecimal numbers.
+  *Example:* `2001:0db8:85a3:0000:0000:8a2e:0370:7334`
+  *Total limit:* `2^128` = **340 undecillion addresses**. (That's 340 followed by 36 zeros).
+
+  With IPv6, there are enough IP addresses to assign a unique public IP to every single atom on the surface of the Earth. NAT is no longer required!
+</ConceptBlock>
+
+---
+
+## 8. Node.js Implementation
+
+As a Node.js backend engineer, you often need to know the IP address of the machine your code is running on. This is especially useful for logging, debugging, or configuring microservices to talk to each other.
+
+Node.js provides a built-in `os` (Operating System) module to fetch this data.
+
+<CodeTabs>
+  <div label="server-ip.js (Node.js)">
+    ```javascript
+    // Import the built-in operating system module
+    const os = require('os');
+
+    function getMachineIpAddresses() {
+      // Get all network interfaces on this machine
+      const interfaces = os.networkInterfaces();
+      const results = {};
+
+      for (const name of Object.keys(interfaces)) {
+        for (const iface of interfaces[name]) {
+          // We only want external IPv4 addresses (ignore internal localhost)
+          if (iface.family === 'IPv4' && !iface.internal) {
+            if (!results[name]) results[name] = [];
+            results[name].push(iface.address);
+          }
+        }
+      }
+      return results;
+    }
+
+    console.log("Detecting Machine IP Addresses...");
+    const ips = getMachineIpAddresses();
+
+    console.log(JSON.stringify(ips, null, 2));
+    
+    // In production, you might use this to bind your Express server!
+    // const express = require('express');
+    // const app = express();
+    // const HOST = ips['eth0'][0]; // Bind to the main ethernet interface
+    // app.listen(3000, HOST, () => console.log(`Running on ${HOST}:3000`));
+    ```
+  </div>
+</CodeTabs>
+
+**Expected Output:**
+```json
+Detecting Machine IP Addresses...
+{
+  "en0": [
+    "192.168.1.15"
+  ]
+}
+```
+
+<ConceptBlock type="idea" title="Best Practice: 0.0.0.0 vs 127.0.0.1">
+  When starting an Express server, if you bind to `127.0.0.1` (localhost), your server can ONLY be accessed by applications running on the exact same computer. If you bind to `0.0.0.0`, your server listens on ALL available network interfaces, meaning other computers on the network (or internet) can access it!
+</ConceptBlock>
+
+---
+
+## 9. Interactive Playground
+
+Let's test this in the real world. Open your terminal and ping a website to see its IP address.
+
+```bash
+# Ping Google to see the IP address of the server responding to you
+ping google.com
+
+# Run curl to an API that returns YOUR public IP address!
+curl ifconfig.me
+```
+
+---
+
+## 10. Common Mistakes
+
+<WarningCard title="Hardcoding IP Addresses">
+  **The Mistake:** Writing code like `fetch('http://192.168.1.50/api/users')` in your frontend application.
+
+  **Why it happens:** When developing locally, your backend might be running on that specific IP.
+
+  **The Fix:** NEVER hardcode IP addresses. If the server restarts or the DHCP lease expires, the IP will change, and your app will break instantly. Always use **Environment Variables** and **Domain Names** (which resolve via DNS).
+</WarningCard>
+
+---
+
+## 11. Best Practices
+
+**How Netflix & Amazon build this:**
+Enterprise backends never expose their application servers directly to the Public IP space. Instead, they use a **VPC (Virtual Private Cloud)**. The application servers are assigned Private IPs (e.g., `10.0.1.5`) which are completely invisible to the internet. Only a Load Balancer (with a Public IP) is exposed, which securely routes traffic to the private servers.
+
+**Static vs Dynamic IPs:**
+When you deploy a backend database on AWS, you must assign it an **Elastic IP (Static IP)**. This guarantees the IP never changes, so your backend servers never lose connection to the database.
+
+---
+
+## 12. Performance & Security
+
+**Performance (Geo-IP Routing)**
+Companies use Geo-IP databases to look up the physical country of an incoming IP address. This allows them to instantly route users in India to the Mumbai data center, and users in the USA to the Virginia data center, reducing latency!
+
+**Security (IP Whitelisting & Blacklisting)**
+A common security practice for databases is **IP Whitelisting**. You configure your database firewall to *only* accept connections from the specific IP addresses of your backend servers. If a hacker tries to connect to the database from their own computer, the firewall drops the connection immediately.
+
+
+---
+
+## 14. Practice Challenge
+
+**Mini Assignment:**
+1. Open your terminal and find your computer's private IP address.
+   * Mac/Linux: type `ifconfig` or `ip addr`.
+   * Windows: type `ipconfig`.
+2. Look for an address starting with `192.168.x.x`, `10.x.x.x`, or `172.16.x.x`.
+3. Now, open your web browser and go to `https://whatismyipaddress.com/`. 
+4. Notice how the Public IP shown in the browser is completely different from the Private IP in your terminal! That is NAT in action.
+
+---
+
+## 15. Summary
+
+*   **IP Address** is a numerical label assigned to every device on a network.
+*   **IPv4** is older, uses 32-bits (e.g. `192.168.1.1`), and ran out of addresses.
+*   **IPv6** is modern, uses 128-bits, and provides effectively infinite addresses.
+*   **NAT (Network Address Translation)** allows multiple devices to share a single Public IP.
+*   **127.0.0.1** is localhost (your own machine). **0.0.0.0** binds to all available network interfaces.
+
+---
+
+## 16. Next Lesson
+
+Now you know how traffic routes to the correct physical computer using the IP Address. But a single server can run a web server, an email server, and a database simultaneously.
+
+How does the data know which application it should go to inside that computer? That is where **Ports** come in!
+
+<CourseNavigation prev={{ slug: "dns", title: "DNS", emoji: "Globe" }} next={{ slug: "ports", title: "Ports", emoji: "DoorOpen" }} lessonSlug="ip-address" />

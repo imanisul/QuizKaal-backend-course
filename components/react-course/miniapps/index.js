@@ -404,3 +404,14 @@ export function Ch16App() {
     </div>
   );
 }
+
+export function Ch17App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">API Sync Simulator coming soon</div>; }
+export function Ch18App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">Auth Gateway Simulator coming soon</div>; }
+export function Ch19App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">Render Profiler coming soon</div>; }
+export function Ch20App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">Test Suite Runner coming soon</div>; }
+export function Ch21App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">CI/CD Pipeline Sim coming soon</div>; }
+export function Ch22App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">Crash & Recover Sim coming soon</div>; }
+export function Ch23App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">Network Chunk Sim coming soon</div>; }
+export function Ch24App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">Global Store Explorer coming soon</div>; }
+export function Ch25App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">Architecture Sandbox coming soon</div>; }
+export function Ch26App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">E-commerce Showcase coming soon</div>; }

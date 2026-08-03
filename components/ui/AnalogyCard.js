@@ -3,8 +3,8 @@ import StaggerReveal, { StaggerItem } from "@/components/ui/StaggerReveal";
 import RenderIcon from "@/components/ui/IconMap";
 import DOMPurify from "isomorphic-dompurify";
 
-export default function AnalogyCard({ title, subtitle, description, iconName }) {
-  if (!title || !description) return null;
+export default function AnalogyCard({ title, subtitle, description, iconName, children }) {
+  if (!title || (!description && !children)) return null;
 
   return (
     <StaggerReveal>
@@ -22,16 +22,22 @@ export default function AnalogyCard({ title, subtitle, description, iconName }) 
             <div className="analogy-icon text-primary flex-shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
               <RenderIcon iconName={iconName || "Lightbulb"} size={24} />
             </div>
-            <div>
+            <div className="w-full">
               {subtitle && (
                 <h3 className="text-[16px] font-bold mb-2 text-primary drop-shadow-[0_0_8px_rgba(79,70,229,0.3)]">
                   {subtitle}
                 </h3>
               )}
-              <div
-                className="text-textSecondary text-[15.5px] leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(description) }}
-              />
+              {description ? (
+                <div
+                  className="text-textSecondary text-[15.5px] leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(description) }}
+                />
+              ) : (
+                <div className="text-textSecondary text-[15.5px] leading-relaxed prose prose-invert max-w-none prose-p:my-2 prose-ul:my-2">
+                  {children}
+                </div>
+              )}
             </div>
           </div>
         </StaggerItem>

@@ -1,0 +1,86 @@
+# Rendering Pipelines (16ms Rule)
+
+Why do some mobile apps feel buttery smooth while others stutter and lag when you scroll? The answer lies in the 16-millisecond rule.
+
+## 1. Introduction
+
+Mobile phones have standard refresh rates of 60 Hertz (60 frames per second). Some modern phones (like the iPhone Pro or Pixel Pro) have 120Hz screens. To maintain 60fps, your app must calculate layout, execute javascript, and draw the pixels to the screen in exactly **16.67 milliseconds** (or 8ms for 120Hz).
+
+## 2. Why this concept exists
+
+If your code takes 25ms to execute, the phone will miss the 16.67ms deadline. The screen will display the *old* frame twice. This is called a "dropped frame" or "jank". If you drop multiple frames in a row while the user is scrolling, the app feels cheap and broken.
+
+## 3. Visual Explanation
+
+<ConceptCard 
+  title="The 16ms Deadline" 
+  description="Thread 1 (UI Thread) -> Calculate Layout -> Rasterize Vectors -> Send to GPU. If this pipeline takes longer than 16.67ms, the frame drops. You MUST offload heavy work to Thread 2 (Background Thread)."
+/>
+
+## 4. Internal Working: The Threads
+
+- **UI Thread (Main Thread):** The only thread allowed to touch the screen. It must remain perfectly idle, waiting to draw 60 times a second.
+- **Background Threads:** Used for network requests, database parsing, and heavy math.
+- **The JS Thread (React Native only):** React Native runs your business logic on a separate JS thread. It communicates with the UI thread asynchronously.
+
+## 5. Interactive Animation: Rendering Pipeline
+
+Click "Render Frame" to watch how the rendering pipeline processes a single frame within the 16.67ms budget:
+
+<RenderingPipelineDiagram />
+
+## 6. Code Examples: Performance Profiling
+
+How to use list virtualization to maintain 60fps when rendering 10,000 items:
+
+<MultiLangCodeBlock rnCodeBase64="Ly8gUmVhY3QgTmF0aXZlIChGbGF0TGlzdCkKLy8gTmV2ZXIgdXNlIC5tYXAoKSBmb3IgbG9uZyBsaXN0cyEgVXNlIEZsYXRMaXN0Lgo8RmxhdExpc3QKICBkYXRhPXttYXNzaXZlQXJyYXlPZjEwMDAwSXRlbXN9CiAga2V5RXh0cmFjdG9yPXsoaXRlbSkgPT4gaXRlbS5pZH0KICByZW5kZXJJdGVtPXsoeyBpdGVtIH0pID0+IDxVc2VyQ2FyZCB1c2VyPXtpdGVtfSAvPn0KICB3aW5kb3dTaXplPXs1fSAvLyBPbmx5IHJlbmRlcnMgaXRlbXMgbmVhciB0aGUgc2NyZWVuCi8+" flutterCodeBase64="Ly8gRmx1dHRlciAoTGlzdFZpZXcuYnVpbGRlcikKTGlzdFZpZXcuYnVpbGRlcigKICBpdGVtQ291bnQ6IG1hc3NpdmVBcnJheU9mMTAwMDBJdGVtcy5sZW5ndGgsCiAgaXRlbUJ1aWxkZXI6IChjb250ZXh0LCBpbmRleCkgewogICAgcmV0dXJuIFVzZXJDYXJkKHVzZXI6IG1hc3NpdmVBcnJheU9mMTAwMDBJdGVtc1tpbmRleF0pOwogIH0sCik=" androidCodeBase64="Ly8gQW5kcm9pZCBDb21wb3NlIChMYXp5Q29sdW1uKQpMYXp5Q29sdW1uIHsKICAgIGl0ZW1zKG1hc3NpdmVBcnJheU9mMTAwMDBJdGVtcykgeyB1c2VyIC0+CiAgICAgICAgVXNlckNhcmQodXNlcikKICAgIH0KfQ==" />
+
+**Explanation:**  
+Each framework provides a 'Virtualization' or 'Lazy Loading' list primitive. Instead of instantiating 10,000 UI elements in memory (which would instantly crash the device), these components only instantiate the ~10 elements currently visible on the screen. As the user scrolls, the elements that go off the top are recycled and reused for the new elements appearing at the bottom.
+
+## 7. Real-world Examples
+
+- **Twitter Feed:** Twitter uses aggressive virtualization. As you scroll down, the tweets that go off the top of the screen are actually destroyed and removed from memory. When you scroll back up, they are recreated. This keeps memory usage low and frame rates at 60fps.
+
+## 8. Best Practices
+
+- **Avoid heavy computations in `render()`:** Never map over a 5000-item array inside your render function. Memoize it.
+- **Optimize Images:** Do not load a 4K 10MB image into a 50x50 pixel avatar circle. Use a CDN to resize the image to 50x50 *before* sending it to the phone.
+
+## 9. Common Mistakes
+
+- **React Native Bridge Traffic:** Sending a massive base64 encoded string across the React Native JS Bridge. The bridge gets blocked, the JS thread locks up, and the app drops frames.
+- **Animations on the JS Thread:** Always use `useNativeDriver: true` (or Reanimated) to run animations directly on the UI thread, bypassing JS entirely.
+
+## 10. Interview Questions
+
+<InterviewQuestion 
+  question="What is the 16ms rule and why is it important?"
+  answer="The 16ms rule refers to the 16.67 millisecond budget a phone has to render a single frame on a 60Hz display. If your layout calculation or Javascript execution takes longer than 16.67ms, the frame is dropped, resulting in visual stuttering ('jank')."
+  commonFollowUp="How does this math change for modern 120Hz ProMotion displays?"
+/>
+
+<InterviewQuestion 
+  question="Why should you use a FlatList instead of a ScrollView for large datasets in React Native?"
+  answer="A ScrollView renders ALL of its children immediately, even those completely off-screen. If you have 5,000 items, it will try to render 5,000 views at once, likely crashing the app. A FlatList is virtualized—it only renders the 10-15 items currently visible on the screen, recycling them as you scroll, which uses O(1) memory instead of O(N)."
+  bestPractice="Ensure your FlatList items are PureComponents or wrapped in React.memo to prevent unnecessary re-renders when the list scrolls."
+/>
+
+<InterviewQuestion 
+  question="How does Flutter achieve 120fps without a JavaScript bridge?"
+  answer="Flutter doesn't use Javascript or a bridge. Dart code is compiled Ahead-Of-Time (AOT) directly into native ARM machine code. Furthermore, Flutter bypasses the OEM widgets entirely and uses its own C++ rendering engine (Skia/Impeller) to draw pixels directly to the screen canvas."
+/>
+
+## 11. Knowledge Check
+
+<QuizWidget 
+  question="To maintain a smooth 60 frames per second (60fps), your app must complete all rendering work in approximately how much time?"
+  options={["8 milliseconds", "16.67 milliseconds", "32 milliseconds", "60 milliseconds"]}
+  correctAnswer="16.67 milliseconds"
+  explanation="1000 milliseconds / 60 frames = 16.67 milliseconds per frame."
+  takeaway="Every millisecond counts. Offload heavy data parsing to background threads so the UI thread can hit the 16ms deadline."
+/>
+
+## 12. Summary
+
+Performance is a feature. Users might not know what a "dropped frame" is, but they know when an app feels slow. By understanding the 16ms rule, virtualization, and threading, you can build apps that feel incredibly premium.

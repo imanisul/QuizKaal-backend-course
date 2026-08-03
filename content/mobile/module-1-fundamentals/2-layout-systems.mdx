@@ -1,0 +1,84 @@
+# Layout Systems (Flexbox vs Constrained)
+
+Now that you know the language, how do you actually place a button on the screen? In mobile engineering, placing UI elements requires understanding flexible layout engines.
+
+## 1. Introduction
+
+Mobile devices come in thousands of different screen sizes, from 4-inch phones to 13-inch tablets. You cannot hardcode pixel positions. Instead, you must use layout systems that dynamically calculate positions at runtime. 
+
+## 2. Why this concept exists
+
+If you hardcode a button at `(x: 100, y: 200)`, it might look great on an iPhone 15, but on a smaller device, that button will render completely off-screen. Layout systems solve this by using relative constraints and flexbox math.
+
+## 3. Visual Explanation
+
+<ConceptCard 
+  title="The Layout Pass" 
+  description="When a screen mounts, the OS performs a 'Layout Pass'. It reads your constraints (e.g. 'center this box'), calculates the exact width and height of the user's screen in milliseconds, and computes the absolute X,Y coordinates for every single view on the screen."
+/>
+
+## 4. Internal Working: Flexbox vs ConstraintLayout
+
+- **React Native (Flexbox):** Uses a C++ engine called Yoga to bring web-style Flexbox to mobile. Everything is a flex container.
+- **Flutter (Widgets):** Uses composable widgets like `Column`, `Row`, and `Center`. It uses a strict top-down constraint passing system.
+- **Android (ConstraintLayout):** Uses a flat hierarchy where views are attached to each other using spring-like constraints. 
+
+## 5. Interactive Animation: UI Rendering
+
+Watch how the UI engine calculates layout bounds before actually drawing the colors to the screen.
+
+<InteractivePhoneMockup 
+  scenario="chat"
+  title="Dynamic Layout Calculation"
+/>
+
+## 6. Code Examples: Centering a Box
+
+Here is how you center a box in the middle of the screen:
+
+<MultiLangCodeBlock rnCodeBase64="Ly8gUmVhY3QgTmF0aXZlIChGbGV4Ym94KQo8VmlldyBzdHlsZT17eyAKICBmbGV4OiAxLCAKICBqdXN0aWZ5Q29udGVudDogJ2NlbnRlcicsIAogIGFsaWduSXRlbXM6ICdjZW50ZXInIAp9fT4KICA8VmlldyBzdHlsZT17eyB3aWR0aDogMTAwLCBoZWlnaHQ6IDEwMCwgYmFja2dyb3VuZENvbG9yOiAnYmx1ZScgfX0gLz4KPC9WaWV3Pg==" flutterCodeBase64="Ly8gRmx1dHRlciAoV2lkZ2V0cykKQ2VudGVyKAogIGNoaWxkOiBDb250YWluZXIoCiAgICB3aWR0aDogMTAwLAogICAgaGVpZ2h0OiAxMDAsCiAgICBjb2xvcjogQ29sb3JzLmJsdWUsCiAgKSwKKQ==" androidCodeBase64="Ly8gQW5kcm9pZCBKZXRwYWNrIENvbXBvc2UgKE1vZGlmaWVycykKQm94KAogICAgbW9kaWZpZXIgPSBNb2RpZmllci5maWxsTWF4U2l6ZSgpLAogICAgY29udGVudEFsaWdubWVudCA9IEFsaWdubWVudC5DZW50ZXIKKSB7CiAgICBCb3goCiAgICAgICAgbW9kaWZpZXIgPSBNb2RpZmllci5zaXplKDEwMC5kcCkuYmFja2dyb3VuZChDb2xvci5CbHVlKQogICAgKQp9" />
+
+**Explanation:**  
+Each framework provides a primitive to expand to the available space (`flex: 1`, `Center`, or `fillMaxSize()`), and then a constraint instruction to align the children exactly in the middle. The layout engine computes the exact X/Y pixel coordinates automatically based on the device screen size.
+
+## 7. Real-world Examples
+
+- **Responsive Navigation Bars:** In Instagram, the bottom tab bar uses Flexbox `justifyContent: 'space-around'` so the icons are perfectly spaced regardless of whether the phone is wide or narrow.
+
+## 8. Best Practices
+
+- **Avoid fixed dimensions:** Use percentages, flex values, or screen dimension APIs (`Dimensions.get('window').width`) to ensure UI scales.
+- **Keep hierarchies flat:** Deeply nested `<View>` or `Container` tags force the layout engine to do exponentially more math during the Layout Pass, dropping your frame rate.
+
+## 9. Common Mistakes
+
+- **Unconstrained Heights:** Setting `height: '100%'` inside a parent that has no defined height. The child element will collapse to 0 height and disappear entirely.
+- **Hardcoding Offsets:** Hardcoding `width: 400` assuming everyone has a wide phone, resulting in horizontal scrolling or cropped UIs on smaller devices.
+
+## 10. Interview Questions
+
+<InterviewQuestion 
+  question="Explain how React Native's Yoga engine converts Flexbox to native constraints."
+  answer="Yoga is a cross-platform layout engine written in C++. It takes Flexbox rules written in JavaScript (like flex: 1, justifyContent), calculates the exact absolute (X, Y, width, height) geometry for every node in the tree, and then passes those raw pixel coordinates across the bridge to the Native OS to draw."
+  commonFollowUp="What are some flexbox properties available in Web CSS that Yoga does NOT support?"
+/>
+
+<InterviewQuestion 
+  question="What is the difference between `justify-content` and `align-items`?"
+  answer="`justify-content` aligns children along the main axis (which is column/vertical by default in React Native), while `align-items` aligns children along the cross axis (horizontal by default)."
+  bestPractice="Always remember that React Native defaults to flexDirection: 'column', whereas the web defaults to 'row'."
+/>
+
+## 11. Knowledge Check
+
+<QuizWidget 
+  question="Why shouldn't you use hardcoded pixel values (e.g. x: 50, y: 100) for positioning?"
+  options={["It's slower to render", "Screen sizes vary drastically across devices", "The compiler will throw an error", "It drains the battery"]}
+  correctAnswer="Screen sizes vary drastically across devices"
+  explanation="Hardcoded pixels mean the UI won't adapt. A button perfectly placed on a tablet will likely render completely off-screen on a small phone."
+  takeaway="Always use flexible constraints (like flexbox) instead of absolute pixel coordinates."
+/>
+
+## 12. Summary
+
+Mastering layout systems is non-negotiable. Whether you use Flexbox, Compose, or Flutter's Row/Columns, the goal is to define rules (constraints) that allow the engine to compute the perfect UI for any screen size dynamically.

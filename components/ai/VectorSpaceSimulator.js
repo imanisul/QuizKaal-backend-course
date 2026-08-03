@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Database, ArrowRight, Brain } from "lucide-react";
 
@@ -18,7 +18,7 @@ export default function VectorSpaceSimulator() {
   const [isSearching, setIsSearching] = useState(false);
   const [results, setResults] = useState([]);
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     if (!query) return;
     setIsSearching(true);
     setQueryVector(null);
@@ -52,7 +52,7 @@ export default function VectorSpaceSimulator() {
       }, 1500);
 
     }, 1500);
-  };
+  }, [query]);
 
   return (
     <div className="glass-card p-6 border border-accent/20 bg-accent/5 rounded-3xl relative overflow-hidden flex flex-col md:flex-row gap-8">

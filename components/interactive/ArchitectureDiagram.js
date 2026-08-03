@@ -10,13 +10,13 @@ export default function ArchitectureDiagram({ title = "System Architecture", nod
   return (
     <div className="my-10 bg-[#0d1117] border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row min-h-[400px]">
       {/* Left Side: Diagram Area */}
-      <div className="flex-1 p-8 relative flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/10 bg-grid-white/[0.02]">
+      <div className="flex-1 p-4 sm:p-8 relative flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/10 bg-grid-white/[0.02]">
         <div className="absolute top-4 left-6">
           <h4 className="font-bold text-white text-lg m-0">{title}</h4>
           <p className="text-xs text-textSecondary mt-1">Hover over components to inspect</p>
         </div>
 
-        <div className="mt-12 flex flex-wrap justify-center gap-6 max-w-2xl w-full relative z-10">
+        <div className="mt-12 flex flex-wrap justify-center gap-4 sm:gap-6 max-w-2xl w-full relative z-10">
           {nodes.map((node, i) => {
             const isActive = activeNode?.id === node.id;
             return (
@@ -24,7 +24,7 @@ export default function ArchitectureDiagram({ title = "System Architecture", nod
                 key={node.id}
                 onHoverStart={() => setActiveNode(node)}
                 onClick={() => setActiveNode(node)}
-                className={`relative cursor-pointer p-6 rounded-xl border-2 transition-all duration-300 min-w-[140px] flex flex-col items-center justify-center ${
+                className={`relative cursor-pointer p-4 sm:p-6 rounded-xl border-2 transition-all duration-300 w-full sm:w-auto min-w-[120px] sm:min-w-[140px] flex flex-col items-center justify-center ${
                   isActive 
                     ? "border-primary bg-primary/10 shadow-[0_0_30px_rgba(var(--primary),0.2)] z-20" 
                     : "border-white/10 bg-white/5 hover:border-white/30 hover:bg-white/10 z-10"

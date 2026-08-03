@@ -2,7 +2,7 @@ export default function Loading() {
   return (
     <div className="grid grid-cols-1 xl:grid-cols-[240px_minmax(0,1fr)_240px] gap-10 max-w-[1400px] mx-auto px-6 sm:px-8 relative z-[1]">
       {/* Left Sidebar Skeleton */}
-      <aside className="hidden xl:block pt-24 pb-32 h-[100vh] border-r border-white/10 pr-2">
+      <aside className="hidden xl:block pt-[96px] pb-32 h-[100vh] border-r border-white/10 pr-2">
         <div className="h-4 w-24 bg-white/5 rounded animate-pulse mb-8 ml-2"></div>
         {/* Phase Groups Skeletons */}
         {[1, 2, 3, 4, 5].map((i) => (
@@ -18,7 +18,7 @@ export default function Loading() {
       </aside>
 
       {/* Main Content Skeleton */}
-      <main className="min-w-0 pt-24 pb-32">
+      <main className="min-w-0 global-page-pt pb-32">
         {/* Breadcrumbs */}
         <div className="flex items-center gap-2 mb-8">
           <div className="h-3 w-16 bg-white/10 rounded animate-pulse"></div>
@@ -62,7 +62,7 @@ export default function Loading() {
       </main>
 
       {/* Right Sidebar (TOC) Skeleton */}
-      <aside className="hidden xl:block pt-24 pb-32 h-screen pl-6">
+      <aside className="hidden xl:block pt-[96px] pb-32 h-screen pl-6">
         <div className="h-4 w-24 bg-white/5 rounded animate-pulse mb-6"></div>
         <div className="space-y-4">
           <div className="h-3 w-3/4 bg-white/10 rounded animate-pulse"></div>

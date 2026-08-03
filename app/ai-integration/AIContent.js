@@ -4,6 +4,7 @@ import StaggerReveal, { StaggerItem } from "@/components/ui/StaggerReveal";
 import QAAccordion from "@/components/lesson1/QAAccordion";
 import { Brain, Network, Zap, Lock, Blocks, Layers, Server, ShieldCheck, CheckCircle2, MessageSquare, IndianRupee, Database, FolderTree, Activity, AlertTriangle } from "lucide-react";
 import ParticleField from "@/components/ui/ParticleField";
+import CourseHeader from '@/components/ui/CourseHeader';
 
 // The new massive Interactive Backend Debugger
 const RequestLifecycleSimulator = dynamic(() => import('@/components/ai/RequestLifecycleSimulator'), { ssr: false, loading: () => <div className="h-[800px] rounded-3xl bg-white/5 animate-pulse mt-12" /> });
@@ -26,31 +27,18 @@ export default function AIContent() {
   return (
     <>
       {/* ═══════════ HERO ═══════════ */}
-      <section id="hero" className="relative pt-12 pb-24 border-b border-white/[0.06] mb-16 scroll-mt-24">
-        <ParticleField count={30} />
-        <StaggerReveal>
-          <StaggerItem>
-            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm">
-              <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(79,70,229,0.8)]" />
-              <span className="text-[11px] font-bold uppercase tracking-widest text-primary flex items-center gap-1.5"><Brain size={14} /> Production Backend Walkthrough</span>
-            </div>
-          </StaggerItem>
-          
-          <StaggerItem>
-            <h1 className="text-[clamp(3rem,6vw,4.5rem)] font-black tracking-tighter leading-[1.05] mb-6 text-white drop-shadow-2xl">
-              AI Integration in <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary animate-gradient-shift drop-shadow-[0_0_15px_rgba(79,70,229,0.3)]">
-                Full-Stack Apps
-              </span>
-            </h1>
-          </StaggerItem>
-
-          <StaggerItem>
-            <p className="text-lg text-textSecondary max-w-2xl leading-relaxed mb-12">
-              Don't treat AI as a magic black box. Learn exactly how a production backend works by stepping through every single layer—from the React frontend, through the Express middleware, into the Vector DB, and streaming back from the LLM.
-            </p>
-          </StaggerItem>
-        </StaggerReveal>
+      <section id="hero" className="relative pb-24 border-b border-white/[0.06] mb-16 scroll-mt-24">
+        <CourseHeader 
+          title="AI Integration in Full-Stack Apps"
+          description="Don't treat AI as a magic black box. Learn exactly how a production backend works by stepping through every single layer—from the React frontend, through the Express middleware, into the Vector DB, and streaming back from the LLM."
+          icon={Brain}
+          completedCount={0}
+          totalLessons={7}
+          nextLessonTitle="The Request Lifecycle"
+          nextLessonPath="#simulator"
+          themeColor="from-indigo-500 to-purple-500"
+          bgGlow="from-indigo-500/20 to-purple-500/20"
+        />
       </section>
 
       {/* ═══════════ THE MASSIVE SIMULATOR ═══════════ */}

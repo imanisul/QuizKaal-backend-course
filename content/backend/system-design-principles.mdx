@@ -1,0 +1,93 @@
+---
+title: "System Design Principles"
+description: "Understand the theoretical foundation of distributed systems including CAP Theorem, PACELC, ACID, Pagination strategies, and caching."
+phase: "System Design"
+difficulty: "intermediate"
+---
+
+# System Design Principles
+
+Before we dive into microservices, Docker, and Kubernetes, we must understand the theoretical foundation of distributed systems.
+
+## 1. Introduction
+
+System design is the process of defining the architecture, components, modules, interfaces, and data for a system to satisfy specified requirements. At scale, every architectural decision is a trade-off. There is no "perfect" system—only systems optimized for specific use cases.
+
+## 2. Why this concept exists
+
+When an application runs on a single server, things are simple. If a user writes data, they can instantly read it back. However, when an application scales to millions of users, you must split the database across multiple servers (distributed system). Once data is spread across a network, you encounter the fundamental laws of physics: network latency and network partitions.
+
+## 3. The CAP Theorem
+
+The CAP Theorem (Brewer's Theorem) is the most critical concept in distributed data stores. It states that a distributed data store can only guarantee two out of the following three properties simultaneously:
+
+1. **Consistency (C):** Every read receives the most recent write or an error. If User A updates their profile, User B immediately sees the new profile.
+2. **Availability (A):** Every request receives a (non-error) response, without the guarantee that it contains the most recent write. 
+3. **Partition Tolerance (P):** The system continues to operate despite an arbitrary number of messages being dropped (or delayed) by the network between nodes.
+
+<Callout title="CAP in Practice" type="info">
+Because networks WILL fail, Partition Tolerance (P) is mandatory. Therefore, in the real world, you are always choosing between AP (Availability) and CP (Consistency).
+</Callout>
+
+### CP vs AP Examples
+- **CP (Consistent & Partition Tolerant):** Banking apps. If a network goes down, the ATM will reject your transaction rather than risk allowing you to overdraft (Availability is sacrificed). Databases: MongoDB, HBase.
+- **AP (Available & Partition Tolerant):** Twitter/Instagram feed. If the network drops, it is perfectly fine if you see a tweet from 5 seconds ago instead of the absolute latest tweet (Consistency is sacrificed). Databases: Cassandra, DynamoDB.
+
+## 4. PACELC Theorem
+
+PACELC is an extension of the CAP theorem. It states:
+- If there is a **P**artition (P), how does the system trade off between **A**vailability and **C**onsistency (A and C)?
+- **E**lse (E), when the system is running normally, how does it trade off between **L**atency (L) and **C**onsistency (C)?
+
+If you want absolute consistency during normal operations, you must wait for data to replicate to all nodes before responding to the user, which increases Latency.
+
+## 5. ACID Properties
+
+When discussing relational databases (SQL), we rely on ACID properties to guarantee transactions are processed reliably:
+- **Atomicity:** "All or nothing." If a transaction fails halfway through, all changes are rolled back.
+- **Consistency:** The database remains in a structurally sound state (e.g., foreign keys are respected).
+- **Isolation:** Concurrent transactions do not interfere with each other.
+- **Durability:** Once a transaction is committed, it remains saved even in the event of a power loss.
+
+## 6. Real-world Architectural Principles
+
+When designing enterprise systems, adhere to these guiding principles:
+
+- **Single Responsibility Principle (SRP):** A service should have one, and only one, reason to change. Do not build a single service that handles User Authentication, Image Processing, and Billing.
+- **Statelessness:** Your API servers should not store any client state (like active sessions in RAM). If Server A crashes, Server B should be able to seamlessly handle the user's next request because all state is stored in an external database (like Redis).
+- **Graceful Degradation:** If the Recommendation Engine microservice crashes, the entire Netflix app shouldn't crash. It should gracefully degrade by showing a default list of "Popular Movies".
+
+## 7. Caching Strategies
+
+To reduce latency and database load, you must introduce caching. 
+- **Cache-Aside:** The application checks the cache. If a miss occurs, it fetches from the DB, writes to the cache, and returns the data.
+- **Write-Through:** The application writes data to the cache, and the cache immediately writes it to the database. Slower writes, faster reads.
+- **Write-Behind (Write-Back):** The application writes data to the cache and immediately returns success. The cache asynchronously writes to the database later. Extremely fast, but risks data loss if the cache server crashes before syncing.
+
+## 8. Pagination Methods (Paging)
+
+When returning large datasets (like a list of 1,000,000 users), you must never return all records at once. You must use **Pagination**.
+- **Offset Pagination (`OFFSET 100 LIMIT 50`):** The simplest method. However, at massive scale (e.g. `OFFSET 1000000`), the database still has to scan the first 1,000,000 rows before skipping them, leading to slow queries.
+- **Cursor-based Pagination:** You return a `next_cursor` (usually the ID of the last item). The next query uses `WHERE id > last_id LIMIT 50`. This uses an index and is incredibly fast, even at scale. It is the industry standard for endless scrolling feeds (like Twitter or Instagram).
+
+## 9. Interview Questions
+
+- *"What is the CAP Theorem and why must you choose between AP and CP?"*
+- *"Explain the difference between Cache-Aside and Write-Through caching."*
+- *"If you were designing a banking ledger, would you choose an AP or CP database?"*
+
+## 9. Knowledge Check
+
+<Quiz 
+  question="According to the CAP Theorem, if a network link goes down between two data centers (a Partition), a highly available (AP) system will:"
+  options={["Crash gracefully", "Stop accepting reads and writes to ensure data consistency", "Continue accepting reads and writes, even if the data returned is temporarily stale", "Instantly route all traffic to a third data center"]}
+  answer="Continue accepting reads and writes, even if the data returned is temporarily stale"
+/>
+
+<Callout type="success" title="Explanation">
+An AP system prioritizes Availability over Consistency. It will continue serving traffic to users, accepting that the data might not be perfectly synchronized until the network partition is resolved.
+</Callout>
+
+## 10. Summary
+
+System design is fundamentally about managing trade-offs. You trade consistency for availability, latency for durability, and simplicity for scale. Understanding these theoretical principles is required before you can effectively design microservices and distributed databases.

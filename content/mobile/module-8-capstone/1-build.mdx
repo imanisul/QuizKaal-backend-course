@@ -1,0 +1,86 @@
+# Build a Mini Social App
+
+It is time to put everything you've learned into practice. We are going to architect a mini social application from scratch.
+
+## 1. Introduction
+
+You know how to render UI, manage state, fetch APIs, handle permissions, and deploy. A Capstone project forces you to combine these disparate skills into a single, cohesive architecture.
+
+## 2. Why this concept exists
+
+Following tutorials is easy because the instructor makes the architectural decisions for you. Building a project from a blank canvas teaches you *Engineering*—the art of deciding *how* systems should connect.
+
+## 3. Visual Explanation
+
+<ConceptCard 
+  title="The Architecture Diagram" 
+  description="Our App consists of: 1. A Tab Navigator (Feed, Profile). 2. A Stack Navigator inside the Feed (Feed -> Post Details). 3. A Global State store for the User Token. 4. A Local SQLite DB for offline caching."
+/>
+
+## 4. Internal Working: The App Boot Sequence
+
+Before the first screen renders, the app must boot up:
+1. OS launches the process.
+2. App reads SecureStorage for a JWT.
+3. If JWT exists -> Load Feed Screen.
+4. If no JWT -> Load Login Screen.
+
+## 5. Interactive Animation: The Social App
+
+Here is a mockup of what we are building. A basic chat/social feed.
+
+<InteractivePhoneMockup 
+  scenario="chat"
+  title="Social App Architecture"
+/>
+
+## 6. Code Examples: The Router
+
+The most critical part of a new app is setting up the protected router.
+
+<MultiLangCodeBlock rnCodeBase64="Ly8gUmVhY3QgTmF0aXZlIChSZWFjdCBOYXZpZ2F0aW9uIEF1dGggRmxvdykKZnVuY3Rpb24gQXBwKCkgewogIGNvbnN0IHsgdXNlclRva2VuIH0gPSB1c2VBdXRoU3RvcmUoKTsKCiAgcmV0dXJuICgKICAgIDxOYXZpZ2F0aW9uQ29udGFpbmVyPgogICAgICA8U3RhY2suTmF2aWdhdG9yPgogICAgICAgIHt1c2VyVG9rZW4gPT0gbnVsbCA/ICgKICAgICAgICAgIC8vIE5vIHRva2VuIGZvdW5kLCB1c2VyIGlzbid0IHNpZ25lZCBpbgogICAgICAgICAgPFN0YWNrLlNjcmVlbiBuYW1lPSJTaWduSW4iIGNvbXBvbmVudD17U2lnbkluU2NyZWVufSAvPgogICAgICAgICkgOiAoCiAgICAgICAgICAvLyBVc2VyIGlzIHNpZ25lZCBpbgogICAgICAgICAgPFN0YWNrLlNjcmVlbiBuYW1lPSJIb21lIiBjb21wb25lbnQ9e0hvbWVTY3JlZW59IC8+CiAgICAgICAgKX0KICAgICAgPC9TdGFjay5OYXZpZ2F0b3I+CiAgICA8L05hdmlnYXRpb25Db250YWluZXI+CiAgKTsKfQ==" flutterCodeBase64="Ly8gRmx1dHRlciAoR29Sb3V0ZXIgQXV0aCBHdWFyZCkKZmluYWwgcm91dGVyID0gR29Sb3V0ZXIoCiAgaW5pdGlhbExvY2F0aW9uOiAnLycsCiAgcmVkaXJlY3Q6IChjb250ZXh0LCBzdGF0ZSkgewogICAgZmluYWwgaXNBdXRoZW50aWNhdGVkID0gYXV0aFN0YXRlLnVzZXJUb2tlbiAhPSBudWxsOwogICAgZmluYWwgaXNHb2luZ1RvTG9naW4gPSBzdGF0ZS5zdWJsb2MgPT0gJy9sb2dpbic7CgogICAgaWYgKCFpc0F1dGhlbnRpY2F0ZWQgJiYgIWlzR29pbmdUb0xvZ2luKSByZXR1cm4gJy9sb2dpbic7CiAgICBpZiAoaXNBdXRoZW50aWNhdGVkICYmIGlzR29pbmdUb0xvZ2luKSByZXR1cm4gJy8nOwogICAgcmV0dXJuIG51bGw7CiAgfSwKICByb3V0ZXM6IFsKICAgIEdvUm91dGUocGF0aDogJy8nLCBidWlsZGVyOiAoY29udGV4dCwgc3RhdGUpID0+IEhvbWVTY3JlZW4oKSksCiAgICBHb1JvdXRlKHBhdGg6ICcvbG9naW4nLCBidWlsZGVyOiAoY29udGV4dCwgc3RhdGUpID0+IExvZ2luU2NyZWVuKCkpLAogIF0sCik7" androidCodeBase64="Ly8gQW5kcm9pZCBDb21wb3NlIChOYXZpZ2F0aW9uKQpOYXZIb3N0KG5hdkNvbnRyb2xsZXIsIHN0YXJ0RGVzdGluYXRpb24gPSBpZiAodXNlclRva2VuID09IG51bGwpICJsb2dpbiIgZWxzZSAiaG9tZSIpIHsKICAgIGNvbXBvc2FibGUoImxvZ2luIikgeyBMb2dpblNjcmVlbigpIH0KICAgIGNvbXBvc2FibGUoImhvbWUiKSB7IEhvbWVTY3JlZW4oKSB9Cn0=" />
+
+**Explanation:**  
+The router dynamically reads from the global state (`userToken`). If the token is null, it only mounts the Login screen—making it literally impossible for the user to navigate to the protected Home screen. Once they log in and the state updates, the router unmounts the Login screen and mounts the Home screen automatically.
+
+## 7. Real-world Examples
+
+- Every major app (Instagram, Twitter, LinkedIn) uses this exact authentication router architecture. If you understand the code block above, you understand how enterprise apps handle logins.
+
+## 8. Best Practices
+
+- **Feature Folders:** Do not group files by type (e.g. putting all components in one folder and all screens in another). Group them by feature (e.g. `src/features/auth/`, `src/features/feed/`).
+- **Offline First:** Design your API calls to save to a local database first, and have your UI read from the local database.
+
+## 9. Common Mistakes
+
+- **Starting without a plan:** Writing UI code before deciding how your global state will be structured.
+- **Putting network requests in UI components:** Keep your API logic in a separate service layer, away from your buttons and text fields.
+
+## 10. Interview Questions
+
+<InterviewQuestion 
+  question="How would you architect the folder structure for a large scale mobile app?"
+  answer="I would use Feature-Based Architecture (Domain-Driven Design). Instead of putting all views in a /screens folder and all logic in a /services folder, I create folders per feature: /features/auth, /features/feed. Each feature folder contains its own components, hooks, api calls, and state. This makes the app easily scalable across multiple teams."
+  bestPractice="This pattern prevents the 'git merge conflict' nightmare when 50 engineers are all modifying the exact same global /components folder."
+/>
+
+<InterviewQuestion 
+  question="Explain how you handle the transition between the splash screen and the authenticated home screen."
+  answer="The app boots up showing the native OS splash screen. While that is visible, the app checks Secure Storage for a JWT. If a token exists, the router's initial route is set to 'Home'. If no token exists, the initial route is set to 'Login'. Only AFTER this check completes do we hide the native splash screen."
+  commonFollowUp="What happens if you hide the splash screen before the token check is complete?"
+/>
+
+## 11. Knowledge Check
+
+<QuizWidget 
+  question="Why is it a best practice to group files by Feature (e.g. /auth) instead of by Type (e.g. /components, /screens)?"
+  options={["Because the compiler requires it", "It makes the app run faster", "It makes large codebases easier to maintain and scale across multiple teams", "It saves storage space"]}
+  correctAnswer="It makes large codebases easier to maintain and scale across multiple teams"
+  explanation="In a large enterprise app, separating by feature (Domain-Driven Design) allows different teams to work on the 'Auth' feature or the 'Feed' feature without stepping on each other's toes."
+  takeaway="Architecture is about organizing code for humans, not for the compiler."
+/>
+
+## 12. Summary
+
+Congratulations on reaching the Capstone! You now have a high-level understanding of what it takes to architect, build, and deploy a production-ready mobile application.

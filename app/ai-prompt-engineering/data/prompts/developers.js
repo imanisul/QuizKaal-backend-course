@@ -1,0 +1,122 @@
+export const developerPrompts = [
+  {
+    id: "dev-explain",
+    title: "Explain Complex Code",
+    category: "Developers",
+    difficulty: "Beginner",
+    bestTool: "ChatGPT / Claude",
+    description: "Break down undocumented, complex legacy code into plain English.",
+    prompt: "You are a Senior Engineer. I am a Junior Developer. Please explain what the following code does, step-by-step. Break it down into understandable chunks, explain the time/space complexity, and point out any potential edge cases or bugs you spot.\n\n```[Language]\n[Paste Code Here]\n```",
+    exampleOutput: "This code is a recursive function that...\nTime Complexity: O(n^2)...\nPotential Bug: If the array is empty...",
+    whenToUse: "When inheriting a legacy codebase with zero documentation.",
+    proTips: ["If the code uses specific domain logic, mention the domain (e.g., 'This is a fintech billing service')."]
+  },
+  {
+    id: "dev-refactor",
+    title: "Clean Code Refactoring",
+    category: "Developers",
+    difficulty: "Intermediate",
+    bestTool: "Claude 3.5 Sonnet",
+    description: "Refactor messy code to follow SOLID principles and modern standards.",
+    prompt: "Please refactor the following [Language] code to make it cleaner, more readable, and more maintainable. Apply SOLID principles where applicable. Use modern language features. Do not change the core business logic. Show the refactored code and briefly list the design patterns or improvements you applied.\n\n```[Language]\n[Paste Code Here]\n```",
+    exampleOutput: "Refactored Code:\n```javascript...\nImprovements:\n- Extracted magic numbers into constants.\n- Replaced nested if-statements with early returns...",
+    whenToUse: "Before submitting a PR, or when cleaning up technical debt.",
+    proTips: ["Claude 3.5 Sonnet is currently considered the best model for nuanced coding tasks."]
+  },
+  {
+    id: "dev-regex",
+    title: "Regex Generator & Explainer",
+    category: "Developers",
+    difficulty: "Beginner",
+    bestTool: "ChatGPT",
+    description: "Generate complex Regular Expressions without the headache.",
+    prompt: "I need a Regular Expression (Regex) in [Language, e.g., JavaScript/Python] that matches the following pattern: [Describe pattern exactly, e.g., A valid US phone number with or without hyphens].\nPlease provide the Regex, and then break it down character-by-character to explain exactly how it works. Finally, provide 3 passing test strings and 3 failing test strings.",
+    exampleOutput: "Regex: `/^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$/`\nExplanation:\n`^` asserts start of string...",
+    whenToUse: "Whenever you need to validate input or extract data and can't remember Regex syntax.",
+    proTips: ["Always ask the AI for failing test strings to ensure it handles edge cases."]
+  },
+  {
+    id: "dev-sql",
+    title: "Complex SQL Query Builder",
+    category: "Developers",
+    difficulty: "Intermediate",
+    bestTool: "Claude / ChatGPT",
+    description: "Generate complex JOINs, subqueries, and window functions.",
+    prompt: "I am using [PostgreSQL/MySQL]. I have two tables. \nTable A (users): id, name, created_at, plan_type.\nTable B (orders): id, user_id, amount, order_date.\nWrite a highly optimized SQL query that returns [Describe what you want, e.g., the top 5 users by total order amount who joined in the last 30 days, grouped by plan_type]. Explain any window functions or specific JOINs you used.",
+    exampleOutput: "```sql\nSELECT u.name, SUM(o.amount)...\n```\nExplanation: I used an INNER JOIN because...",
+    whenToUse: "When writing analytics queries or generating reports.",
+    proTips: ["Providing the exact table schema (or creating a dummy schema) dramatically improves accuracy."]
+  },
+  {
+    id: "dev-tests",
+    title: "Unit Test Generator",
+    category: "Developers",
+    difficulty: "Intermediate",
+    bestTool: "Claude 3.5 Sonnet",
+    description: "Generate comprehensive unit tests covering edge cases and mocks.",
+    prompt: "Write comprehensive unit tests for the following [Language] function using [Testing Framework, e.g., Jest, PyTest]. \nEnsure you cover:\n1. The happy path\n2. Null/undefined inputs\n3. Edge cases (empty arrays, negative numbers)\n4. Mocking any external API calls.\n\n```[Language]\n[Paste Code Here]\n```",
+    exampleOutput: "```javascript\ndescribe('calculateTotal', () => {\n  it('should return correct total for valid input', () => {...})",
+    whenToUse: "To quickly increase test coverage or practice Test-Driven Development (TDD).",
+    proTips: ["If the function relies on a database connection, explicitly ask the AI to 'mock the DB connection'."]
+  },
+  {
+    id: "dev-react-component",
+    title: "UI Component Boilerplate",
+    category: "Developers",
+    difficulty: "Beginner",
+    bestTool: "Claude / ChatGPT",
+    description: "Generate a fully styled React/Vue component instantly.",
+    prompt: "Act as a Frontend Engineer. Create a [React/Next.js/Vue] component for a [Component Type, e.g., Pricing Card]. \nRequirements:\n- Use TailwindCSS for styling (dark mode support).\n- Make it fully responsive (mobile-first).\n- Include typescript interfaces/props.\n- Include accessible ARIA labels.\nOutput ONLY the code block.",
+    exampleOutput: "```tsx\ninterface PricingCardProps {...}\nexport default function PricingCard(...) { ... }\n```",
+    whenToUse: "When building UI and you want to skip the tedious boilerplate.",
+    proTips: ["If using Next.js, specify if it should be a 'use client' component or a Server Component."]
+  },
+  {
+    id: "dev-api-design",
+    title: "RESTful API Architect",
+    category: "Developers",
+    difficulty: "Advanced",
+    bestTool: "ChatGPT (GPT-4o)",
+    description: "Design a clean, standard-compliant REST or GraphQL API schema.",
+    prompt: "I am building a [App Type, e.g., E-commerce app]. I need to design a RESTful API for the [Entity, e.g., Products] resource. \nPlease outline the standard CRUD endpoints (GET, POST, PUT, PATCH, DELETE). For each endpoint, provide:\n- The exact URL route\n- The expected JSON Request payload\n- The expected JSON Response (success and failure)\n- The correct HTTP status codes to use.",
+    exampleOutput: "### Create a Product\n**POST** `/api/v1/products`\n**Payload:** `{\"name\": \"...\"}`\n**Response (201 Created):**...",
+    whenToUse: "Before writing backend code, to establish a contract with the frontend team.",
+    proTips: ["Ask the AI to generate a Postman Collection JSON or an OpenAPI/Swagger YAML file based on the design!"]
+  },
+  {
+    id: "dev-debug",
+    title: "The Ultimate Debugger",
+    category: "Developers",
+    difficulty: "Intermediate",
+    bestTool: "Claude",
+    description: "Feed errors to the AI to find the root cause.",
+    prompt: "I am getting the following error in my [Framework/Language] app. \nError Log: \n```\n[Paste Error Trace]\n```\nHere is the file where the error is occurring:\n```\n[Paste File Code]\n```\nWhat is the root cause of this error, and how do I fix it? Provide the corrected code.",
+    exampleOutput: "The root cause is a race condition. The `await` is missing on line 42, causing...\nHere is the fixed code: ...",
+    whenToUse: "When you have stared at a stack trace for 30 minutes and are ready to flip a table.",
+    proTips: ["Always paste the full stack trace, not just the top line. The context is crucial."]
+  },
+  {
+    id: "dev-commit",
+    title: "Conventional Commit Generator",
+    category: "Developers",
+    difficulty: "Beginner",
+    bestTool: "ChatGPT",
+    description: "Generate clean, standard commit messages from a git diff.",
+    prompt: "Based on the following `git diff`, generate a Conventional Commit message. It must include a type (feat, fix, docs, refactor, chore), an optional scope, and a concise description. If the change is significant, include a bulleted body explaining 'Why' this change was made.\n\n```diff\n[Paste Git Diff]\n```",
+    exampleOutput: "feat(auth): implement JWT token refresh mechanism\n\n- Added refresh token endpoint to API\n- Updated frontend interceptor to handle 401s...",
+    whenToUse: "When you made a bunch of changes and can't figure out how to summarize them for the PR.",
+    proTips: ["Run `git diff > diff.txt` to easily copy the diff to paste into the AI."]
+  },
+  {
+    id: "dev-architecture",
+    title: "System Architecture Review",
+    category: "Developers",
+    difficulty: "Advanced",
+    bestTool: "ChatGPT (GPT-4o)",
+    description: "Get a critical review of your proposed system architecture.",
+    prompt: "Act as a Principal Staff Engineer. I am proposing the following architecture for a [App Type, e.g., real-time chat app]:\n- Frontend: React + WebSockets\n- Backend: Node.js + Express\n- DB: MongoDB\n- Cache: Redis\nWe expect [Traffic/Load, e.g., 10,000 concurrent users].\nCritique this architecture. What are the single points of failure? What scaling bottlenecks will we hit first? Should we use a different technology stack?",
+    exampleOutput: "Critique:\n1. WebSockets with a single Node.js instance will not scale. You need a Redis Pub/Sub adapter to sync sockets across multiple Node.js instances...\nBottlenecks...",
+    whenToUse: "During the planning phase of a major project or feature.",
+    proTips: ["Be honest with the AI about your team's skillset. If no one knows Kubernetes, ask for architectures without it."]
+  }
+];

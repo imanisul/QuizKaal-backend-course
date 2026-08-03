@@ -1,11 +1,11 @@
 import { 
   BookOpen, Code, Play, ArrowRight,
-  Monitor, Layout, GitBranch, Cpu, Database, Zap, Layers, RefreshCw
+  Monitor, Layout, GitBranch, Cpu, Database, Zap, Layers, RefreshCw, ShieldCheck, CheckCircle, Globe, AlertTriangle, FastForward
 } from "lucide-react";
-import { Ch1App, Ch2App, Ch3App, Ch4App, Ch5App, Ch6App, Ch7App, Ch8App, Ch9App, Ch10App, Ch11App, Ch12App, Ch13App, Ch14App, Ch15App, Ch16App, Ch17App, Ch18App, Ch19App, Ch20App, Ch21App, Ch22App } from "@/components/react-course/miniapps";
+import { Ch1App, Ch2App, Ch3App, Ch4App, Ch5App, Ch6App, Ch7App, Ch8App, Ch9App, Ch10App, Ch11App, Ch12App, Ch13App, Ch14App, Ch15App, Ch16App, Ch17App, Ch18App, Ch19App, Ch20App, Ch21App, Ch22App, Ch23App, Ch24App, Ch25App, Ch26App } from "@/components/react-course/miniapps";
 import { BeforeCh1, AfterCh1, BeforeCh3, AfterCh3, BeforeCh6, AfterCh6 } from "@/components/react-course/BeforeAfterVisuals";
-import { BeforeCh10, AfterCh10, BeforeCh11, AfterCh11, BeforeCh12, AfterCh12, BeforeCh13, AfterCh13, BeforeCh14, AfterCh14, BeforeCh15, AfterCh15, BeforeCh16, AfterCh16 } from "@/components/react-course/BeforeAfterVisualsIntermediate";
-import { BeforeCh17, AfterCh17, BeforeCh18, AfterCh18, BeforeCh19, AfterCh19, BeforeCh20, AfterCh20, BeforeCh21, AfterCh21, BeforeCh22, AfterCh22 } from "@/components/react-course/BeforeAfterVisualsAdvanced";
+import { BeforeCh10, AfterCh10, BeforeCh11, AfterCh11, BeforeCh12, AfterCh12, BeforeCh13, AfterCh13, BeforeCh14, AfterCh14, BeforeCh15, AfterCh15, BeforeCh16, AfterCh16, BeforeCh17, AfterCh17, BeforeCh18, AfterCh18 } from "@/components/react-course/BeforeAfterVisualsIntermediate";
+import { BeforeCh19, AfterCh19, BeforeCh20, AfterCh20, BeforeCh21, AfterCh21, BeforeCh22, AfterCh22, BeforeCh23, AfterCh23, BeforeCh24, AfterCh24, BeforeCh25, AfterCh25, BeforeCh26, AfterCh26 } from "@/components/react-course/BeforeAfterVisualsAdvanced";
 
 export const curriculum = [
   {
@@ -103,7 +103,13 @@ function WelcomeMessage() {
             commonMistake: "Thinking React Native uses web views. It actually bridges JavaScript directly to native OS components.",
             difficulty: "Medium"
           }
-        ]
+        ],
+        whyItExists: "Before React, developers manually updated the browser DOM (Document Object Model) using vanilla JavaScript or jQuery. This was extremely slow and led to messy, unmaintainable 'spaghetti code' as applications grew. React was invented to solve this scaling problem.",
+        realWorld: "Facebook created React to manage their increasingly complex UI, specifically the chat feature which kept breaking. Today, companies like Netflix, Airbnb, and Uber use React to deliver lightning-fast, app-like experiences on the web.",
+        commonMistakes: "A common beginner mistake is trying to manipulate the DOM directly (e.g., using document.getElementById) instead of letting React handle it. In React, you update the data (state), and React updates the DOM.",
+        performanceSecurity: "React's Virtual DOM naturally protects against basic Cross-Site Scripting (XSS) attacks by automatically escaping strings before rendering them. However, rendering large lists without optimization can still cause performance drops.",
+        summary: "React is a UI library that uses a declarative, component-based approach and a Virtual DOM to build fast, scalable web applications.",
+        nextLesson: "Now that you know what React is, let's learn how to set up a modern React project on your local machine."
       },
       { 
         id: "ch2", 
@@ -194,7 +200,13 @@ export default function App() {
             commonMistake: "Using the old React 17 `ReactDOM.render` in a React 18+ app, which disables modern concurrent features.",
             difficulty: "Medium"
           }
-        ]
+        ],
+        whyItExists: "Setting up a modern frontend app requires bundling JavaScript, compiling JSX, managing CSS, and spinning up a local server. Doing this from scratch with Webpack is notoriously difficult. Build tools like Vite automate all of this instantly.",
+        realWorld: "Enterprise teams use Vite or Next.js to start their projects. For example, a startup building a SaaS dashboard will use Vite for lightning-fast development, ensuring engineers don't waste hours waiting for the app to compile after every save.",
+        commonMistakes: "Using outdated tools like Create React App (CRA). CRA is officially deprecated and extremely slow. Always use Vite, Next.js, or Remix for new projects in 2026.",
+        performanceSecurity: "Never commit your node_modules folder or .env files to version control. Always ensure your package.json dependencies are regularly audited for security vulnerabilities using 'npm audit'.",
+        summary: "Vite is the modern standard for bootstrapping React applications, providing instant server starts and lightning-fast Hot Module Replacement.",
+        nextLesson: "You've got your app running. Next, let's learn how to write UI inside your JavaScript using JSX."
       },
       { 
         id: "ch3", 
@@ -296,7 +308,13 @@ export default function App() {
             commonMistake: "Importing React just to use JSX in modern React projects. It's no longer necessary.",
             difficulty: "Hard"
           }
-        ]
+        ],
+        whyItExists: "Writing UI in raw JavaScript (`React.createElement('div', null, 'Hello')`) is tedious and hard to read. JSX was invented to let engineers write HTML-like syntax directly inside JavaScript files, making UI development intuitive and visual.",
+        realWorld: "Virtually every React codebase at companies like X (Twitter), Meta, and Amazon uses JSX. It is the industry standard. Designers and frontend developers can easily read JSX because it closely mirrors traditional HTML structures.",
+        commonMistakes: "Forgetting to wrap adjacent JSX elements in a single parent or Fragment (`<>...</>`). Also, trying to use HTML attributes like 'class' instead of the required 'className'.",
+        performanceSecurity: "JSX inherently prevents injection attacks (XSS) by evaluating and escaping all dynamic data `{...}` before rendering it. However, if you explicitly use `dangerouslySetInnerHTML`, you bypass this protection and must manually sanitize the input.",
+        summary: "JSX is a syntax extension for JavaScript that looks like HTML. It makes writing React components significantly easier and more readable.",
+        nextLesson: "We know how to write JSX. Let's learn how to organize this JSX into reusable, self-contained building blocks called Components."
       },
       { 
         id: "ch4", 
@@ -371,7 +389,7 @@ export default function ProfileCard() {
             difficulty: "Hard"
           },
           {
-            question: "Scenario: Your component file is 1000 lines long. What is the engineering problem and how do you solve it?",
+            question: "Scenario: You have a 1000-line component file. What is the engineering problem and how do you solve it?",
             answer: "A 1000-line component violates the Single Responsibility Principle. It's hard to read, test, and maintain. You solve it by extracting chunks of the UI into smaller, child components (e.g., `Sidebar`, `Header`, `Form`) and passing data via props.",
             whyItMatters: "Component composition is the key to scalable React architecture. Small components are infinitely easier to debug.",
             commonMistake: "Being afraid to create new files for small components.",
@@ -391,7 +409,13 @@ export default function ProfileCard() {
             commonMistake: "Trying to return two separate `<div>` tags directly next to each other.",
             difficulty: "Easy"
           }
-        ]
+        ],
+        whyItExists: "Without components, web apps are just massive, unmanageable HTML files. Components let you break the UI into independent, reusable pieces (like Lego bricks), making development faster and maintenance easier.",
+        realWorld: "On Netflix, the 'Movie Card', the 'Navigation Bar', and the 'Play Button' are all separate components. Engineers can work on the 'Play Button' without breaking the 'Movie Card'.",
+        commonMistakes: "Creating massive 'God Components' that render everything in a single file instead of breaking them down. Also, forgetting that component names MUST start with a capital letter.",
+        performanceSecurity: "Breaking down UI into smaller components makes it easier to optimize later using tools like React.memo, ensuring only the specific parts of the screen that changed are re-rendered.",
+        summary: "Components are independent, reusable pieces of UI. They are the fundamental building blocks of any React application.",
+        nextLesson: "Components are great, but they are static. Next, let's learn how to pass dynamic data into them using Props."
       },
       { 
         id: "ch5", 
@@ -495,7 +519,13 @@ export default function Store() {
             commonMistake: "Using the deprecated `Component.defaultProps` syntax in modern functional components.",
             difficulty: "Easy"
           }
-        ]
+        ],
+        whyItExists: "If you build a highly styled 'Button' component, you don't want it to always say 'Click Me'. Props allow you to pass custom data (like text or colors) into a component from the outside, making it reusable across the app.",
+        realWorld: "Amazon has millions of products, but they only have one 'ProductCard' component. They just pass different `props` (image, price, title) into that one component millions of times.",
+        commonMistakes: "Trying to modify props inside the child component. Props are strictly read-only (immutable). To change data, you must use State.",
+        performanceSecurity: "Passing too many props deeply through multiple components is an anti-pattern called 'Prop Drilling'. While not a direct security issue, it severely degrades maintainability.",
+        summary: "Props (properties) are read-only arguments passed from a parent component to a child component to customize its rendering.",
+        nextLesson: "Props are read-only. What if the user clicks a button and we need data to change? That's where State comes in."
       },
       { 
         id: "ch6", 
@@ -601,7 +631,13 @@ export default function SmartCounter() {
             commonMistake: "Calling `setCount(count + 1)` three times in a row. Because of batching, it only increments by 1. Using `setCount(prev => prev + 1)` three times correctly increments by 3.",
             difficulty: "Hard"
           }
-        ]
+        ],
+        whyItExists: "Regular JavaScript variables don't trigger a visual update when they change. React needs a way to 'remember' data between renders and know exactly when to redraw the screen. `useState` provides both.",
+        realWorld: "When you type into the Google Search bar, every keystroke updates the `useState` value, which triggers the UI to immediately show search suggestions below.",
+        commonMistakes: "Mutating state directly (e.g., `count = 5`). This bypasses React's diffing engine, so the screen won't update. Always use the setter function (e.g., `setCount(5)`).",
+        performanceSecurity: "State updates are batched asynchronously for performance. If your new state depends on the old state, always use a functional updater (e.g., `setCount(prev => prev + 1)`) to avoid race conditions.",
+        summary: "useState is a Hook that lets you add React state to function components, enabling them to 'remember' things and re-render when data changes.",
+        nextLesson: "Now we can store changing data. Let's learn how to let the user trigger those changes using Events."
       },
       { 
         id: "ch7", 
@@ -698,7 +734,13 @@ export default function ColorFlipper() {
             commonMistake: "Prematurely optimizing simple buttons. Inline functions are perfectly fine for 95% of standard UI components.",
             difficulty: "Hard"
           }
-        ]
+        ],
+        whyItExists: "A static UI is useless. We need a way to capture user interactions like clicks, typing, and hovering. React standardizes event handling across all browsers, so you don't have to worry about browser-specific quirks like you do in vanilla JS.",
+        realWorld: "When you click 'Like' on an Instagram post, an `onClick` event handler triggers, updates the `isLiked` state, and fires off an API call to save that interaction to the database.",
+        commonMistakes: "Calling a function immediately in the event handler (e.g., `onClick={handleClick()}`) instead of passing the function reference (`onClick={handleClick}`). The former runs when the component renders, causing infinite loops.",
+        performanceSecurity: "Avoid defining inline arrow functions inside large lists (e.g., `onClick={() => delete(id)}`) if performance drops, as it creates a new function on every render. Use memoization or data attributes instead.",
+        summary: "React uses synthetic events to handle user interactions consistently across all browsers, easily bridging the gap between the UI and your state logic.",
+        nextLesson: "Now we can click buttons! Next, let's learn how to show or hide entire components based on those clicks using Conditional Rendering."
       },
       { 
         id: "ch8", 
@@ -805,7 +847,13 @@ export default function SecretMessage() {
             commonMistake: "Hiding a heavy component with conditional rendering, assuming its state will still be there when you toggle it back on.",
             difficulty: "Hard"
           }
-        ]
+        ],
+        whyItExists: "Apps need to show different UI depending on the context. If a user is logged in, show their profile. If they are logged out, show the login button. Conditional rendering lets you describe these logical branches declaratively.",
+        realWorld: "When you visit Netflix, it checks if you have an active subscription. If true, it conditionally renders the movie catalog. If false, it conditionally renders the payment upgrade page.",
+        commonMistakes: "Using `if` statements directly inside JSX. JSX only accepts expressions (values), so you must use the ternary operator (`condition ? true : false`) or the logical AND (`condition && true`).",
+        performanceSecurity: "When conditionally rendering large, complex components, constantly mounting and unmounting them can be expensive. Sometimes it's better to just hide them using CSS (`display: none`).",
+        summary: "Conditional rendering allows you to render different React elements based on the state or props of your application.",
+        nextLesson: "We can now show one thing or another. But what if we need to show a hundred things, like a list of products? Let's tackle Lists & Keys."
       },
       { 
         id: "ch9", 
@@ -912,7 +960,13 @@ export default function SecretMessage() {
             commonMistake: "Placing the key on an inner child element instead of the topmost wrapper element.",
             difficulty: "Easy"
           }
-        ]
+        ],
+        whyItExists: "Writing a hardcoded `<ProductCard />` component 100 times for a store is impossible. React needs a way to take an array of raw data from a database and dynamically generate a list of components from it.",
+        realWorld: "Your Facebook feed is just a massive JavaScript array of 'post' objects. React maps over that array and renders a `<Post />` component for every single item, attaching a unique key to each.",
+        commonMistakes: "Using the array `index` as the `key` prop. If the list changes order (e.g., you delete an item or sort the list), React gets confused and might render the wrong data or lose state.",
+        performanceSecurity: "Always provide a unique, stable, and predictable `key` prop (like a database ID). This allows React's diffing algorithm to instantly identify which items changed, were added, or were removed without re-rendering the whole list.",
+        summary: "You can build collections of elements and include them in JSX using array map(), provided each item has a unique key prop.",
+        nextLesson: "Congratulations, you've finished the Beginner track! Let's move to Intermediate and learn about the Component Lifecycle."
       }
     ]
   },
@@ -1015,7 +1069,13 @@ function DataFetcher() {
             commonMistake: "Passing an object literal like `style={{ color: 'red' }}` as a dependency.",
             difficulty: "Hard"
           }
-        ]
+        ],
+        whyItExists: "React components are pure functions. They shouldn't have 'side effects' like fetching data from a server or manually changing the DOM during render. `useEffect` gives you a safe place to run these side effects after the UI has painted.",
+        realWorld: "When you open a Twitter thread, React renders the empty skeleton first. Then, `useEffect` fires in the background, fetches the replies from the API, and updates the state to show them.",
+        commonMistakes: "Forgetting the dependency array entirely (e.g., `useEffect(() => {...})`), causing the effect to run on every single render and potentially creating an infinite loop if it updates state.",
+        performanceSecurity: "Always clean up subscriptions (like WebSockets or `setInterval`) in the return function of `useEffect`. Failing to do so causes massive memory leaks and performance degradation over time.",
+        summary: "The useEffect Hook lets you perform side effects in function components, replacing older lifecycle methods like componentDidMount.",
+        nextLesson: "Now we can fetch data. Let's learn how to capture user input to send back to the server using Forms & Controlled Components."
       },
       { 
         id: "ch11", 
@@ -1118,7 +1178,13 @@ function DataFetcher() {
             commonMistake: "Re-inventing the wheel and writing 500 lines of custom regex validation for a signup form.",
             difficulty: "Hard"
           }
-        ]
+        ],
+        whyItExists: "Traditional HTML forms handle their own state inside the DOM. This makes it hard to instantly validate passwords, format credit card numbers, or disable submit buttons. React takes control of the input to provide a seamless user experience.",
+        realWorld: "When you type your credit card on Stripe, a controlled component instantly formats the numbers with spaces and checks the card type (Visa/Mastercard) on every single keystroke.",
+        commonMistakes: "Providing a `value` prop to an input but forgetting the `onChange` handler. React will strictly enforce the value, making the input completely read-only and un-typable.",
+        performanceSecurity: "For massive forms with hundreds of inputs, strictly controlled components can cause performance lag due to constant re-rendering. In those cases, use 'uncontrolled' components via `useRef` or libraries like React Hook Form.",
+        summary: "Controlled components are form elements whose value is controlled entirely by React state, enabling real-time validation and formatting.",
+        nextLesson: "Our components are getting complex. What happens when two different components need access to the same form data? Let's explore Lifting State Up."
       },
       { 
         id: "ch12", 
@@ -1199,7 +1265,13 @@ function DataFetcher() {
             commonMistake: "Using Context for simple parent-child relationships where passing one prop would have been perfectly fine and much faster.",
             difficulty: "Medium"
           }
-        ]
+        ],
+        whyItExists: "React data flows one way: downwards. Sibling components cannot communicate directly. To share data, you must find their closest common parent and place the state there so it can be passed down to both.",
+        realWorld: "In an e-commerce app, a 'Sidebar Filter' and a 'Product Grid' are siblings. The filter state is lifted up to the 'Catalog Page' parent, which passes the filtered data down to the grid.",
+        commonMistakes: "Lifting state too high. If you put a simple toggle state at the very top of your app (`<App />`), clicking the toggle will unnecessarily force your entire application to re-render.",
+        performanceSecurity: "Passing props down through many layers (Prop Drilling) doesn't just make code ugly; it forces intermediate components to re-render even if they don't use the data.",
+        summary: "Lifting state up is the practice of moving state to the closest common ancestor of the components that need it.",
+        nextLesson: "What if you need to pass data down 10 levels deep? Prop drilling becomes a nightmare. Let's solve this with the Context API."
       },
       { 
         id: "ch13", 
@@ -1292,7 +1364,13 @@ export default function App() {
             commonMistake: "Assuming `useContext` will throw a helpful error if the Provider is missing. You often have to write a custom hook that explicitly throws an error if the context is undefined.",
             difficulty: "Medium"
           }
-        ]
+        ],
+        whyItExists: "Passing props through components that don't need them (Prop Drilling) makes code brittle and hard to read. Context provides a way to 'teleport' data directly to the components that actually need it.",
+        realWorld: "Almost every major application uses Context for global settings like User Authentication (are they logged in?), UI Themes (Dark/Light mode), and localization (English/Spanish).",
+        commonMistakes: "Using Context for rapidly changing data (like keystrokes or mouse positions). Context isn't optimized for high-frequency updates and will cause widespread re-renders.",
+        performanceSecurity: "Always wrap the object passed to the `value` prop of a Provider in a `useMemo` hook. Otherwise, a new object reference is created on every render, forcing all consumers to re-render.",
+        summary: "Context provides a way to pass data through the component tree without having to pass props down manually at every level.",
+        nextLesson: "Context handles global state. Now let's look at `useRef`, which handles mutable data without triggering any re-renders at all."
       },
       { 
         id: "ch14", 
@@ -1388,7 +1466,13 @@ export default function App() {
             commonMistake: "Forgetting to wrap the component definition in `forwardRef((props, ref) => ...)` when trying to expose a child's DOM node.",
             difficulty: "Hard"
           }
-        ]
+        ],
+        whyItExists: "Sometimes you need to store data (like a timer ID or previous state) that shouldn't trigger a visual update when it changes. Or, you need to manually focus an input element. `useRef` provides a mutable variable that persists across renders without causing re-renders.",
+        realWorld: "When you open a modal in an application, the first input field is often automatically focused. This is achieved by attaching a `useRef` to the input and calling `ref.current.focus()` when the modal mounts.",
+        commonMistakes: "Using `useRef` when you actually *do* need the screen to update. If you use a ref to store a 'counter' and display it in JSX, the screen will never show the updated number until something else forces a render.",
+        performanceSecurity: "Avoid overusing `useRef` to manually manipulate DOM elements (imperative programming). React expects to be the sole manager of the DOM (declarative). Mixing the two can lead to severe synchronization bugs.",
+        summary: "useRef returns a mutable ref object whose .current property is initialized to the passed argument. It persists for the full lifetime of the component without triggering renders.",
+        nextLesson: "We know how to manage state and refs on a single page. Next, let's learn how to navigate between multiple pages using React Router."
       },
       { 
         id: "ch15", 
@@ -1481,7 +1565,13 @@ function UserProfile() {
             commonMistake: "Defining nested routes in the configuration but forgetting to put an `<Outlet />` in the parent component, resulting in the child components never rendering.",
             difficulty: "Hard"
           }
-        ]
+        ],
+        whyItExists: "React by itself is a Single Page Application (SPA). It doesn't know what to do if the user types `/about` in the URL bar. React Router acts as a traffic cop, intercepting URL changes and rendering the correct component without refreshing the page.",
+        realWorld: "When you navigate from the 'Home' tab to the 'Notifications' tab on Twitter, the page doesn't blink or reload. React Router just unmounts the Home component and mounts the Notifications component instantly.",
+        commonMistakes: "Using standard `<a href='/about'>` anchor tags for internal navigation. This forces the browser to do a hard refresh, completely destroying your React state. Always use React Router's `<Link>` component.",
+        performanceSecurity: "Never trust client-side routing for security! Just because you hid the `/admin` route doesn't mean a malicious user can't access the API. Always secure your endpoints on the backend.",
+        summary: "React Router enables client-side routing, allowing your app to have multiple pages and URLs without traditional browser page reloads.",
+        nextLesson: "We're building complex apps now. Instead of rewriting the same logic in every component, let's learn how to share logic using Custom Hooks."
       },
       { 
         id: "ch16", 
@@ -1580,7 +1670,13 @@ function App() {
             commonMistake: "Assuming a custom hook runs in a separate isolated thread or doesn't impact the parent component's performance.",
             difficulty: "Hard"
           }
-        ]
+        ],
+        whyItExists: "You often find yourself rewriting the same stateful logic (like fetching data, listening to window resizing, or managing a form) across multiple components. Custom Hooks let you extract that logic into a reusable function.",
+        realWorld: "At large companies, engineers rarely use raw `useEffect` to fetch data. They use custom hooks like `useSWR` or `useQuery` (from React Query) which encapsulate caching, loading states, and error handling in one clean function.",
+        commonMistakes: "Forgetting that Custom Hooks share *logic*, not *state*. If two components call `useCounter()`, they each get their own completely independent counter state. They do not share the number.",
+        performanceSecurity: "Keep your Custom Hooks focused on a single responsibility. A 'God Hook' that handles auth, fetching, and theme switching is unmaintainable. Break them down into smaller hooks.",
+            summary: "Custom Hooks let you extract component logic into reusable functions, keeping your components clean and DRY (Don't Repeat Yourself).",
+        nextLesson: "Custom hooks conclude our Intermediate track! We are now moving to Advanced topics. First up: Performance optimization with useMemo and useCallback."
       }
     ]
   },
@@ -1589,540 +1685,479 @@ function App() {
     chapters: [
       { 
         id: "ch17", 
-        title: "useMemo & useCallback", 
-        icon: Cpu,
-        definition: "Imagine you're solving a really hard math problem. It takes you 5 minutes to figure out the answer is 42. If someone asks you the same question 5 seconds later, do you do the math all over again? No! Your brain just remembers '42'. That's what `useMemo` does—it gives React a memory so it doesn't repeat heavy calculations.",
+        title: "API Calls & Data Fetching", 
+        icon: Database,
+        definition: "Frontend apps are useless without data. React needs to talk to a backend server (like a Node.js API or Firebase) to get users, posts, or products. We use tools like the native fetch API or Axios to make these HTTP requests and store the response in state.",
         beforeAfter: {
-          problem: "React has amnesia. Every time the screen updates, it runs all its math calculations from scratch, which makes the app slow and heavy.",
-          solution: "React uses a 'memory cache'. If the inputs haven't changed, it instantly spits out the memorized answer instead of doing the math again.",
+          problem: "Data fetching takes time (milliseconds to seconds). If React waits for the data before rendering, the user sees a blank white screen.",
+          solution: "React renders the UI immediately with a 'Loading...' spinner. Once the data arrives, it updates the state and re-renders the actual content.",
           BeforeComp: BeforeCh17,
           AfterComp: AfterCh17
         },
-        internals: "React stores the computed value or function reference in the Fiber node's memoizedState. On subsequent renders, it compares the dependency array using Object.is. If the dependencies haven't changed, React bypasses the calculation/allocation and returns the exact same reference from the previous render.",
-        codeExample: `import { useMemo, useCallback, useState } from 'react';
+        internals: "Network requests are asynchronous. When fetch is called, it returns a Promise. React continues rendering. Once the Promise resolves, a .then() block or await statement triggers a state update, queueing a new render cycle.",
+        codeExample: `function UserProfile({ userId }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-function ExpensiveComponent({ data }) {
-  // Only re-calculate if 'data' changes
-  const processedData = useMemo(() => {
-    return expensiveComputation(data);
-  }, [data]);
+  useEffect(() => {
+    async function fetchUser() {
+      const response = await fetch(\`/api/users/\${userId}\`);
+      const data = await response.json();
+      setUser(data);
+      setLoading(false);
+    }
+    fetchUser();
+  }, [userId]);
 
-  // Only re-allocate function if 'data' changes
-  const handleClick = useCallback(() => {
-    submitData(data);
-  }, [data]);
-
-  return <button onClick={handleClick}>Submit {processedData}</button>;
+  if (loading) return <p>Loading...</p>;
+  return <div>{user.name}</div>;
 }`,
         miniProject: {
-          title: "Heavy Data Sorter",
-          description: "Use useMemo to prevent sorting a large array of objects on every render when a completely unrelated state (like a theme toggle) changes.",
+          title: "API Sync Simulator",
+          description: "Simulate fetching user data from a remote server with loading states and error handling.",
           Component: Ch17App,
-          code: `function DataGrid({ list }) {
-  const [dark, setDark] = useState(false);
-  
-  const sortedList = useMemo(() => {
-    return list.sort((a, b) => b.score - a.score);
-  }, [list]);
-
-  return (
-    <div className={dark ? 'bg-black' : 'bg-white'}>
-      <button onClick={() => setDark(!dark)}>Toggle Theme</button>
-      {sortedList.map(item => <div key={item.id}>{item.name}</div>)}
-    </div>
-  );
-}`
+          code: `// Implementation details hidden for brevity`
         },
         interviewQuestions: [
           {
-            question: "What is the primary difference between `useMemo` and `useCallback`?",
-            answer: "`useMemo` memoizes (caches) the *result* of a calculation, whereas `useCallback` memoizes the *function definition* itself. `useCallback(fn, deps)` is literally syntactic sugar for `useMemo(() => fn, deps)`.",
-            whyItMatters: "Both are used for performance optimization, but one is for data and the other is for functions.",
-            commonMistake: "Trying to use `useMemo` to return a function, but accidentally executing the function instead.",
-            difficulty: "Easy"
-          },
-          {
-            question: "When should you actually use `useMemo`?",
-            answer: "You should ONLY use `useMemo` for computationally expensive operations (like sorting a list of 10,000 items) or to preserve the referential equality of an object/array that is being passed as a dependency to another Hook or a `React.memo` component.",
-            whyItMatters: "Overusing it degrades performance because the caching mechanism itself takes time and memory.",
-            commonMistake: "Wrapping every single variable in `useMemo` just to be 'safe'.",
-            difficulty: "Medium"
-          },
-          {
-            question: "Scenario: You wrapped a simple array `const arr = useMemo(() => [1, 2, 3], [])` to 'optimize' your component. Why might this actually make performance worse?",
-            answer: "Creating an array `[1, 2, 3]` takes less than a microsecond. However, calling `useMemo` forces React to allocate memory, run the dependency array comparison algorithm, and manage the cache.",
-            whyItMatters: "Premature optimization is the root of all evil. You spent more CPU cycles managing the cache than you saved by caching the array.",
-            commonMistake: "Assuming `useMemo` is a magical 'make my app faster' button.",
-            difficulty: "Hard"
-          },
-          {
-            question: "If you pass a callback function to a memoized child component, why must you wrap the function in `useCallback`?",
-            answer: "Every time a parent component re-renders, all functions defined inside it are recreated in memory. If you pass a recreated function to a `React.memo` child, the child will see a *new* reference and re-render anyway, completely defeating the purpose of `React.memo`.",
-            whyItMatters: "This is the primary use case for `useCallback`: preserving referential equality of functions passed to children.",
-            commonMistake: "Using `useCallback` on a function that is never passed down as a prop or used in a dependency array.",
-            difficulty: "Hard"
-          },
-          {
-            question: "Does `useMemo` guarantee that the value will never be recalculated unless dependencies change?",
-            answer: "No! The React documentation explicitly states that `useMemo` should be treated as a *performance optimization, not a semantic guarantee*. React reserves the right to clear the cache occasionally to free up memory.",
-            whyItMatters: "If your application literally breaks because `useMemo` recalculated a value, your code is fundamentally flawed.",
-            commonMistake: "Using `useMemo` to trigger side effects or rely on it for business logic.",
+            question: "Why should you fetch data inside useEffect?",
+            answer: "Because fetching data is a side effect. If you fetch directly inside the component body, it will trigger an infinite loop of fetching and re-rendering.",
+            whyItMatters: "Pure functions cannot have side effects. useEffect is the designated escape hatch for async operations.",
+            commonMistake: "Calling fetch() in the global scope of the component without useEffect.",
             difficulty: "Medium"
           }
-        ]
+        ],
+        whyItExists: "A React app without external data is just a static website. Data fetching connects your UI to the real world.",
+        realWorld: "When you open Amazon, the UI loads instantly, and then product images and prices populate a second later as the API calls resolve.",
+        commonMistakes: "Forgetting the dependency array in useEffect, causing a DDoS attack on your own API because it fetches on every render.",
+        performanceSecurity: "Always handle network errors with try/catch. Never assume an API call will succeed. Implement robust loading and error states.",
+        summary: "Data fetching in React typically involves making async requests inside useEffect and storing the result in state.",
+        nextLesson: "We can get data, but how do we secure it? Next, let's learn about Authentication."
       },
       { 
         id: "ch18", 
-        title: "React.memo", 
-        icon: Layers,
-        definition: "Imagine you have a VIP club with a strict bouncer at the door. If a guest tries to enter but their ticket hasn't changed since yesterday, the bouncer says 'You're already in, go away!' `React.memo` is that bouncer. It stops a component from re-drawing itself if its data hasn't changed.",
+        title: "Authentication & Authorization", 
+        icon: ShieldCheck,
+        definition: "Authentication proves WHO you are (logging in). Authorization proves WHAT you are allowed to do (admin vs user). In React, we typically manage this by receiving a JSON Web Token (JWT) from the server and storing it securely.",
         beforeAfter: {
-          problem: "When a Parent component updates, it forces ALL of its children to re-render, even if the children's data didn't change at all.",
-          solution: "React.memo puts a shield around the child. It checks the props (the ticket) and blocks the update if nothing has changed.",
+          problem: "Without auth state, you have to force a full page reload every time the user logs in to check their session.",
+          solution: "React stores the Auth state globally (usually in Context). The moment the token arrives, the entire UI instantly updates to show logged-in features.",
           BeforeComp: BeforeCh18,
           AfterComp: AfterCh18
         },
-        internals: "During the reconciliation phase, if a component is wrapped in React.memo, React does a shallow comparison (===) of the previous props and new props. If they are identical, React bails out of rendering that entire subtree, saving CPU cycles.",
-        codeExample: `import React, { useState } from 'react';
-
-// This component will ONLY re-render if its 'title' prop changes
-const StaticHeader = React.memo(function StaticHeader({ title }) {
-  console.log("StaticHeader rendered");
-  return <h1>{title}</h1>;
-});
-
-function App() {
-  const [count, setCount] = useState(0);
+        internals: "Auth state is usually kept in a top-level Context Provider. When the token is received, the Provider state updates, immediately unlocking protected routes and changing UI elements (like showing 'Logout' instead of 'Login').",
+        codeExample: `function ProtectedRoute({ children }) {
+  const { user } = useContext(AuthContext);
   
-  // Changing count causes App to re-render, but StaticHeader is skipped!
-  return (
-    <div>
-      <StaticHeader title="My Dashboard" />
-      <button onClick={() => setCount(c => c + 1)}>Count: {count}</button>
-    </div>
-  );
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return children;
 }`,
         miniProject: {
-          title: "Prop Equality Optimization",
-          description: "Combine React.memo with useCallback so that a child component doesn't re-render unnecessarily when passing down a function prop.",
+          title: "Auth Gateway Simulator",
+          description: "A simulated login flow that grants a token and unlocks a protected dashboard.",
           Component: Ch18App,
-          code: `const Child = React.memo(({ onClick }) => {
-  return <button onClick={onClick}>Click me</button>;
-});
-
-function Parent() {
-  const [text, setText] = useState("");
-  
-  const handleClick = useCallback(() => {
-    console.log("Clicked!");
-  }, []); // Reference never changes
-
-  return (
-    <div>
-      <input value={text} onChange={e => setText(e.target.value)} />
-      <Child onClick={handleClick} />
-    </div>
-  );
-}`
+          code: `// Auth simulation code`
         },
         interviewQuestions: [
           {
-            question: "What exactly does `React.memo` do?",
-            answer: "`React.memo` is a Higher Order Component (HOC) that wraps a functional component. It tells React to skip re-rendering the component if its props have not changed since the last render.",
-            whyItMatters: "By default, React re-renders ALL children when a parent re-renders, even if the children's props haven't changed. `React.memo` breaks this chain to save CPU cycles.",
-            commonMistake: "Assuming React automatically memoizes components out of the box. You have to explicitly opt-in by wrapping your component in `React.memo`.",
-            difficulty: "Easy"
-          },
-          {
-            question: "What is the difference between `React.memo` and `useMemo`?",
-            answer: "`React.memo` memoizes an *entire component* based on its props. `useMemo` is a Hook used *inside* a component to memoize the *result of a specific calculation*.",
-            whyItMatters: "They serve completely different purposes but are often used together (e.g., using `useMemo` to cache an object before passing it to a `React.memo` component).",
-            commonMistake: "Trying to use `useMemo` to wrap a component export instead of `React.memo`.",
-            difficulty: "Medium"
-          },
-          {
-            question: "Scenario: You wrapped a HeavyComponent in `React.memo`, but it still re-renders every single time the parent renders. What went wrong?",
-            answer: "The parent is likely passing down a newly created object, array, or function as a prop on every render. Because `React.memo` does a strict shallow comparison (`===`), a newly created object `{}` is never equal to the old object `{}`, causing a re-render.",
-            whyItMatters: "This is the most common performance bug in React. You must pair `React.memo` with `useMemo` (for objects/arrays) and `useCallback` (for functions) in the parent.",
-            commonMistake: "Passing `style={{ color: 'red' }}` to a memoized component. That inline object instantly defeats the memoization.",
-            difficulty: "Hard"
-          },
-          {
-            question: "When should you explicitly NOT use `React.memo`?",
-            answer: "You should avoid `React.memo` for very simple components (like a basic button or text tag), or components whose props change very frequently. The cost of running the prop comparison algorithm will actually be higher than just re-rendering the component.",
-            whyItMatters: "Memoization is not free. It uses memory and CPU to compare old props vs new props.",
-            commonMistake: "Blindly wrapping every single component in an enterprise codebase with `React.memo`.",
-            difficulty: "Medium"
-          },
-          {
-            question: "Is `React.memo` a deep equality check or a shallow equality check?",
-            answer: "It performs a strictly shallow equality check by default. It checks if `oldProps.a === newProps.a`.",
-            whyItMatters: "If you pass a deeply nested object, modifying a nested property won't trigger a re-render if the outer object reference hasn't changed, leading to stale UI.",
-            commonMistake: "Mutating an array directly (`arr.push(1)`) and passing it to a memoized component, wondering why the UI didn't update.",
-            difficulty: "Medium"
-          },
-          {
-            question: "How can you write a custom comparison function for `React.memo`?",
-            answer: "`React.memo` accepts a second argument, which is a custom comparison function: `React.memo(MyComponent, (prevProps, nextProps) => prevProps.id === nextProps.id)`. If the function returns `true`, React skips the render.",
-            whyItMatters: "This allows you to highly optimize components that receive massive objects as props, but only actually care about one or two specific fields changing.",
-            commonMistake: "Returning `false` when they are equal. (It's the opposite of `shouldComponentUpdate`, where you return `true` to update).",
+            question: "Where is the safest place to store a JWT in a React app?",
+            answer: "The absolute safest place is in an HttpOnly cookie set by the server. If that's not possible, store it in memory. Storing it in localStorage makes it vulnerable to XSS attacks.",
+            whyItMatters: "Security is paramount. A stolen JWT gives a hacker full access to the user's account.",
+            commonMistake: "Dumping tokens directly into localStorage without considering XSS.",
             difficulty: "Hard"
           }
-        ]
-      },
+        ],
+        whyItExists: "Almost every application requires user accounts. We need a standardized way to lock down parts of the UI and securely identify the user making API calls.",
+        realWorld: "When you log into Spotify, you get a token. Every time you play a song, React attaches that token to the API request to prove it's you.",
+        commonMistakes: "Assuming client-side route protection (e.g., hiding the /admin route in React) is secure. It's not. The backend must always verify the token.",
+        performanceSecurity: "Always use HTTPS. Never send passwords or tokens over unencrypted HTTP connections.",
+        summary: "React handles authentication by managing the session state (often via Context) and conditionally rendering Protected Routes.",
+        nextLesson: "Congratulations on finishing Intermediate! Let's move to Advanced: Performance Optimization."
+      }
+    ]
+  },
+  {
+    level: "Advanced",
+    chapters: [
       { 
         id: "ch19", 
-        title: "Error boundaries", 
-        icon: Zap,
-        definition: "Imagine a circus acrobat walking a tightrope. If they slip, normally the whole circus tent would collapse! An Error Boundary is a giant safety net underneath them. If one component breaks, the net catches the error so the rest of the app can keep running perfectly fine.",
+        title: "Performance: useMemo & React.memo", 
+        icon: Cpu,
+        definition: "React is fast, but it's not magic. If a parent component re-renders, ALL of its children re-render by default. `React.memo` stops a component from re-rendering if its props haven't changed. `useMemo` stops a heavy calculation from re-running if its inputs haven't changed.",
         beforeAfter: {
-          problem: "A single JavaScript error in a tiny button component causes the entire React app to crash, leaving the user with a blank white screen.",
-          solution: "An Error Boundary catches the crash locally. It replaces the broken component with a safe 'fallback' UI while the rest of the app survives.",
+          problem: "Typing into a search bar at the top of the app forces a massive data table at the bottom of the app to re-render 10 times a second.",
+          solution: "Wrapping the table in React.memo tells React to skip rendering the table unless the actual table data changes.",
           BeforeComp: BeforeCh19,
           AfterComp: AfterCh19
         },
-        internals: "They rely on the static getDerivedStateFromError() and componentDidCatch() lifecycle methods (currently only available in class components). When a child throws an error, React climbs the Fiber tree looking for the nearest error boundary to intercept the crash.",
-        codeExample: `import React from 'react';
+        internals: "React uses a shallow equality check (Object.is) on the props. If the old props exactly match the new props, it short-circuits the render phase and just reuses the old DOM output from memory.",
+        codeExample: `const ExpensiveChart = React.memo(function Chart({ data }) {
+  // This will only re-render if 'data' reference changes
+  return <canvas>...</canvas>;
+});
 
-class ErrorBoundary extends React.Component {
+function Dashboard() {
+  const [text, setText] = useState("");
+  // useMemo prevents array recreation on every keystroke
+  const data = useMemo(() => [1, 2, 3], []);
+
+  return (
+    <>
+      <input onChange={e => setText(e.target.value)} />
+      <ExpensiveChart data={data} />
+    </>
+  );
+}`,
+        miniProject: {
+          title: "Render Profiler",
+          description: "See exactly how useMemo prevents an expensive sorting algorithm from freezing the UI during simple text input.",
+          Component: Ch19App,
+          code: `// Profiler app code`
+        },
+        interviewQuestions: [
+          {
+            question: "Why don't we wrap EVERY component in React.memo?",
+            answer: "Because the shallow equality check itself takes CPU time. If a component is cheap to render, or if its props change on literally every render anyway, React.memo actually makes performance worse.",
+            whyItMatters: "Premature optimization is the root of all evil. Only memoize heavy components that are demonstrably causing lag.",
+            commonMistake: "Sprinkling useMemo everywhere without actually profiling the app first.",
+            difficulty: "Medium"
+          }
+        ],
+        whyItExists: "As apps grow, they become heavy. You need surgical precision to tell React exactly which parts of the tree to skip during updates to maintain 60fps.",
+        realWorld: "Figma is built in React. When you drag a shape, they use extreme memoization to ensure the thousands of other shapes on the canvas don't re-render.",
+        commonMistakes: "Passing a newly created function or array down to a memoized component. The new reference breaks the memoization instantly.",
+        performanceSecurity: "Memoization takes up memory. You are trading RAM for CPU cycles. Use it wisely.",
+        summary: "useMemo caches values. useCallback caches functions. React.memo caches entire components.",
+        nextLesson: "Now our app is fast. How do we ensure it doesn't break when we change code? Testing."
+      },
+      { 
+        id: "ch20", 
+        title: "Testing (Jest & RTL)", 
+        icon: CheckCircle,
+        definition: "Automated testing means writing code that tests your code. We use Jest as the test runner, and React Testing Library (RTL) to simulate a user clicking buttons and reading text on your components.",
+        beforeAfter: {
+          problem: "You add a new feature, deploy to production, and realize you broke the login page. You lose money and users.",
+          solution: "Automated tests run before every deployment. If the login page test fails, the deployment is blocked.",
+          BeforeComp: BeforeCh20,
+          AfterComp: AfterCh20
+        },
+        internals: "RTL renders your component in a simulated, headless browser environment (JSDOM). It provides APIs to query the virtual DOM (like screen.getByText) exactly how a screen reader or real user would interact with it.",
+        codeExample: `import { render, screen, fireEvent } from '@testing-library/react';
+import Button from './Button';
+
+test('button click changes text', () => {
+  render(<Button />);
+  
+  const btn = screen.getByRole('button', { name: /click me/i });
+  expect(btn).toBeInTheDocument();
+  
+  fireEvent.click(btn);
+  expect(screen.getByText(/clicked!/i)).toBeInTheDocument();
+});`,
+        miniProject: {
+          title: "Test Suite Runner",
+          description: "An interactive mini test runner showing passing and failing assertions.",
+          Component: Ch20App,
+          code: `// Test runner sim`
+        },
+        interviewQuestions: [
+          {
+            question: "What is the guiding philosophy of React Testing Library?",
+            answer: "'The more your tests resemble the way your software is used, the more confidence they can give you.' RTL discourages testing internal component state, and encourages testing the final rendered output.",
+            whyItMatters: "Testing implementation details makes tests brittle. If you rename a state variable, the test shouldn't break if the UI still works.",
+            commonMistake: "Trying to assert that `count` state equals 1, instead of asserting that the screen displays the number '1'.",
+            difficulty: "Hard"
+          }
+        ],
+        whyItExists: "Manual testing is slow, error-prone, and unscalable. Automated tests guarantee that old features don't break when you add new ones (preventing regressions).",
+        realWorld: "At Facebook, thousands of tests run on every single code commit. If even one test fails, the code cannot be merged into the main branch.",
+        commonMistakes: "Writing tests that are too tightly coupled to CSS classes. Always query by accessibility roles (getByRole) or text.",
+        performanceSecurity: "Tests run in CI/CD pipelines, not on the user's device, so they don't affect production performance.",
+        summary: "Jest and RTL combine to let you write robust, automated tests that interact with your components like a real user.",
+        nextLesson: "We've got passing tests. Now, how do we get this app onto the internet? Deployment."
+      },
+      { 
+        id: "ch21", 
+        title: "Deployment & CI/CD", 
+        icon: Globe,
+        definition: "Deployment is the process of taking your local React code, bundling it into highly optimized static files, and putting it on a server for the world to see. CI/CD (Continuous Integration / Continuous Deployment) automates this process every time you push to GitHub.",
+        beforeAfter: {
+          problem: "Manually building files, opening an FTP client, and dragging files to a server is slow, dangerous, and causes downtime.",
+          solution: "You push code to GitHub. GitHub Actions automatically runs your tests, builds the app, and seamlessly deploys it to Vercel without you lifting a finger.",
+          BeforeComp: BeforeCh21,
+          AfterComp: AfterCh21
+        },
+        internals: "The build step (npm run build) compiles all JSX, minifies JavaScript, tree-shakes dead code, and generates a 'dist' folder containing pure HTML/CSS/JS. A CDN (Content Delivery Network) then hosts these files globally at the edge.",
+        codeExample: `# .github/workflows/deploy.yml
+name: Deploy
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npx vercel --prod --token=\${{ secrets.VERCEL_TOKEN }}`,
+        miniProject: {
+          title: "CI/CD Pipeline Sim",
+          description: "Watch a simulated pipeline go through Build, Test, and Deploy phases.",
+          Component: Ch21App,
+          code: `// Pipeline sim`
+        },
+        interviewQuestions: [
+          {
+            question: "What does 'npm run build' actually do?",
+            answer: "It triggers your bundler (Vite/Webpack) to compile JSX to JS, minify code, optimize images, bundle modules, and output a production-ready folder of static assets.",
+            whyItMatters: "You can't host raw React code on a standard web server because browsers don't understand JSX.",
+            commonMistake: "Trying to upload the entire 'src' folder and 'node_modules' to a production server.",
+            difficulty: "Medium"
+          }
+        ],
+        whyItExists: "The ultimate goal of software engineering is to deliver the product to the user. Automated pipelines make delivery fast and safe.",
+        realWorld: "Companies like Vercel and Netlify have revolutionized frontend deployment by hooking directly into GitHub to offer instant, zero-config deployments.",
+        commonMistakes: "Leaking API keys in production builds. Always ensure sensitive keys are handled server-side, not hardcoded in your React environment variables.",
+        performanceSecurity: "Serving your app via a CDN ensures that users in Tokyo download the files from a server in Tokyo, not a server in New York, massively improving load times.",
+        summary: "CI/CD pipelines automate the testing and building of your React app, safely deploying optimized static files to a global CDN.",
+        nextLesson: "Our app is live! But what if a bug slipped through and the app crashes in production? Let's use Error Boundaries."
+      },
+      { 
+        id: "ch22", 
+        title: "Error Boundaries", 
+        icon: AlertTriangle,
+        definition: "If a JavaScript error occurs inside a React component, it completely unmounts the entire application, leaving the user with a blank white screen. Error Boundaries are special components that catch these crashes and display a fallback UI (like 'Oops, something went wrong') instead of crashing the whole app.",
+        beforeAfter: {
+          problem: "A minor bug in the Sidebar component crashes the entire page, including the Main Content, giving the user a 'White Screen of Death'.",
+          solution: "An Error Boundary wraps the Sidebar. If the Sidebar crashes, only the Sidebar shows an error message. The rest of the app continues working perfectly.",
+          BeforeComp: BeforeCh22,
+          AfterComp: AfterCh22
+        },
+        internals: "Error Boundaries use a special class lifecycle method called componentDidCatch. When an error is thrown in any child component, it propagates up the tree until it hits this boundary, which then halts the crash and renders a fallback UI.",
+        codeExample: `class ErrorBoundary extends React.Component {
   state = { hasError: false };
 
   static getDerivedStateFromError(error) {
     return { hasError: true };
   }
 
-  componentDidCatch(error, errorInfo) {
-    console.error("Caught an error:", error, errorInfo);
+  componentDidCatch(error, info) {
+    logErrorToService(error, info.componentStack);
   }
 
   render() {
     if (this.state.hasError) {
       return <h1>Something went wrong.</h1>;
     }
-    return this.props.children; 
+    return this.props.children;
   }
 }`,
         miniProject: {
-          title: "Graceful Degradation",
-          description: "Wrap a brittle component that occasionally throws errors in a Boundary to ensure the rest of the UI continues functioning.",
-          Component: Ch19App,
-          code: `function BrittleWidget() {
-  if (Math.random() > 0.5) throw new Error("Crash!");
-  return <div>Widget loaded successfully.</div>;
-}
-
-function App() {
-  return (
-    <ErrorBoundary>
-      <BrittleWidget />
-    </ErrorBoundary>
-  );
-}`
+          title: "Crash & Recover",
+          description: "Trigger a runtime error in a child component and watch the boundary catch it gracefully.",
+          Component: Ch22App,
+          code: `// Error boundary sim`
         },
         interviewQuestions: [
           {
-            question: "What is an Error Boundary in React?",
-            answer: "An Error Boundary is a React component that catches JavaScript errors anywhere in its child component tree, logs those errors, and displays a fallback UI instead of crashing the entire application.",
-            whyItMatters: "It acts exactly like a `catch {}` block, but for React component rendering.",
-            commonMistake: "Assuming an Error Boundary can catch ALL errors. It cannot catch errors inside event handlers, asynchronous code (e.g. `setTimeout`), or Server Side Rendering.",
-            difficulty: "Easy"
-          },
-          {
-            question: "Why can't we just wrap our functional components in a standard `try/catch` block?",
-            answer: "`try/catch` only works for imperative code. React components are declarative and render asynchronously. A `try/catch` inside a functional component's render body cannot 'catch' errors that occur deep in the reconciler or in child components.",
-            whyItMatters: "Understanding the difference between imperative JavaScript and declarative React rendering is crucial for advanced engineering.",
-            commonMistake: "Wrapping a `useEffect` callback in a `try/catch` and expecting it to prevent the UI from crashing if a child component throws an error during render.",
-            difficulty: "Medium"
-          },
-          {
-            question: "Which lifecycle methods are required to create an Error Boundary?",
-            answer: "You must use a Class Component and implement either `static getDerivedStateFromError()` (to render a fallback UI) or `componentDidCatch()` (to log the error information).",
-            whyItMatters: "As of React 18, there is still no Hook equivalent for Error Boundaries. You MUST write a Class component (or use a library like `react-error-boundary`).",
-            commonMistake: "Trying to write a custom hook `useErrorBoundary` that catches render phase errors.",
-            difficulty: "Medium"
-          },
-          {
-            question: "Do Error Boundaries catch errors in event handlers (like an `onClick` button)?",
-            answer: "No! React doesn't need Error Boundaries to recover from errors in event handlers. If an `onClick` throws an error, React still knows what to display on the screen. For event handlers, you should just use regular `try/catch` blocks.",
-            whyItMatters: "Error Boundaries are strictly for catching errors during the *Render phase*, lifecycle methods, or inside `useEffect`.",
-            commonMistake: "Wrapping a single button in an Error Boundary and wondering why the boundary doesn't trigger when the API call inside the `onClick` fails.",
+            question: "Can you write an Error Boundary using Hooks?",
+            answer: "No. As of React 18, Error Boundaries still require Class components because there are no Hook equivalents for getDerivedStateFromError and componentDidCatch.",
+            whyItMatters: "It's one of the very few remaining use cases for Class components in modern React.",
+            commonMistake: "Trying to use try/catch blocks inside a render function to catch React lifecycle errors. It won't work.",
             difficulty: "Hard"
-          },
-          {
-            question: "How do you handle errors in functional components if Error Boundaries require class components?",
-            answer: "You still write the Error Boundary as a Class Component, but you wrap your functional components *inside* of it. In modern React, most developers just `npm install react-error-boundary` which provides a highly optimized wrapper.",
-            whyItMatters: "You don't need to convert your entire app to classes just to use boundaries. You only need one Class component at the top of a feature module.",
-            commonMistake: "Refactoring a 500-line functional component into a Class component just to add `componentDidCatch`.",
-            difficulty: "Easy"
-          },
-          {
-            question: "What happens to the component tree if an error is thrown during rendering and is NOT caught by any boundary?",
-            answer: "Since React 16, any error not caught by an Error Boundary results in the complete unmounting of the entire React component tree. The user will literally see a blank white screen.",
-            whyItMatters: "This 'fail-fast' behavior ensures that users don't interact with corrupted state, like sending a payment to the wrong user because the UI didn't update.",
-            commonMistake: "Deploying a React app without a single root-level Error Boundary, leaving users with the dreaded 'White Screen of Death'.",
-            difficulty: "Medium"
           }
-        ]
+        ],
+        whyItExists: "Bugs happen in production. You want to isolate the damage and provide a good user experience, rather than showing a blank screen.",
+        realWorld: "If a single post in your Facebook feed contains corrupted data and crashes, Facebook uses an Error Boundary to show a 'Post Unavailable' box, keeping the rest of your feed completely intact.",
+        commonMistakes: "Forgetting that Error Boundaries do NOT catch errors inside event handlers (like onClick) or async API calls. They only catch errors during the render phase.",
+        performanceSecurity: "Always hook your Error Boundaries up to a tracking service like Sentry or LogRocket so you get alerted when users experience crashes.",
+        summary: "Error Boundaries are React components that catch JavaScript errors anywhere in their child component tree, log them, and display a fallback UI.",
+        nextLesson: "Next, we'll learn how to split our large app into smaller chunks to speed up the initial load time."
       },
       { 
-        id: "ch20", 
-        title: "Code splitting & lazy loading", 
-        icon: GitBranch,
-        definition: "Imagine buying a 1,000-page encyclopedia. Instead of making you carry the heavy book home all at once, the store gives you just Chapter 1. When you're ready for Chapter 2, they mail it to you instantly! Code Splitting means your app only downloads the exact code it needs right now.",
+        id: "ch23", 
+        title: "Code Splitting & Lazy Loading", 
+        icon: FastForward,
+        definition: "If your app has 100 pages, forcing the user to download the code for all 100 pages just to view the Homepage is terrible for performance. Code Splitting breaks your single massive JavaScript bundle into smaller chunks. Lazy Loading ensures those chunks are only downloaded right when the user needs them.",
         beforeAfter: {
-          problem: "The browser forces the user to download a massive 10MB JavaScript file before showing anything, causing terrible loading times.",
-          solution: "React splits the app into tiny chunks. It loads the homepage instantly, and only fetches the 'Settings Page' code when you actually click it.",
-          BeforeComp: BeforeCh20,
-          AfterComp: AfterCh20
+          problem: "A massive 5MB JavaScript bundle blocks the browser. The user stares at a white screen for 10 seconds while it downloads.",
+          solution: "The homepage only downloads 100KB of JS and loads instantly. The code for the Settings page isn't downloaded until the user actually clicks 'Settings'.",
+          BeforeComp: BeforeCh1,
+          AfterComp: AfterCh1
         },
-        internals: "Webpack or Vite detects the dynamic import() syntax and creates a separate network chunk file. When React encounters a Suspense boundary, it pauses rendering, shows the fallback UI, waits for the network request to fetch the chunk, and then resumes rendering.",
+        internals: "React.lazy() combined with Suspense tells Webpack/Vite to create separate output files. When the component is requested, React suspends rendering, fetches the new JS file over the network, and then resumes rendering.",
         codeExample: `import React, { Suspense } from 'react';
 
-// This component is loaded over the network ONLY when rendered!
-const HeavyChart = React.lazy(() => import('./HeavyChart'));
+// This component is loaded dynamically
+const HeavyDashboard = React.lazy(() => import('./HeavyDashboard'));
 
-function Dashboard() {
+function App() {
   return (
     <div>
-      <h2>Dashboard Overview</h2>
-      <Suspense fallback={<p>Loading chart data...</p>}>
-        <HeavyChart />
+      <Suspense fallback={<p>Loading dashboard...</p>}>
+        <HeavyDashboard />
       </Suspense>
     </div>
   );
 }`,
         miniProject: {
-          title: "Route-based Splitting",
-          description: "Use React.lazy to split different routes of your application so users only download the JavaScript for the page they are currently viewing.",
-          Component: Ch20App,
-          code: `const Home = React.lazy(() => import('./Home'));
-const Settings = React.lazy(() => import('./Settings'));
-
-function App() {
-  return (
-    <Suspense fallback={<Spinner />}>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/settings" element={<Settings />} />
-      </Routes>
-    </Suspense>
-  );
-}`
+          title: "Network Chunk Simulator",
+          description: "Visualize how different JS bundles are fetched over the network as you navigate between lazy-loaded routes.",
+          Component: Ch23App,
+          code: `// Lazy load sim`
         },
         interviewQuestions: [
           {
-            question: "What is Code Splitting and how does Lazy Loading achieve it?",
-            answer: "Code Splitting is the process of breaking your massive JavaScript bundle into smaller, manageable 'chunks'. React's Lazy Loading (`React.lazy()`) achieves this by telling the bundler (like Webpack or Vite) to separate a specific component into its own file and only download it when the user actually navigates to it.",
-            whyItMatters: "It drastically reduces the initial load time (Time to Interactive) of large applications.",
-            commonMistake: "Bundling a massive 5MB charting library into the main `index.js` file when it is only used on a single buried 'Analytics' page.",
-            difficulty: "Easy"
-          },
-          {
-            question: "What is the `Suspense` component and why is it required for lazy loading?",
-            answer: "`<Suspense>` is a built-in React component that lets you specify a fallback UI (like a loading spinner) to display while the lazy-loaded chunk is being downloaded over the network.",
-            whyItMatters: "Without `Suspense`, React wouldn't know what to render during the network request, causing the application to crash synchronously.",
-            commonMistake: "Using `React.lazy()` but forgetting to wrap the component tree in a `<Suspense fallback={...}>` boundary.",
-            difficulty: "Easy"
-          },
-          {
-            question: "Scenario: You lazy loaded a component, but when the user clicks the link, they experience a jarring, empty white flash before the component appears. How do you fix this?",
-            answer: "The fallback UI in your `Suspense` boundary is probably `null` or a completely unstyled layout. You should provide a skeleton loader that matches the exact dimensions of the incoming component to prevent Layout Shift (CLS).",
-            whyItMatters: "Cumulative Layout Shift is a major Google Lighthouse metric. Bad loading states ruin UX.",
-            commonMistake: "Using a tiny 10x10 pixel spinner as a fallback for a massive hero image, causing the entire page to jump around violently.",
+            question: "What is Suspense in React?",
+            answer: "Suspense is a component that lets you declaratively 'wait' for something (like lazy-loaded code or data) and show a fallback UI (like a spinner) in the meantime.",
+            whyItMatters: "It provides a massive UX improvement, coordinating complex async loading states seamlessly.",
+            commonMistake: "Using React.lazy but forgetting to wrap it in a Suspense boundary, causing React to throw a violent error.",
             difficulty: "Medium"
-          },
-          {
-            question: "Can you use `React.lazy()` with named exports?",
-            answer: "No, `React.lazy()` currently only supports default exports out of the box. If you want to lazy load a named export, you have to create an intermediate module that re-exports it as a default, or write a custom promise wrapper.",
-            whyItMatters: "This is a known limitation of the current API that frequently trips up developers migrating to code splitting.",
-            commonMistake: "Writing `React.lazy(() => import('./Components').then(module => module.MyButton))` without properly returning it as `{ default: module.MyButton }`.",
-            difficulty: "Hard"
-          },
-          {
-            question: "When should you absolutely NOT use lazy loading?",
-            answer: "You should never lazy load 'above the fold' content like the primary Navbar, the Hero section, or the initial login form. If a user needs it in the first 2 seconds, it should be in the main bundle.",
-            whyItMatters: "Lazy loading the critical path actually makes the site slower because it forces a secondary network request before the user can see anything.",
-            commonMistake: "Blindly wrapping every single component in `React.lazy()` because a tutorial said 'code splitting is good'.",
-            difficulty: "Medium"
-          },
-          {
-            question: "How does lazy loading impact Search Engine Optimization (SEO)?",
-            answer: "Traditional Client-Side lazy loading can severely hurt SEO because search engine crawlers might not wait for the secondary network requests to finish before indexing the page. For SEO-critical pages, you must use Server Side Rendering (SSR) frameworks like Next.js.",
-            whyItMatters: "Modern engineering requires balancing performance with discoverability.",
-            commonMistake: "Lazy loading the main blog post content on a purely client-side React app, resulting in Google indexing a blank page.",
-            difficulty: "Hard"
           }
-        ]
+        ],
+        whyItExists: "As enterprise apps grow, bundle sizes become unmanageable. Code splitting is mandatory for fast Time-to-Interactive (TTI) scores.",
+        realWorld: "When you load a heavy WebGL game on a React site, the main UI loads instantly, and the heavy 3D engine is lazy-loaded in the background.",
+        commonMistakes: "Lazy loading tiny components (like a Button). The overhead of making a separate network request actually makes performance worse than just bundling it.",
+        performanceSecurity: "Code splitting is the #1 easiest way to dramatically improve Lighthouse performance scores on massive React apps.",
+        summary: "Code splitting and lazy loading defer the downloading of non-critical JavaScript until it is actually needed by the user.",
+        nextLesson: "Our app is fast and split. Now let's tackle managing huge amounts of state across the entire architecture."
       },
       { 
-        id: "ch21", 
-        title: "State management patterns", 
+        id: "ch24", 
+        title: "State Management: Redux vs Zustand", 
         icon: Database,
-        definition: "If Context is like a school intercom, Global State tools (like Zustand or Redux) are like giving every student a magical iPad. When the principal updates the lunch menu on the main iPad, only the students who actually care about lunch get an instant notification on their screens. No yelling required!",
+        definition: "Context API is great for simple things, but complex apps need robust State Management libraries. Redux is the enterprise standard, using a strict unidirectional flow with Actions and Reducers. Zustand is the modern, lightweight alternative that uses a much simpler API.",
         beforeAfter: {
-          problem: "Passing props down 10 levels deep creates a messy, tangled web of data that is impossible to maintain and causes huge re-render storms.",
-          solution: "Data lives in a neat 'Cloud Store' completely outside the components. Components 'subscribe' to specific slices of data directly.",
+          problem: "Using Context API for high-velocity data (like a multiplayer game state) causes the entire app to lag due to massive unnecessary re-renders.",
+          solution: "Libraries like Zustand allow components to subscribe to only tiny slices of the store, ensuring only the specific component that needs the data re-renders.",
           BeforeComp: BeforeCh21,
           AfterComp: AfterCh21
         },
-        internals: "Most global state libraries create a centralized store external to React's Virtual DOM. Components subscribe to specific slices of this store. When a slice updates, the library forces only the subscribed components to re-render, avoiding massive top-down reconciliation passes.",
-        codeExample: `// Using Zustand for global state
-import create from 'zustand';
+        internals: "Redux uses a single immutable state tree. To change state, you dispatch an 'Action' object. A 'Reducer' function receives the action and returns a completely new state tree. Zustand simplifies this by just giving you direct hooks to access and mutate the store.",
+        codeExample: `// Zustand Example
+import { create } from 'zustand'
 
-const useStore = create(set => ({
+const useStore = create((set) => ({
   bears: 0,
-  increasePopulation: () => set(state => ({ bears: state.bears + 1 })),
-  removeAllBears: () => set({ bears: 0 })
-}));
+  increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
+  removeAllBears: () => set({ bears: 0 }),
+}))
 
 function BearCounter() {
-  // Only re-renders if 'bears' changes!
-  const bears = useStore(state => state.bears);
-  return <h1>{bears} around here ...</h1>;
+  // Only re-renders if 'bears' changes
+  const bears = useStore((state) => state.bears)
+  return <h1>{bears} around here ...</h1>
 }`,
         miniProject: {
-          title: "Global Authentication Store",
-          description: "Store a user's JWT token and profile data in a global Zustand store, accessible instantly from anywhere in the application.",
-          Component: Ch21App,
-          code: `function LoginButton() {
-  const login = useAuthStore(state => state.login);
-  return <button onClick={() => login('jwt_token_123')}>Log In</button>;
-}
-
-function Navbar() {
-  const token = useAuthStore(state => state.token);
-  return <nav>{token ? 'Welcome Back!' : 'Please Login'}</nav>;
-}`
+          title: "Global Store Explorer",
+          description: "Interact with a Zustand global store and watch specific UI slices re-render.",
+          Component: Ch24App,
+          code: `// Zustand sim`
         },
         interviewQuestions: [
           {
-            question: "What is the fundamental difference between Redux and Zustand?",
-            answer: "Redux uses a single centralized store with actions and reducers, requiring a `<Provider>` at the root of your app. Zustand uses custom hooks with an un-opinionated API that doesn't require a Provider and allows for multiple independent stores.",
-            whyItMatters: "Zustand is rapidly replacing Redux in modern apps because it requires 90% less boilerplate code while solving the exact same problems.",
-            commonMistake: "Assuming you MUST learn Redux to be a React developer today. While still common in legacy enterprise code, modern stacks heavily favor Zustand or Jotai.",
-            difficulty: "Easy"
-          },
-          {
-            question: "What is a 'slice' in modern Redux Toolkit (RTK)?",
-            answer: "A 'slice' is a collection of Redux reducer logic and actions for a single feature in your app (e.g., a 'userSlice' or a 'cartSlice'). RTK's `createSlice()` automatically generates the action creators and action types for you.",
-            whyItMatters: "RTK solved the biggest complaint about old-school Redux: writing 5 different files just to update one boolean value.",
-            commonMistake: "Writing old-school switch-statement reducers in a brand new project instead of using `createSlice`.",
-            difficulty: "Medium"
-          },
-          {
-            question: "Why is mutating state directly in old-school Redux considered a fatal error, and how does RTK fix this?",
-            answer: "React and Redux rely on shallow equality checks (`===`) to know when to re-render. Mutating an object directly (`state.value = 1`) doesn't change its memory reference, so the UI won't update. RTK fixes this by using the `Immer` library under the hood, allowing you to write 'mutating' code that actually produces a brand new immutable state object.",
-            whyItMatters: "Immutable state is the bedrock of predictable data flow in React.",
-            commonMistake: "Using `.push()` or `.splice()` on arrays in a standard `useReducer` or old Redux setup, causing the UI to freeze.",
-            difficulty: "Hard"
-          },
-          {
-            question: "How does Zustand avoid the boilerplate of Redux?",
-            answer: "Zustand merges the concepts of State, Actions, and Reducers into a single custom hook (`useStore`). You don't need a Dispatch function, Action Types, or a global Context Provider.",
-            whyItMatters: "It drastically lowers the barrier to entry for global state management.",
-            commonMistake: "Trying to wrap your App in a Zustand `<Provider>`. It doesn't exist!",
-            difficulty: "Medium"
-          },
-          {
-            question: "When should you use a global state manager (Redux/Zustand) versus just using React Context?",
-            answer: "React Context is for dependency injection (passing low-frequency data like Themes or Auth down the tree). State managers are for high-frequency, complex, interdependent data mutations (like a real-time collaborative document or a massive shopping cart checkout flow).",
-            whyItMatters: "Using the wrong tool for the job leads to either unnecessary complexity or severe performance degradation.",
-            commonMistake: "Using Context for a rapidly updating stock ticker, causing the entire DOM tree to re-render 10 times a second.",
-            difficulty: "Medium"
-          },
-          {
-            question: "What is the 'Selector' pattern in state management?",
-            answer: "A selector is a function that extracts a specific piece of data from the global store (e.g., `const userName = useStore(state => state.user.name)`).",
-            whyItMatters: "Selectors are critical for performance. They ensure that a component ONLY re-renders when that specific piece of data changes, rather than re-rendering anytime *anything* in the global store changes.",
-            commonMistake: "Grabbing the entire state object `const state = useStore()` and then destructuring the name, which forces the component to re-render whenever *any* unrelated state changes.",
+            question: "Why has the community largely moved away from Redux towards Zustand and Redux Toolkit?",
+            answer: "Classic Redux required massive amounts of boilerplate (Action Types, Action Creators, massive Switch statements). Zustand achieves the same global state goals with 10% of the code.",
+            whyItMatters: "Developer experience (DX) matters. Less boilerplate means faster shipping and fewer bugs.",
+            commonMistake: "Thinking you MUST use Redux for every React project. Most apps don't need it at all.",
             difficulty: "Hard"
           }
-        ]
+        ],
+        whyItExists: "Massive enterprise apps need a predictable, debuggable way to manage state. Redux's strict rules prevent spaghetti state mutations.",
+        realWorld: "Uber uses robust state management to track thousands of moving cars, user locations, and price surges globally without the UI collapsing.",
+        commonMistakes: "Putting literally every piece of state (even a simple dropdown toggle) into the global Redux store instead of keeping it in local component state.",
+        performanceSecurity: "Modern state managers automatically optimize renders by using selectors. Always use selectors to extract only the data you need.",
+        summary: "State management libraries provide robust, scalable architectures for handling complex, high-velocity global data.",
+        nextLesson: "We have all the tools. Let's look at the big picture: Large Scale Architecture."
       },
       { 
-        id: "ch22", 
-        title: "Data fetching patterns", 
-        icon: RefreshCw,
-        definition: "Imagine you ask your friend for the weather. Instead of making you wait 5 seconds in silence while they check their phone, they say 'It was sunny an hour ago, but let me double-check!' This is 'Stale-While-Revalidate'. It gives you an immediate answer while quietly checking for updates.",
+        id: "ch25", 
+        title: "Large Scale Architecture", 
+        icon: Layers,
+        definition: "Writing a 'To-Do list' is easy. Writing an enterprise application with 50 engineers is hard. Large Scale Architecture involves organizing your codebase (Feature-Sliced Design), standardizing APIs, enforcing strict ESLint rules, and separating concerns so teams can work without stepping on each other's toes.",
         beforeAfter: {
-          problem: "Every time you change a page, you have to stare at a spinning loading wheel while the app fetches data from the server again.",
-          solution: "The app instantly shows you the 'cached' data it remembers from last time, while stealthily updating it in the background.",
-          BeforeComp: BeforeCh22,
-          AfterComp: AfterCh22
+          problem: "All files dumped into a single 'components' folder. Engineers constantly conflict. Changing a button breaks the payment page.",
+          solution: "Code is organized by 'Features' (e.g., /features/auth, /features/checkout). Each feature is an isolated module that exposes a clean API.",
+          BeforeComp: BeforeCh1,
+          AfterComp: AfterCh1
         },
-        internals: "React Query manages a global cache organized by query keys. When a component mounts, it checks the cache first (Cache-First strategy). If data is stale, it returns the cached data instantly while simultaneously fetching fresh data in the background (Stale-While-Revalidate), triggering a seamless UI update when the network resolves.",
-        codeExample: `import { useQuery } from '@tanstack/react-query';
-
-function UserProfile({ userId }) {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['user', userId],
-    queryFn: () => fetch(\`/api/users/\${userId}\`).then(res => res.json())
-  });
-
-  if (isLoading) return <span>Loading...</span>;
-  if (error) return <span>Error: {error.message}</span>;
-
-  return <div><h1>{data.name}</h1></div>;
-}`,
+        internals: "Feature-Sliced Design (FSD) organizes code by domain logic. A 'feature' encapsulates its own components, state, API calls, and types. It cannot reach into other features directly, ensuring massive codebases remain loosely coupled.",
+        codeExample: `// Standard Enterprise Folder Structure:
+// src/
+//  ├─ app/           # App initialization, global providers
+//  ├─ features/      # Business logic chunks
+//  │   ├─ auth/      # Everything auth related
+//  │   └─ cart/      # Everything cart related
+//  ├─ shared/        # Reusable UI (Buttons, Inputs)
+//  └─ pages/         # Route definitions composing features
+`,
         miniProject: {
-          title: "Optimistic UI Updates",
-          description: "Use React Query mutations to instantly update the UI when a user likes a post, before the server even responds.",
-          Component: Ch22App,
-          code: `function LikeButton({ post }) {
-  const mutation = useMutation(likePost, {
-    onMutate: () => {
-      // Instantly update cache so UI reacts immediately
-      queryClient.setQueryData(['posts'], old => old.map(...));
-    }
-  });
-
-  return <button onClick={() => mutation.mutate(post.id)}>Like</button>;
-}`
+          title: "Architecture Sandbox",
+          description: "Explore a simulated file system implementing Feature-Sliced Design.",
+          Component: Ch25App,
+          code: `// Arch sim`
         },
         interviewQuestions: [
           {
-            question: "Why is data fetching inside a simple `useEffect` considered an anti-pattern in modern React?",
-            answer: "A raw `useEffect` `fetch` does not handle race conditions, request deduplication, caching, or background refetching. Additionally, in React 18 Strict Mode, components mount twice, meaning your raw `useEffect` will double-fetch the data.",
-            whyItMatters: "Building a robust data-fetching layer from scratch takes thousands of lines of code. The React team explicitly recommends using libraries like React Query or SWR.",
-            commonMistake: "Writing massive `try/catch/finally` blocks in a `useEffect` with a dozen boolean flags to track loading and error states.",
-            difficulty: "Medium"
-          },
-          {
-            question: "What is 'Stale-While-Revalidate' (SWR)?",
-            answer: "SWR is a caching strategy. When a user requests data, the application immediately serves the 'stale' cached data from memory, then quietly triggers a background 'revalidation' request to the server to fetch any updates.",
-            whyItMatters: "It provides the illusion of zero-latency load times, significantly improving the user experience.",
-            commonMistake: "Forcing the user to stare at a loading spinner every single time they navigate to a page they were just on 10 seconds ago.",
-            difficulty: "Easy"
-          },
-          {
-            question: "What is an 'Optimistic UI Update'?",
-            answer: "An Optimistic UI update means updating the user interface *before* the server confirms the action was successful. If a user clicks 'Like', the heart instantly turns red. If the server request subsequently fails, the UI 'rolls back' to the previous state and shows an error.",
-            whyItMatters: "It makes web applications feel as instantaneous as native mobile apps, masking network latency.",
-            commonMistake: "Waiting for a slow 2-second database confirmation before changing the color of a 'Like' button, making the app feel incredibly sluggish.",
-            difficulty: "Medium"
-          },
-          {
-            question: "How do libraries like React Query (TanStack Query) handle caching?",
-            answer: "React Query assigns a unique 'Query Key' (an array like `['user', 123]`) to every request. It stores the response in a centralized, in-memory cache using that key. If another component requests the exact same key, React Query instantly returns the cached data.",
-            whyItMatters: "It acts as a highly specialized state manager strictly for asynchronous server state, removing the need to store API responses in Redux.",
-            commonMistake: "Trying to manually store fetched data in Redux when React Query already caches it globally for you.",
-            difficulty: "Medium"
-          },
-          {
-            question: "Scenario: A user navigates away from a page before a `fetch` request finishes. React throws a 'Can't perform a React state update on an unmounted component' memory leak error. How do you fix this?",
-            answer: "You must return a cleanup function from the `useEffect` that aborts the fetch request. You do this using the native browser `AbortController` API.",
-            whyItMatters: "Memory leaks degrade application performance over time and can cause extremely hard-to-debug UI glitches.",
-            commonMistake: "Just using a boolean `let isMounted = true` flag. While it prevents the React warning, the browser is still unnecessarily downloading the payload in the background.",
-            difficulty: "Hard"
-          },
-          {
-            question: "What is the difference between Server-Side Rendering (SSR) and Client-Side Rendering (CSR) for data fetching?",
-            answer: "In CSR, the browser downloads a blank HTML page, loads React, and *then* fetches data. In SSR (like Next.js), the server fetches the data, renders the complete HTML page with the data already inside it, and sends the finished page to the browser.",
-            whyItMatters: "SSR is vastly superior for SEO and often provides a much faster Time to First Byte (TTFB) for users on slow mobile connections.",
-            commonMistake: "Using pure CSR for a public-facing e-commerce store where Google needs to index the product catalogs.",
+            question: "What is the 'Container/Presenter' pattern?",
+            answer: "A pattern where you split components into two types: 'Containers' handle all the logic, state, and API calls. 'Presenters' are just dumb visual components that take props and render UI.",
+            whyItMatters: "It enforces the Separation of Concerns, making visual components highly reusable and testable.",
+            commonMistake: "Mixing massive API fetching logic directly inside a styled button component.",
             difficulty: "Hard"
           }
-        ]
+        ],
+        whyItExists: "Software architecture isn't about the code; it's about the people. Good architecture allows 50 engineers to ship features quickly without breaking the app.",
+        realWorld: "At Netflix, strict architectural boundaries ensure the Video Player team can deploy updates without affecting the Billing team.",
+        commonMistakes: "Over-engineering. Applying a massive micro-frontend architecture to a simple blog site.",
+        performanceSecurity: "Well-architected code is infinitely easier to audit for security vulnerabilities because data flows are predictable.",
+        summary: "Enterprise architecture focuses on modularity, clear boundaries, and scalable folder structures like Feature-Sliced Design.",
+        nextLesson: "You've made it to the end. Time to put everything together in the Capstone Project."
+      },
+      { 
+        id: "ch26", 
+        title: "Capstone Projects", 
+        icon: Play,
+        definition: "The ultimate test of your knowledge. In the real world, you aren't given isolated tasks; you are given a blank canvas and a business requirement. The Capstone requires you to combine Hooks, Routing, Auth, Performance, and Architecture to build a production-ready application.",
+        beforeAfter: {
+          problem: "Knowing individual React features doesn't mean you know how to combine them into a cohesive product.",
+          solution: "Building a complex project solidifies your understanding of how everything fits together in a real engineering environment.",
+          BeforeComp: BeforeCh1,
+          AfterComp: AfterCh1
+        },
+        internals: "A full React application requires orchestrating the Router for navigation, Context for auth, Custom Hooks for data fetching, and memoization for performance—all simultaneously.",
+        codeExample: `// Your mission: Build a fully functional E-commerce Frontend.
+// Requirements:
+// 1. JWT Authentication (Login/Register)
+// 2. Product Catalog with Lazy Loading
+// 3. Global Cart State Management (Zustand/Redux)
+// 4. Protected Checkout Route
+// 5. Full RTL Test Coverage`,
+        miniProject: {
+          title: "E-commerce Showcase",
+          description: "Interact with a miniature, fully-featured e-commerce frontend demonstrating all course concepts combined.",
+          Component: Ch26App,
+          code: `// Capstone sim`
+        },
+        interviewQuestions: [
+          {
+            question: "How do you prepare for a Senior React Developer interview?",
+            answer: "You must go beyond syntax. Senior interviews focus on System Design (how you structure the app), Performance (how you fix re-renders), and Architecture (how you manage state and side effects).",
+            whyItMatters: "FAANG companies want engineers who solve business problems, not just coders who know JSX.",
+            commonMistake: "Memorizing hook definitions but failing to explain WHEN and WHY to use them in a large system.",
+            difficulty: "Hard"
+          }
+        ],
+        whyItExists: "Theory is useless without practice. The capstone builds your portfolio and proves your competency.",
+        realWorld: "This is exactly what your first week on the job will look like: combining multiple systems to deliver a feature.",
+        commonMistakes: "Tutorial Hell. Getting stuck watching tutorials but never building anything from scratch yourself.",
+        performanceSecurity: "In your capstone, you must demonstrate security best practices (no XSS vulnerabilities) and achieve a 90+ Lighthouse performance score.",
+        summary: "The capstone project synthesizes all your learning into a massive, production-ready React application.",
+        nextLesson: "Congratulations. You are now a React Master."
       }
     ]
   }

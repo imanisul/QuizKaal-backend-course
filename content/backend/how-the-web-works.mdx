@@ -106,12 +106,7 @@ server.listen(3000, () => {
 - **Man-in-the-Middle (MITM) Attacks:** If a user is on public Wi-Fi, an attacker can intercept the TCP packets. TLS encryption (HTTPS) is the only defense.
 - **CORS (Cross-Origin Resource Sharing):** Browsers block websites from making requests to different domains unless the backend explicitly allows it via CORS headers.
 
-## 15. Interview questions
 
-1. **"What happens when you type google.com into your browser?"**
-   *Answer:* The browser checks its DNS cache, then asks the OS, then the ISP. Once the IP is found, a TCP 3-way handshake occurs. Then an SSL handshake secures the connection. Finally, an HTTP GET request is sent, and the server returns the HTML.
-2. **"What is the difference between TCP and UDP?"**
-   *Answer:* TCP is reliable and ordered (used for web pages and emails). UDP is fast but unreliable, meaning packets can be lost (used for video games and live streaming).
 
 ## 16. Quiz
 

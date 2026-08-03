@@ -1,0 +1,88 @@
+# Screens, Stacks, and Tabs
+
+In mobile engineering, managing how users move between different views is far more complex than standard web navigation.
+
+## 1. Introduction
+
+On the web, clicking a link changes the URL and completely unloads the previous page. In a mobile app, moving to a new screen often involves "pushing" the new screen on top of the old one, keeping the old screen alive in memory underneath. 
+
+## 2. Why this concept exists
+
+Mobile phones have hardware "Back" buttons (or back swipe gestures). If mobile navigation worked like the web, swiping back would force the phone to re-download and re-render the entire previous screen. By keeping old screens alive in memory (a Stack), swiping back is instantaneous.
+
+## 3. Visual Explanation
+
+<ConceptCard 
+  title="The Navigation Stack" 
+  description="Think of navigation like a stack of plates. You push a new screen onto the top of the stack. When the user hits the back button, you pop the top screen off, instantly revealing the screen underneath exactly as they left it."
+/>
+
+## 4. Internal Working: Stacks vs Tabs
+
+There are two primary paradigms in mobile navigation:
+1. **Stacks (Stack Navigator):** Pushing and popping screens. Used for deep-diving into content (e.g. Feed -> Post -> User Profile).
+2. **Tabs (Tab Navigator):** Flat hierarchy. Used for switching between completely different sections of the app (e.g. Home, Search, Profile). Tabs do *not* pile on top of each other.
+
+## 5. Interactive Animation: Stack Visualizer
+
+Interact with the Native Navigation Stack below. Watch how screens are pushed on top, and how popping a screen reveals the preserved state underneath.
+
+<NavigationStackVisualizer />
+
+## 6. Code Examples
+
+How do you implement Stack Navigation across tracks?
+
+<MultiLangCodeBlock rnCodeBase64="Ly8gUmVhY3QgTmF2aWdhdGlvbgppbXBvcnQgeyBjcmVhdGVTdGFja05hdmlnYXRvciB9IGZyb20gJ0ByZWFjdC1uYXZpZ2F0aW9uL3N0YWNrJzsKCmNvbnN0IFN0YWNrID0gY3JlYXRlU3RhY2tOYXZpZ2F0b3IoKTsKCmZ1bmN0aW9uIEFwcCgpIHsKICByZXR1cm4gKAogICAgPFN0YWNrLk5hdmlnYXRvcj4KICAgICAgPFN0YWNrLlNjcmVlbiBuYW1lPSJIb21lIiBjb21wb25lbnQ9e0hvbWVTY3JlZW59IC8+CiAgICAgIDxTdGFjay5TY3JlZW4gbmFtZT0iRGV0YWlscyIgY29tcG9uZW50PXtEZXRhaWxzU2NyZWVufSAvPgogICAgPC9TdGFjay5OYXZpZ2F0b3I+CiAgKTsKfQ==" flutterCodeBase64="Ly8gRmx1dHRlciAoTmF2aWdhdG9yIDEuMCkKTmF2aWdhdG9yLnB1c2goCiAgY29udGV4dCwKICBNYXRlcmlhbFBhZ2VSb3V0ZShidWlsZGVyOiAoY29udGV4dCkgPT4gY29uc3QgRGV0YWlsc1NjcmVlbigpKSwKKTsKCi8vIFRvIGdvIGJhY2s6Ck5hdmlnYXRvci5wb3AoY29udGV4dCk7" androidCodeBase64="Ly8gQW5kcm9pZCAoSmV0cGFjayBOYXZpZ2F0aW9uKQp2YWwgbmF2Q29udHJvbGxlciA9IHJlbWVtYmVyTmF2Q29udHJvbGxlcigpCgpOYXZIb3N0KG5hdkNvbnRyb2xsZXIgPSBuYXZDb250cm9sbGVyLCBzdGFydERlc3RpbmF0aW9uID0gImhvbWUiKSB7CiAgICBjb21wb3NhYmxlKCJob21lIikgeyBIb21lU2NyZWVuKG5hdkNvbnRyb2xsZXIpIH0KICAgIGNvbXBvc2FibGUoImRldGFpbHMiKSB7IERldGFpbHNTY3JlZW4oKSB9Cn0KCi8vIE5hdmlnYXRlCm5hdkNvbnRyb2xsZXIubmF2aWdhdGUoImRldGFpbHMiKQ==" />
+
+**Explanation:**  
+Each framework provides a Navigation Router. In React Native and Android Jetpack, you declare a static graph of your screens upfront, and then trigger navigation actions. In Flutter (Navigator 1.0), you dynamically push routes onto the stack imperative-style.
+
+## 7. Real-world Examples
+
+- **Settings Menus:** When you go to `Settings -> Display -> Brightness`, you are pushing 3 screens onto a stack. Hitting back pops them off one by one.
+- **Instagram:** The bottom icons (Home, Search, Reels, Profile) are a Tab Navigator. But if you tap a Reel, it pushes a new screen onto the Stack *inside* the Reels Tab.
+
+## 8. Best Practices
+
+- **Don't push the same screen twice:** If you push "Profile", then push "Profile" again, the user will have to hit back twice to escape. 
+- **Clear the stack on Logout:** When a user logs out, you must clear the entire navigation stack so they cannot hit the back button and return to the authenticated area.
+
+## 9. Common Mistakes
+
+- **Memory Leaks:** Pushing 100 screens onto a stack without ever popping them. The OS will run out of memory and crash your app.
+- **Passing massive data objects:** Do not pass massive JSON objects through navigation parameters. Pass an ID, and let the new screen fetch the data.
+
+## 10. Interview Questions
+
+<InterviewQuestion 
+  question="What is the difference between a Stack Navigator and a Tab Navigator?"
+  answer="A Stack Navigator manages screens in a Last-In-First-Out (LIFO) pile. Pushing a screen keeps the previous one alive in memory. A Tab Navigator switches between independent parallel trees. Switching tabs does not stack screens on top of each other."
+  bestPractice="Complex apps nest Stacks INSIDE Tabs. So each Tab has its own independent Stack history."
+/>
+
+<InterviewQuestion 
+  question="How do you pass data between screens in React Native?"
+  answer="You pass data via the 'params' object in the navigate call. e.g. navigation.navigate('Details', { userId: 42 }). The receiving screen reads it via route.params.userId."
+  commonFollowUp="Why should you only pass IDs rather than full objects in route parameters?"
+/>
+
+<InterviewQuestion 
+  question="What happens to the memory of Screen A when you push Screen B on top of it?"
+  answer="Screen A remains completely alive in memory. Its state is preserved. This ensures that when the user presses the hardware back button, Screen A reappears instantaneously exactly as they left it."
+  commonFollowUp="How does this impact battery life if Screen A was playing a video?"
+/>
+
+## 11. Knowledge Check
+
+<QuizWidget 
+  question="When you push Screen B on top of Screen A, what happens to Screen A?"
+  options={["It is destroyed to save memory", "It remains in memory (alive) underneath Screen B", "It is converted to a background service", "It is cached to the local database"]}
+  correctAnswer="It remains in memory (alive) underneath Screen B"
+  explanation="In Stack Navigation, previous screens are kept in memory so that popping the current screen results in an instantaneous return to the exact state the user left."
+  takeaway="Be mindful of background processes (like intervals or video players) on screens that are pushed down the stack."
+/>
+
+## 12. Summary
+
+Navigation is the backbone of mobile architecture. Understanding how to manage memory across stacks and tabs ensures your app feels fast, native, and intuitive to use.

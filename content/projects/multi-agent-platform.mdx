@@ -1,16 +1,222 @@
 ---
 title: "Multi-Agent Research Tool"
-description: "LangGraph, supervisor agents, memory"
-phase: "Real-World Projects"
+description: "Build an autonomous research team using LangGraph, supervisor agents, and memory."
+time: "3 hrs"
 difficulty: "expert"
+xp: 250
+phase: "Real-World Projects"
 ---
 
-## Module Overview
+<LearningObjectives
+  objectives={[
+    "Design a Supervisor agent to orchestrate a team of specialized workers",
+    "Implement a web-search Agent equipped with Tavily API",
+    "Implement a data-analysis Agent equipped with a Python interpreter",
+    "Combine the agents into a robust LangGraph state machine"
+  ]}
+/>
 
-Welcome to **Multi-Agent Research Tool**. This module covers langgraph, supervisor agents, memory. 
+## Project Overview
 
-<Callout type="info" title="Content Coming Soon">
-This is a placeholder for the advanced deep-dive content. The interactive visualizations, code examples, and quizzes for this specific module are currently being authored and will be published shortly!
-</Callout>
+We are building a "Market Research Department in a box." You give it a prompt like *"Analyze the current market for electric vehicles in Europe and create a competitor matrix."* 
 
-In the meantime, you can continue exploring the rest of the roadmap or review the previous lessons.
+Instead of one LLM trying to do everything, our system will use three agents:
+1. **The Supervisor:** Breaks down the prompt, assigns tasks, and decides when the job is done.
+2. **The Researcher:** Has web search tools to find current data.
+3. **The Analyst:** Has a Python REPL tool to crunch numbers, calculate growth rates, and format tables.
+
+## 1. Defining the Shared State
+
+In a multi-agent LangGraph system, all agents read from and write to a shared "whiteboard" called the State.
+
+```javascript
+import { Annotation } from "@langchain/langgraph";
+import { BaseMessage } from "@langchain/core/messages";
+
+// Define what data the agents share
+const ResearchState = Annotation.Root({
+  // The conversation history between agents
+  messages: Annotation({
+    reducer: (x, y) => x.concat(y),
+    default: () => [],
+  }),
+  // The name of the next agent to run
+  next: Annotation({
+    reducer: (x, y) => y ?? x ?? "END",
+    default: () => "Researcher",
+  }),
+  // Structured findings collected so far
+  compiledData: Annotation({
+    reducer: (x, y) => x + "\n" + y,
+    default: () => "",
+  })
+});
+```
+
+## 2. Building the Worker Agents
+
+We need to create the specialized worker agents. We'll use LangChain's `createAgent` helper to give them tools.
+
+```javascript
+import { createOpenAIToolsAgent, AgentExecutor } from "langchain/agents";
+import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
+import { PythonREPLTool } from "@langchain/community/tools/experimental/python_repl";
+import { ChatPromptTemplate, MessagesPlaceholder } from "@langchain/core/prompts";
+
+// Helper function to create a worker node
+async function createWorkerNode(llm, tools, systemPrompt) {
+  const prompt = ChatPromptTemplate.fromMessages([
+    ["system", systemPrompt],
+    new MessagesPlaceholder("messages"),
+  ]);
+  
+  const agent = await createOpenAIToolsAgent({ llm, tools, prompt });
+  const executor = new AgentExecutor({ agent, tools });
+  
+  // Return a function that matches the LangGraph node signature
+  return async (state) => {
+    const response = await executor.invoke({ messages: state.messages });
+    return {
+      messages: [response.output],
+      // We don't change 'next' here; the supervisor does that
+    };
+  };
+}
+
+// 1. The Researcher Node
+const researcherNode = await createWorkerNode(
+  model,
+  [new TavilySearchResults({ maxResults: 3 })],
+  "You are a web researcher. Use the search tool to find accurate, up-to-date data."
+);
+
+// 2. The Analyst Node
+const analystNode = await createWorkerNode(
+  model,
+  [new PythonREPLTool()],
+  "You are a data analyst. Use Python to crunch numbers, calculate percentages, and format data into markdown tables."
+);
+```
+
+## 3. Building the Supervisor
+
+The Supervisor's only job is to look at the conversation and decide: "Who should work next?"
+
+```javascript
+import { JsonOutputToolsParser } from "langchain/output_parsers";
+
+async function supervisorNode(state) {
+  const prompt = ChatPromptTemplate.fromMessages([
+    ["system", `You are a supervisor managing a conversation between these workers: 
+     Researcher, Analyst.
+     
+     Given the user request, decide who should act next.
+     - Use the Researcher to find information on the web.
+     - Use the Analyst to do math, code, or format tables.
+     
+     When the original request is fully answered, respond with 'FINISH'.`],
+    new MessagesPlaceholder("messages"),
+  ]);
+
+  // We force the LLM to output a structured JSON response
+  const routingTool = {
+    type: "function",
+    function: {
+      name: "route",
+      description: "Select the next role.",
+      parameters: {
+        type: "object",
+        properties: {
+          next: {
+            type: "string",
+            enum: ["Researcher", "Analyst", "FINISH"],
+          },
+        },
+        required: ["next"],
+      },
+    },
+  };
+
+  const supervisorChain = prompt
+    .pipe(model.bind({ tools: [routingTool], tool_choice: { type: "function", function: { name: "route" } } }))
+    .pipe(new JsonOutputToolsParser());
+
+  const response = await supervisorChain.invoke({ messages: state.messages });
+  
+  return { next: response[0].args.next };
+}
+```
+
+## 4. Connecting the Graph
+
+Now we wire the nodes together. The edges determine the flow.
+
+```javascript
+import { StateGraph, END } from "@langchain/langgraph";
+
+const workflow = new StateGraph(ResearchState)
+  // Add the nodes
+  .addNode("Supervisor", supervisorNode)
+  .addNode("Researcher", researcherNode)
+  .addNode("Analyst", analystNode)
+  
+  // All workers report back to the supervisor
+  .addEdge("Researcher", "Supervisor")
+  .addEdge("Analyst", "Supervisor")
+  
+  // The graph starts at the Supervisor
+  .addEdge("__start__", "Supervisor")
+  
+  // The conditional edges: Supervisor decides where to go
+  .addConditionalEdges(
+    "Supervisor",
+    (state) => {
+      if (state.next === "FINISH") return END;
+      return state.next;
+    }
+  );
+
+// Compile the graph into an executable application
+const app = workflow.compile();
+
+// Run it!
+const result = await app.invoke({
+  messages: [{ role: "user", content: "Compare the Q3 revenue of Microsoft and Apple. Present it in a table." }]
+});
+
+// Flow:
+// Supervisor -> routes to -> Researcher (finds MSFT Q3 revenue)
+// Researcher -> returns to -> Supervisor
+// Supervisor -> routes to -> Researcher (finds AAPL Q3 revenue)
+// Researcher -> returns to -> Supervisor
+// Supervisor -> routes to -> Analyst (formats data into a markdown table)
+// Analyst -> returns to -> Supervisor
+// Supervisor -> outputs 'FINISH' -> END
+```
+
+<InterviewPrep
+  questions={[
+    {
+      question: "In a Supervisor multi-agent architecture, how do you prevent the agents from getting stuck in an infinite loop?",
+      answer: "Infinite loops happen when agents pass tasks back and forth without progressing toward the goal. To prevent this: (1) LangGraph has a built-in `recursion_limit` parameter (default 25) that throws an error if exceeded. (2) I add explicit instructions to the Supervisor's prompt to mandate progress ('Do not assign the same task twice without new instructions'). (3) I add a hard 'step count' integer to the shared Graph State; if it hits a threshold (e.g., 10), the Supervisor's prompt automatically overrides to force a 'FINISH' routing.",
+      difficulty: "expert",
+      commonMistake: "Relying entirely on the LLM's 'common sense' to stop. You must have hard-coded fallback limits in the architecture."
+    },
+    {
+      question: "Why use the PythonREPLTool for the Analyst agent instead of just asking the LLM to do the math?",
+      answer: "LLMs are language models, not calculators. They frequently hallucinate arithmetic, especially with large numbers or complex formulas (like compound interest or statistical variance). By giving the Analyst agent a Python REPL tool, the LLM writes a Python script to do the math, executes the script, and reads the factual output. This offloads deterministic computation to a deterministic engine (Python), guaranteeing 100% mathematical accuracy.",
+      difficulty: "intermediate",
+      commonMistake: "Trusting LLMs with arithmetic. Never do this in production financial or research systems."
+    }
+  ]}
+/>
+
+<LessonSummary
+  keyPoints={[
+    "Multi-agent systems divide complex tasks into specialized roles to prevent context bloat",
+    "The shared State object acts as a whiteboard for all agents to read and write data",
+    "The Supervisor agent doesn't do work; it routes the conversation using structured tool outputs",
+    "Worker agents are equipped with specific tools (Tavily for search, Python REPL for math)",
+    "LangGraph's conditional edges allow the Supervisor to dynamically determine the workflow path"
+  ]}
+/>

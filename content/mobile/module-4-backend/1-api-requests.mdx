@@ -1,0 +1,84 @@
+# REST APIs & Fetch
+
+Mobile apps are useless without data. Unless you're building a calculator, your app needs to talk to a Backend API to fetch user profiles, send messages, or process payments.
+
+## 1. Introduction
+
+A backend API (Application Programming Interface) is essentially a web server that returns raw data (usually JSON) instead of HTML. Mobile apps act as the "Client", making HTTP requests (GET, POST, PUT, DELETE) to this server over the internet.
+
+## 2. Why this concept exists
+
+Mobile phones don't have the storage capacity or processing power to hold the entire database of a company like Netflix. Therefore, the phone must constantly ask the server, "What are the latest movies?" and the server responds with a small JSON payload.
+
+## 3. Visual Explanation
+
+<ConceptCard 
+  title="The Client-Server Model" 
+  description="The Mobile App (Client) initiates a connection. The Backend API (Server) receives the request, queries the Database, formats the data into JSON, and sends it back to the mobile phone."
+/>
+
+## 4. Internal Working: HTTPS
+
+Because mobile apps are used on public Wi-Fi networks (like coffee shops), all API requests *must* use HTTPS (encrypted). If you try to make an HTTP (unencrypted) request in modern Android or iOS, the operating system will block the request at the network layer.
+
+## 5. Interactive Animation: Network Flow
+
+Observe the journey of a data packet as a mobile app requests data from the backend.
+
+<NetworkFlowDiagram />
+
+## 6. Code Examples: Fetching Data
+
+Here is how you make a GET request across all three tracks.
+
+<MultiLangCodeBlock rnCodeBase64="Ly8gUmVhY3QgTmF0aXZlIChGZXRjaCBBUEkpCmFzeW5jIGZ1bmN0aW9uIGdldFVzZXJzKCkgewogIGNvbnN0IHJlc3BvbnNlID0gYXdhaXQgZmV0Y2goJ2h0dHBzOi8vYXBpLmV4YW1wbGUuY29tL3VzZXJzJywgewogICAgbWV0aG9kOiAnR0VUJywKICAgIGhlYWRlcnM6IHsKICAgICAgJ0FjY2VwdCc6ICdhcHBsaWNhdGlvbi9qc29uJywKICAgICAgJ0F1dGhvcml6YXRpb24nOiAnQmVhcmVyIFlPVVJfVE9LRU4nCiAgICB9CiAgfSk7CiAgY29uc3QgZGF0YSA9IGF3YWl0IHJlc3BvbnNlLmpzb24oKTsKICByZXR1cm4gZGF0YTsKfQ==" flutterCodeBase64="Ly8gRmx1dHRlciAoaHR0cCBwYWNrYWdlKQppbXBvcnQgJ3BhY2thZ2U6aHR0cC9odHRwLmRhcnQnIGFzIGh0dHA7CgpGdXR1cmU8TGlzdD4gZ2V0VXNlcnMoKSBhc3luYyB7CiAgZmluYWwgcmVzcG9uc2UgPSBhd2FpdCBodHRwLmdldCgKICAgIFVyaS5wYXJzZSgnaHR0cHM6Ly9hcGkuZXhhbXBsZS5jb20vdXNlcnMnKSwKICAgIGhlYWRlcnM6IHsKICAgICAgJ0FjY2VwdCc6ICdhcHBsaWNhdGlvbi9qc29uJywKICAgICAgJ0F1dGhvcml6YXRpb24nOiAnQmVhcmVyIFlPVVJfVE9LRU4nLAogICAgfSwKICApOwogIHJldHVybiBqc29uRGVjb2RlKHJlc3BvbnNlLmJvZHkpOwp9" androidCodeBase64="Ly8gQW5kcm9pZCAoUmV0cm9maXQgJiBPa0h0dHApCmludGVyZmFjZSBBcGlTZXJ2aWNlIHsKICAgIEBHRVQoInVzZXJzIikKICAgIHN1c3BlbmQgZnVuIGdldFVzZXJzKEBIZWFkZXIoIkF1dGhvcml6YXRpb24iKSB0b2tlbjogU3RyaW5nKTogTGlzdDxVc2VyPgp9" />
+
+**Explanation:**  
+Each framework uses HTTP clients to execute requests asynchronously. In React Native and Flutter, the request is manual and dynamic. In Android, modern developers use Retrofit, an abstraction that generates the network code for you based on simple interfaces and annotations.
+
+## 7. Real-world Examples
+
+- **Twitter:** When you pull down to refresh, the app fires a `GET /tweets?latest=true` request. The UI shows a spinning loader until the JSON arrives, then the Reducer updates the global state, and the UI re-renders with the new tweets.
+
+## 8. Best Practices
+
+- **Timeout Handling:** Mobile users lose signal often. Set a timeout (e.g. 10 seconds) so the app doesn't hang forever waiting for a response.
+- **Show Loading States:** Always show a spinner (ActivityIndicator) while the network request is pending.
+
+## 9. Common Mistakes
+
+- **Not catching errors:** If a user is on an airplane and opens your app, the `fetch` will throw an error immediately. If you don't use a `try/catch` block, your app will hard crash.
+- **Leaking API Keys:** Never hardcode secret API keys (like Stripe secret keys) into your mobile app code. Mobile apps can be decompiled. The mobile app should only talk to *your* backend, and your backend should talk to Stripe.
+
+## 10. Interview Questions
+
+<InterviewQuestion 
+  question="Why must you never store sensitive secret keys in a mobile app?"
+  answer="Because mobile apps are distributed as binaries (APK or IPA files) directly to users. Anyone can download your app, run it through a decompiler, and extract string constants. If you embed a Stripe Secret Key or AWS Root Key, malicious actors will steal it and run up millions of dollars in charges."
+  bestPractice="Keep all secrets on your own backend server. The mobile app should authenticate via JWT, and your backend server should communicate with the third-party API."
+/>
+
+<InterviewQuestion 
+  question="Explain the difference between GET, POST, PUT, and DELETE."
+  answer="GET retrieves data without side effects. POST creates new data. PUT replaces or updates existing data completely. DELETE removes data. These map to CRUD operations (Create, Read, Update, Delete)."
+  commonFollowUp="What does it mean for a GET request to be idempotent?"
+/>
+
+<InterviewQuestion 
+  question="What is a JSON Web Token (JWT) and how do you attach it to an API request?"
+  answer="A JWT is an encrypted string that proves the user's identity. You typically attach it to HTTP requests inside the headers using the 'Authorization' key with the format 'Bearer <TOKEN>'."
+/>
+
+## 11. Knowledge Check
+
+<QuizWidget 
+  question="If you try to make a standard HTTP (non-HTTPS) request on a modern iOS device, what happens?"
+  options={["It works normally", "It works but shows a warning in the console", "The OS blocks the request by default (App Transport Security)", "The request is automatically upgraded to HTTPS"]}
+  correctAnswer="The OS blocks the request by default (App Transport Security)"
+  explanation="Both Apple (App Transport Security) and Google (Network Security Config) block cleartext HTTP traffic by default to protect users on public Wi-Fi from packet sniffing."
+  takeaway="Always use HTTPS for backend communication. If you must use HTTP for local testing, you must explicitly allow it in the OS manifest files."
+/>
+
+## 12. Summary
+
+Networking is a fragile part of mobile engineering because you cannot control the user's internet connection. Building resilient apps means elegantly handling timeouts, displaying loading spinners, and recovering gracefully when the network fails.

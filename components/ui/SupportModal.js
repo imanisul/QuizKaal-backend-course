@@ -112,7 +112,7 @@ export default function SupportModal() {
                 <div className="shrink-0 flex flex-col items-center gap-3">
                   <div className="w-[140px] h-[140px] bg-white border-[6px] border-white/10 rounded-2xl flex items-center justify-center relative overflow-hidden group shadow-[0_0_20px_rgba(255,255,255,0.1)]">
                     <Image 
-                      src="/donate-qr.png" 
+                      src="/donate-qr.jpeg" 
                       alt="Donation QR Code" 
                       width={140}
                       height={140}
@@ -127,7 +127,7 @@ export default function SupportModal() {
                 {/* Amounts */}
                 <div className="flex-1 flex flex-col">
                   <p className="text-sm text-textSecondary mb-4">
-                    If this course helped you land a job, ace an interview, or finally understand CI/CD, consider buying me a coffee! ☕
+                    If this course helped you land a job, ace an interview, or finally understand CI/CD, consider buying me a coffee! <Coffee size={16} className="inline-block ml-1 text-amber-400" />
                   </p>
                   
                   <div className="flex flex-wrap gap-2">

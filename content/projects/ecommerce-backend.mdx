@@ -1,16 +1,240 @@
 ---
 title: "E-commerce Backend"
-description: "Payments, inventory, order processing"
-phase: "Real-World Projects"
+description: "Build a production-grade e-commerce backend with payments, inventory, and order processing."
+time: "2 hrs"
 difficulty: "advanced"
+xp: 200
+phase: "Real-World Projects"
 ---
 
-## Module Overview
+<LearningObjectives
+  objectives={[
+    "Design a relational database schema for an e-commerce platform",
+    "Implement a secure checkout flow with Stripe",
+    "Handle inventory deduction safely using database transactions",
+    "Build an order processing state machine"
+  ]}
+/>
 
-Welcome to **E-commerce Backend**. This module covers payments, inventory, order processing. 
+## Project Overview
 
-<Callout type="info" title="Content Coming Soon">
-This is a placeholder for the advanced deep-dive content. The interactive visualizations, code examples, and quizzes for this specific module are currently being authored and will be published shortly!
-</Callout>
+In this project, we'll architect the backend for a high-traffic e-commerce store. We are moving past CRUD and dealing with real-world problems: what happens if two users buy the last item at the exact same time? How do we ensure we don't ship items if the payment fails?
 
-In the meantime, you can continue exploring the rest of the roadmap or review the previous lessons.
+### Core Requirements
+
+1. **Product Catalog:** List products, categories, and inventory counts.
+2. **Cart & Checkout:** Calculate totals, apply taxes, and process Stripe payments.
+3. **Inventory Management:** Safely deduct stock (handling race conditions).
+4. **Order Management:** Track order states (Pending → Paid → Shipped).
+
+## Architecture & Tech Stack
+
+- **Node.js + Express** (API Layer)
+- **PostgreSQL** (Relational data + ACID transactions)
+- **Prisma** (ORM)
+- **Stripe** (Payment Gateway)
+- **Redis** (Shopping cart caching - optional)
+
+## 1. Database Schema (Prisma)
+
+A robust e-commerce schema requires careful relationship mapping. 
+
+```prisma
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  orders    Order[]
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  price       Int      // Store prices in CENTS to avoid floating point math
+  inventory   Int
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  status        OrderStatus @default(PENDING)
+  totalAmount   Int
+  stripeId      String?
+  items         OrderItem[]
+  createdAt     DateTime @default(now())
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  priceAtBuy Int     // Historical price (products change price later!)
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  SHIPPED
+}
+```
+
+> **Pro Tip:** Notice `priceAtBuy` in the `OrderItem` table. If you just link to the Product table's price, past orders will change totals when you update a product's price next year! Always copy the price at the time of purchase.
+
+## 2. The Checkout Transaction
+
+This is the most critical part of the system. We must use a **Database Transaction**. If the payment succeeds but the database crashes before saving the order, we have a major problem.
+
+```javascript
+// POST /api/checkout
+app.post("/checkout", async (req, res) => {
+  const { userId, cartItems } = req.body;
+  
+  try {
+    // 1. Start a database transaction
+    const order = await prisma.$transaction(async (tx) => {
+      
+      let totalAmount = 0;
+      const orderItemsData = [];
+      
+      // 2. Validate inventory & calculate total
+      for (const item of cartItems) {
+        const product = await tx.product.findUnique({ 
+          where: { id: item.productId } 
+        });
+        
+        if (product.inventory < item.quantity) {
+          throw new Error(`Not enough stock for ${product.name}`);
+        }
+        
+        totalAmount += product.price * item.quantity;
+        orderItemsData.push({
+          productId: product.id,
+          quantity: item.quantity,
+          priceAtBuy: product.price
+        });
+        
+        // 3. Deduct inventory safely
+        await tx.product.update({
+          where: { id: product.id },
+          data: { inventory: { decrement: item.quantity } }
+        });
+      }
+      
+      // 4. Create the pending order
+      return await tx.order.create({
+        data: {
+          userId,
+          totalAmount,
+          status: "PENDING",
+          items: { create: orderItemsData }
+        }
+      });
+    });
+    
+    // 5. Create Stripe Payment Intent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: order.totalAmount,
+      currency: "usd",
+      metadata: { orderId: order.id }
+    });
+    
+    res.json({ clientSecret: paymentIntent.client_secret, orderId: order.id });
+    
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+```
+
+### Why use `$transaction`?
+If `throw new Error("Not enough stock")` runs on the 3rd item in the cart, the transaction rolls back. The inventory deducted for the 1st and 2nd items is magically restored. This prevents inconsistent database states.
+
+## 3. Stripe Webhooks
+
+The client pays Stripe directly. Stripe then sends our server an HTTP request (a Webhook) telling us the payment succeeded.
+
+```javascript
+// POST /api/webhooks/stripe
+app.post("/webhooks/stripe", express.raw({type: 'application/json'}), async (req, res) => {
+  const signature = req.headers['stripe-signature'];
+  let event;
+  
+  try {
+    // Verify this actually came from Stripe
+    event = stripe.webhooks.constructEvent(
+      req.body, 
+      signature, 
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  // Handle the event
+  if (event.type === 'payment_intent.succeeded') {
+    const paymentIntent = event.data.object;
+    const orderId = paymentIntent.metadata.orderId;
+    
+    // Mark order as PAID
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { status: "PAID", stripeId: paymentIntent.id }
+    });
+    
+    // (Optional) Send confirmation email here
+  }
+  
+  if (event.type === 'payment_intent.payment_failed') {
+    // Restore inventory if payment failed!
+    const orderId = event.data.object.metadata.orderId;
+    await restoreInventory(orderId);
+  }
+
+  res.send();
+});
+```
+
+<InterviewPrep
+  questions={[
+    {
+      question: "How do you handle floating point errors when dealing with money in JavaScript?",
+      answer: "You should never store money as floating point numbers (decimals) in JavaScript or a database because of binary floating-point precision issues (e.g., 0.1 + 0.2 = 0.30000000000000004). Instead, store all prices as integers representing the smallest currency unit (e.g., cents for USD). $10.50 is stored as 1050. Format it back to a decimal only on the frontend when displaying it to the user. This guarantees perfect mathematical precision.",
+      difficulty: "intermediate",
+      commonMistake: "Using numeric or decimal types in SQL without strict precision constraints, or worse, using JavaScript's native Number type for calculations."
+    },
+    {
+      question: "What happens in your system if the Stripe webhook fails to reach your server due to a network blip?",
+      answer: "Stripe will automatically retry webhooks for up to 3 days using exponential backoff. However, my webhook handler must be idempotent. If Stripe sends the 'payment_intent.succeeded' event twice, my code must safely ignore the second request (e.g., checking if the order status is already 'PAID'). Additionally, I would implement a cron job that periodically polls the Stripe API for any 'PENDING' orders older than 1 hour to reconcile their status manually.",
+      difficulty: "expert",
+      commonMistake: "Assuming webhooks only arrive exactly once. Webhooks guarantee 'at least once' delivery, so idempotency is mandatory."
+    }
+  ]}
+/>
+
+<PracticeExercise
+  title="Implement Inventory Restoration"
+  description="Write the `restoreInventory(orderId)` function referenced in the webhook handler."
+  steps={[
+    "Find the order by orderId and include all its items",
+    "If the order is already marked FAILED, return early (idempotency)",
+    "Start a Prisma transaction",
+    "Loop through the order items and increment the Product inventory by the item quantity",
+    "Update the order status to FAILED"
+  ]}
+/>
+
+<LessonSummary
+  keyPoints={[
+    "Never store money as floats; use integers representing cents",
+    "Always duplicate product prices into the OrderItem table at checkout",
+    "Inventory deduction and order creation MUST happen inside an ACID transaction",
+    "Rely on Stripe Webhooks for payment confirmation, not client-side success callbacks",
+    "Webhook handlers must be idempotent to handle duplicate deliveries"
+  ]}
+/>

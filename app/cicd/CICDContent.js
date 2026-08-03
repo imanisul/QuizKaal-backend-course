@@ -4,6 +4,7 @@ import StaggerReveal, { StaggerItem } from "@/components/ui/StaggerReveal";
 import QAAccordion from "@/components/lesson1/QAAccordion";
 import { GitBranch, PlayCircle, FolderTree, ShieldCheck, Database, Rocket, AlertTriangle, RefreshCcw, Activity } from "lucide-react";
 import ParticleField from "@/components/ui/ParticleField";
+import CourseHeader from '@/components/ui/CourseHeader';
 
 // The new massive Interactive CI/CD Simulator
 const AdvancedCICDSimulator = dynamic(() => import('@/components/cicd/AdvancedCICDSimulator'), { ssr: false, loading: () => <div className="h-[800px] rounded-3xl bg-white/5 animate-pulse mt-12" /> });
@@ -20,31 +21,18 @@ export default function CICDContent() {
   return (
     <>
       {/* ═══════════ HERO ═══════════ */}
-      <section id="hero" className="relative pt-16 pb-24 border-b border-white/[0.06] mb-16 scroll-mt-24 flex flex-col items-center text-center">
-        <ParticleField count={30} />
-        <StaggerReveal className="flex flex-col items-center">
-          <StaggerItem>
-            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm">
-              <span className="flex h-2 w-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
-              <span className="text-[11px] font-bold uppercase tracking-widest text-blue-400 flex items-center gap-1.5"><GitBranch size={14} /> DevOps & Infrastructure</span>
-            </div>
-          </StaggerItem>
-          
-          <StaggerItem>
-            <h1 className="text-[clamp(3rem,5vw,5rem)] font-black tracking-tighter leading-[1.05] mb-6 text-white drop-shadow-2xl max-w-[1200px]">
-              CI/CD Pipeline from <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-green-400 animate-gradient-shift drop-shadow-[0_0_15px_rgba(59,130,246,0.3)]">
-                Laptop to Production
-              </span>
-            </h1>
-          </StaggerItem>
-
-          <StaggerItem>
-            <p className="text-lg md:text-xl text-textSecondary max-w-[800px] leading-relaxed mb-12">
-              Writing code is only 50% of the job. How does that code reliably get from your laptop, through rigorous automated testing, packaged into Docker, and deployed into a Kubernetes cluster serving millions? Welcome to Continuous Integration and Continuous Deployment.
-            </p>
-          </StaggerItem>
-        </StaggerReveal>
+      <section id="hero" className="relative pb-24 border-b border-white/[0.06] mb-16 scroll-mt-24">
+        <CourseHeader 
+          title="CI/CD Pipeline: Laptop to Production"
+          description="Writing code is only 50% of the job. How does that code reliably get from your laptop, through rigorous automated testing, packaged into Docker, and deployed into a Kubernetes cluster serving millions? Welcome to Continuous Integration and Continuous Deployment."
+          icon={GitBranch}
+          completedCount={0}
+          totalLessons={5}
+          nextLessonTitle="The Deployment Journey"
+          nextLessonPath="#simulator"
+          themeColor="from-blue-400 to-green-400"
+          bgGlow="from-blue-400/20 to-green-400/20"
+        />
       </section>
 
       {/* ═══════════ THE MASSIVE SIMULATOR ═══════════ */}

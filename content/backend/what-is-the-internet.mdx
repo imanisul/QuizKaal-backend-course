@@ -1,0 +1,124 @@
+---
+title: "What is the Internet?"
+description: "The global network of networks that connects billions of computers worldwide."
+phase: "Internet & How It Works"
+time: "10 min"
+difficulty: "beginner"
+xp: 100
+---
+
+<LearningObjectives 
+  objectives={[
+    "Understand the physical reality of the internet.",
+    "Visualize how data packets travel across global networks.",
+    "Differentiate between the Internet and the World Wide Web.",
+    "Learn the fundamental architecture of clients, servers, and routers."
+  ]}
+/>
+
+## The Physical Reality
+
+<ConceptBlock type="idea" title="Overview">
+  The Internet is not a magical cloud in the sky. It is a massive, physical network of underwater fiber optic cables, satellites, and routers that connect billions of computers across the globe. It is the infrastructure that allows data to travel from your laptop to a server in another country in milliseconds.
+</ConceptBlock>
+
+<WarningCard title="The Internet is NOT the Web">
+  A very common misconception! The **Internet** is the physical infrastructure (the cables, routers, and networks). The **World Wide Web (WWW)** is just one service that runs *on top* of the internet using HTTP and HTML. You can use the internet without using the Web (e.g., sending an email, playing a multiplayer game, or using an API).
+</WarningCard>
+
+---
+
+## Interactive Packet Routing
+
+When you watch a movie on Netflix, the video data is physically traveling through thousands of miles of **fiber optic cables** laid across the ocean floor. 
+
+Try sending data below, and then see what happens when a physical cable is severed!
+
+<InternetVisualizer />
+
+> **Notice:** The internet is highly resilient. When the primary fiber optic cable breaks, the routers instantly redirect the packets through an alternative, albeit slower, satellite connection. This dynamic pathfinding makes the internet virtually indestructible.
+
+---
+
+## How Data Travels
+
+<StepByStep 
+  steps={[
+    {
+      title: "Step 1: The Request",
+      description: "Your computer (the Client) asks to view a website by typing a URL."
+    },
+    {
+      title: "Step 2: Packets",
+      description: "The data is broken down into tiny, manageable chunks called Packets."
+    },
+    {
+      title: "Step 3: Routing",
+      description: "These packets hop from router to router across the globe, finding the fastest path."
+    },
+    {
+      title: "Step 4: The Server",
+      description: "The destination computer (the Server) receives the packets, reassembles them, and sends a response back."
+    }
+  ]}
+/>
+
+<AnalogyCard title="The Global Postal Service">
+  Think of the Internet exactly like the postal service:
+  - **IP Address** = Your home's physical mailing address.
+  - **Packet** = An envelope containing your letter.
+  - **Router** = The local post office that looks at the address and forwards it to the correct city.
+  - **Server** = The massive warehouse where you are requesting a package from.
+</AnalogyCard>
+
+---
+
+## Code Example
+
+<CodeTabs>
+  <div label="Beginner (Ping)">
+    You can use your terminal to "ping" a server to see how fast packets travel.
+    ```bash
+    ping google.com
+    # Output:
+    # 64 bytes from 142.250.190.46: icmp_seq=1 ttl=115 time=14.2 ms
+    ```
+  </div>
+  <div label="Production (Traceroute)">
+    Traceroute shows you every single router your packet hops through to reach its destination.
+    ```bash
+    traceroute netflix.com
+    # Output:
+    # 1  192.168.1.1 (Home Router)  1.123 ms
+    # 2  10.0.0.1 (ISP Gateway)     5.432 ms
+    # 3  142.250.190.46 (Backbone)  12.331 ms
+    ```
+  </div>
+</CodeTabs>
+
+
+---
+
+## Practice
+
+<Quiz 
+  question="If the primary transatlantic fiber optic cable breaks, what happens to your data?"
+  options={[
+    "Your internet connection permanently drops until a ship fixes it.",
+    "Routers dynamically find an alternative path to deliver the packets.",
+    "The data is destroyed and cannot be recovered."
+  ]}
+  correctAnswerIndex={1}
+  explanation="The internet was originally designed by DARPA to survive nuclear strikes. It routes around damage dynamically using protocols like BGP."
+/>
+
+<LessonSummary 
+  takeaways={[
+    "The Internet is a massive physical network of cables, routers, and servers.",
+    "Data is broken into tiny packets to travel efficiently.",
+    "Routers dynamically find the best path for packets.",
+    "The Internet is resilient to physical damage by routing around failures."
+  ]}
+  nextLessonTitle="History of the Internet"
+  nextLessonUrl="/lessons/history-of-the-internet"
+/>

@@ -1,0 +1,122 @@
+export const everydayPrompts = [
+  {
+    id: "everyday-summarize",
+    title: "Summarize Complex Text",
+    category: "Everyday AI",
+    difficulty: "Beginner",
+    bestTool: "ChatGPT / Claude",
+    description: "Instantly boil down long articles or documents into key bullet points.",
+    prompt: "I am going to provide you with a long text. Please read it carefully and summarize it into 5 key bullet points. Keep the language simple and easy to understand. Here is the text: [Paste your text here]",
+    exampleOutput: "- The article discusses...\n- The main conclusion is...",
+    whenToUse: "When you have a long article, news piece, or document and don't have time to read the whole thing.",
+    proTips: ["You can specify 'Explain it to me like I am 10' for even simpler summaries."]
+  },
+  {
+    id: "everyday-grammar",
+    title: "Improve Grammar & Tone",
+    category: "Everyday AI",
+    difficulty: "Beginner",
+    bestTool: "Grammarly / ChatGPT",
+    description: "Fix grammar mistakes and make your writing sound more professional.",
+    prompt: "Please review the following text. Fix any grammatical errors, spelling mistakes, and improve the sentence structure to make it sound more professional and confident. Show me the revised version, and briefly list the major changes you made: [Paste text here]",
+    exampleOutput: "Here is the revised text...\nChanges made: Fixed comma splice, improved vocabulary.",
+    whenToUse: "Before sending an important email or message.",
+    proTips: ["Ask the AI to change the tone to 'friendly', 'assertive', or 'formal' based on your needs."]
+  },
+  {
+    id: "everyday-travel",
+    title: "Travel Itinerary Planner",
+    category: "Everyday AI",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT / Gemini",
+    description: "Create a detailed day-by-day travel plan based on your preferences.",
+    prompt: "I am planning a [Number]-day trip to [Destination] in [Month]. I am traveling with [e.g., my family, solo, friends]. Our budget is [Low/Medium/High]. We love [e.g., food, history, nature] but dislike [e.g., crowded tourist traps, hiking]. Please create a detailed, day-by-day itinerary including morning, afternoon, and evening activities, plus restaurant recommendations.",
+    exampleOutput: "Day 1:\nMorning: Visit the local museum...\nAfternoon: Lunch at...",
+    whenToUse: "When planning a vacation and looking for structured ideas.",
+    proTips: ["Be specific about mobility issues or dietary restrictions for better restaurant recommendations."]
+  },
+  {
+    id: "everyday-recipe",
+    title: "Pantry Recipe Generator",
+    category: "Everyday AI",
+    difficulty: "Beginner",
+    bestTool: "ChatGPT",
+    description: "Get a recipe based on what you already have in your fridge.",
+    prompt: "I want to cook dinner, but I only have the following ingredients: [List ingredients]. I also have basic pantry staples like oil, salt, pepper, and common spices. Please give me 3 different recipe ideas I can make right now. For the one that takes the least amount of time, provide step-by-step instructions.",
+    exampleOutput: "Idea 1: Garlic Butter Pasta...\nIdea 2: Fried Rice...\nIdea 3: Veggie Stir-fry...",
+    whenToUse: "When you want to cook but don't want to go to the grocery store.",
+    proTips: ["Mention if you are vegetarian, vegan, or allergic to anything."]
+  },
+  {
+    id: "everyday-explain",
+    title: "Explain Like I'm 5 (ELI5)",
+    category: "Everyday AI",
+    difficulty: "Beginner",
+    bestTool: "Claude / ChatGPT",
+    description: "Break down complex or scientific concepts into simple analogies.",
+    prompt: "Explain the concept of [Complex Topic, e.g., Quantum Computing] as if I am 5 years old. Use simple analogies, avoid jargon completely, and keep it under 3 paragraphs.",
+    exampleOutput: "Imagine you have a magical coin. A normal coin can only be Heads or Tails. But this magical coin...",
+    whenToUse: "When you encounter a dense topic in the news or a book.",
+    proTips: ["If you still don't understand, ask the AI to 'give me another analogy'."]
+  },
+  {
+    id: "everyday-brainstorm",
+    title: "Gift Idea Brainstormer",
+    category: "Everyday AI",
+    difficulty: "Beginner",
+    bestTool: "ChatGPT",
+    description: "Generate thoughtful gift ideas for friends or family.",
+    prompt: "I need to buy a gift for my [Relation, e.g., brother]. He is [Age] years old. His hobbies include [List 3 hobbies]. My budget is under $[Amount]. Please give me 10 unique, thoughtful, and highly specific gift ideas that he would actually use.",
+    exampleOutput: "1. A personalized leather journal...\n2. A subscription to a coffee club...",
+    whenToUse: "Birthdays, holidays, or anniversaries.",
+    proTips: ["Provide details about what they already own so the AI doesn't suggest duplicates."]
+  },
+  {
+    id: "everyday-todo",
+    title: "Overwhelm Buster (To-Do List)",
+    category: "Everyday AI",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT / Claude",
+    description: "Turn a chaotic brain-dump of tasks into an organized, prioritized list.",
+    prompt: "I am feeling overwhelmed with everything I have to do. Here is a brain dump of all my tasks: [List tasks randomly]. Please organize this list into the Eisenhower Matrix (Urgent & Important, Important but Not Urgent, Urgent but Not Important, Neither). Then, suggest which 3 tasks I should tackle first today to build momentum.",
+    exampleOutput: "Urgent & Important: Pay electricity bill...\nTop 3 tasks to do right now...",
+    whenToUse: "When you have too much on your plate and don't know where to start.",
+    proTips: ["Update the AI throughout the day as you finish tasks for continued guidance."]
+  },
+  {
+    id: "everyday-translate",
+    title: "Contextual Translator",
+    category: "Everyday AI",
+    difficulty: "Beginner",
+    bestTool: "DeepL / ChatGPT",
+    description: "Translate text while keeping the cultural context and slang accurate.",
+    prompt: "Translate the following text into [Target Language]. Do not just translate it literally. Ensure that any idioms, slang, or cultural references are adapted so they sound natural and native to a speaker from [Specific Region/Country]: [Paste text]",
+    exampleOutput: "Literal translation: ...\nNatural translation: ...",
+    whenToUse: "When messaging friends abroad or translating informal content.",
+    proTips: ["Always specify the region (e.g., Mexican Spanish vs. Spain Spanish)."]
+  },
+  {
+    id: "everyday-email",
+    title: "Polite Decline Email",
+    category: "Everyday AI",
+    difficulty: "Beginner",
+    bestTool: "ChatGPT",
+    description: "Say 'no' professionally without burning bridges.",
+    prompt: "I received an invitation/request for [Describe the request, e.g., a meeting, a project, a party]. I need to decline it because [Reason, e.g., I am too busy, it's not a good fit]. Write a polite, warm, but firm email declining the request. Keep it short.",
+    exampleOutput: "Hi [Name],\nThank you so much for thinking of me for this...\nUnfortunately, due to...",
+    whenToUse: "When you need to reject an offer but struggle to find the right words.",
+    proTips: ["Ask the AI to provide one formal version and one casual version so you can choose."]
+  },
+  {
+    id: "everyday-health",
+    title: "Workout Routine Planner",
+    category: "Everyday AI",
+    difficulty: "Intermediate",
+    bestTool: "ChatGPT",
+    description: "Get a customized weekly workout split based on your equipment.",
+    prompt: "I want to start working out [Number] days a week. My goal is [e.g., weight loss, muscle gain, flexibility]. I am a [Beginner/Intermediate/Advanced]. The only equipment I have is [List equipment, e.g., dumbbells, a yoga mat, nothing]. Please create a weekly workout routine for me, including specific exercises, sets, and reps.",
+    exampleOutput: "Monday: Full Body (Bodyweight)\n- Pushups: 3 sets of 10...\n- Squats: 3 sets of 15...",
+    whenToUse: "When starting a new fitness journey.",
+    proTips: ["Always consult a doctor. You can ask the AI to include YouTube search terms for exercise form."]
+  }
+];

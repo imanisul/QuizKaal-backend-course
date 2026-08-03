@@ -1,0 +1,143 @@
+export const GAME_LEVELS = [
+  {
+    id: 1,
+    title: "Hello Server",
+    tagline: "Your first startup",
+    story: "You just founded a startup. You have one user. Build a simple connection to serve them their profile page.",
+    traffic: 1, 
+    budget: 100,
+    allowedComponents: ["user", "browser", "server", "db", "response"],
+    winCondition: { servers: 1, lbs: 0, dbs: 0, redis: 0 },
+    mentorHint: "Drag a User, Browser, Server, Database, and Response onto the board."
+  },
+  {
+    id: 2,
+    title: "Mobile First",
+    tagline: "Launching the app",
+    story: "You built a Mobile App! Users are now connecting from their phones.",
+    traffic: 10,
+    budget: 200,
+    allowedComponents: ["user", "browser", "mobile", "server", "db", "response"],
+    winCondition: { servers: 1, db: 1 },
+    mentorHint: "Add Mobile App to the Network Tier alongside your Server."
+  },
+  {
+    id: 3,
+    title: "DNS Explorer",
+    tagline: "Getting a real domain",
+    story: "People hate typing IP addresses. You bought a domain name. Add DNS so users can find your server easily.",
+    traffic: 50,
+    budget: 300,
+    allowedComponents: ["user", "browser", "mobile", "server", "db", "response", "dns"],
+    winCondition: { servers: 1, dns: 1 },
+    mentorHint: "Drag DNS into the Network Tier."
+  },
+  {
+    id: 4,
+    title: "The Viral Spike",
+    tagline: "Scaling horizontally",
+    story: "Your app went viral on Reddit! 10,000 users just logged in. A single server will crash. You need a Load Balancer and multiple servers.",
+    traffic: 10000,
+    budget: 1000,
+    allowedComponents: ["user", "browser", "mobile", "server", "db", "response", "dns", "lb"],
+    winCondition: { servers: 3, lb: 1 },
+    mentorHint: "A Load Balancer distributes traffic. Place it in the Network Tier, and add at least 3 Servers in the App Tier."
+  },
+  {
+    id: 5,
+    title: "Redis Speedrun",
+    tagline: "Caching for performance",
+    story: "Your database is too slow. Every time a user loads the feed, it queries the DB. Add a Redis Cache to speed things up.",
+    traffic: 20000,
+    budget: 2000,
+    allowedComponents: ["user", "browser", "mobile", "server", "db", "response", "dns", "lb", "redis"],
+    winCondition: { servers: 3, lb: 1, db: 1, redis: 1 },
+    mentorHint: "Place a Redis Cache in the Data Tier. Servers will check it before hitting the Database."
+  },
+  {
+    id: 6,
+    title: "Global CDN",
+    tagline: "Serving the world",
+    story: "Users in Japan are complaining about lag. Deploy a CDN to serve images and static files instantly across the globe.",
+    traffic: 50000,
+    budget: 3000,
+    allowedComponents: ["user", "browser", "mobile", "server", "db", "response", "dns", "lb", "redis", "cdn"],
+    winCondition: { servers: 3, lb: 1, db: 1, cdn: 1 },
+    mentorHint: "Place a CDN in the Network Tier. It acts as the absolute first line of defense for static assets."
+  },
+  {
+    id: 7,
+    title: "API Gateway",
+    tagline: "Splitting the monolith",
+    story: "Your code is too messy. Split your single server into an API Gateway and Microservices.",
+    traffic: 30000,
+    budget: 4000,
+    allowedComponents: ["user", "browser", "mobile", "server", "db", "response", "dns", "lb", "redis", "cdn", "gateway", "microservices"],
+    winCondition: { gateway: 1, microservices: 1, db: 1 },
+    mentorHint: "Use the API Gateway in the Network tier, and add Microservices in the App Tier."
+  },
+  {
+    id: 8,
+    title: "Message Queues",
+    tagline: "Asynchronous processing",
+    story: "Uploading videos takes too long and freezes the app. Add a Message Queue so video processing happens in the background.",
+    traffic: 40000,
+    budget: 4000,
+    allowedComponents: ["user", "browser", "mobile", "server", "db", "response", "dns", "lb", "redis", "cdn", "gateway", "microservices", "queue"],
+    winCondition: { lb: 1, queue: 1, db: 1 },
+    mentorHint: "A Queue belongs in the App Tier. It holds heavy tasks until workers are ready to process them."
+  },
+  { id: 9, title: "Notification Center", tagline: "Ping the users", story: "Users want to know when they get a like.", traffic: 50000, budget: 5000, allowedComponents: ["user", "browser", "mobile", "server", "db", "response", "dns", "lb", "redis", "cdn", "gateway", "microservices", "queue", "notification", "email", "push"], winCondition: { queue: 1, notification: 1 }, mentorHint: "Add a Notification service after the Queue." },
+  { id: 10, title: "Observability", tagline: "Monitor everything", story: "Add logging and metrics to a distributed system.", traffic: 30000, budget: 4000, allowedComponents: ["user", "browser", "mobile", "server", "db", "response", "dns", "lb", "redis", "cdn", "gateway", "microservices", "queue", "notification", "email", "push", "monitor", "logging"], winCondition: { lb: 1, monitor: 1, logging: 1 }, mentorHint: "Deploy Monitoring and Logging to keep an eye on health." },
+  { id: 11, title: "Authentication Flow", tagline: "Secure the gates", story: "Build a JWT based auth system.", traffic: 10000, budget: 3000, allowedComponents: ["user", "browser", "mobile", "server", "db", "response", "dns", "lb", "redis", "cdn", "gateway", "microservices", "queue", "notification", "email", "push", "monitor", "logging", "auth"], winCondition: { gateway: 1, auth: 1, redis: 1, db: 1 }, mentorHint: "Auth needs a Gateway, an Auth Service, and Redis for fast token validation." },
+  { id: 12, title: "Payment Systems", tagline: "Don't lose the money", story: "Process payments reliably with Kafka.", traffic: 20000, budget: 4000, allowedComponents: ["user", "browser", "mobile", "server", "db", "response", "dns", "lb", "redis", "cdn", "gateway", "microservices", "queue", "notification", "email", "push", "monitor", "logging", "auth", "payment", "kafka"], winCondition: { gateway: 1, payment: 1, kafka: 1, db: 1 }, mentorHint: "Payments must be durable. Use Kafka." },
+  { id: 13, title: "Search Engine", tagline: "Find things fast", story: "Users need to search through millions of products.", traffic: 40000, budget: 5000, allowedComponents: ["user", "browser", "mobile", "server", "db", "response", "dns", "lb", "redis", "cdn", "gateway", "microservices", "queue", "notification", "email", "push", "monitor", "logging", "auth", "payment", "kafka", "search", "elasticsearch"], winCondition: { search: 1, elasticsearch: 1 }, mentorHint: "Add a Search Service and ElasticSearch." },
+  { id: 14, title: "The Algorithms", tagline: "For You Page", story: "Build a recommendation engine to keep users scrolling.", traffic: 60000, budget: 6000, allowedComponents: ["user", "browser", "mobile", "server", "db", "response", "dns", "lb", "redis", "cdn", "gateway", "microservices", "queue", "notification", "email", "push", "monitor", "logging", "auth", "payment", "kafka", "search", "elasticsearch", "recommendation", "analytics"], winCondition: { recommendation: 1, analytics: 1 }, mentorHint: "Use Analytics and a Recommendation Service." },
+  { id: 15, title: "The Architect", tagline: "Build Amazon", story: "Design a massive, highly available, fault-tolerant e-commerce architecture.", traffic: 5000000, budget: 20000, allowedComponents: ["user", "browser", "mobile", "server", "db", "response", "dns", "lb", "redis", "cdn", "gateway", "microservices", "queue", "notification", "email", "push", "monitor", "logging", "auth", "payment", "kafka", "cassandra", "search", "elasticsearch", "recommendation", "analytics", "kubernetes", "docker", "autoscaling", "ratelimiter", "postgresql", "mongodb", "rediscluster", "objectstorage", "video"], winCondition: { lb:1, cdn:1, gateway:1, server:3, auth:1, payment:1, queue:1, redis:2, db:2 }, mentorHint: "Combine everything you've learned to build a FAANG-level system." }
+];
+
+export const COMPONENTS_DATA = {
+  // BEGINNER
+  user: { id: "user", name: "User", type: "network", cost: 0, icon: "User", diff: "Beginner", desc: "The person accessing your application." },
+  browser: { id: "browser", name: "Browser", type: "network", cost: 0, icon: "Globe", diff: "Beginner", desc: "A user accessing the web application." },
+  mobile: { id: "mobile", name: "Mobile App", type: "network", cost: 0, icon: "Smartphone", diff: "Beginner", desc: "A user accessing via an iOS or Android app." },
+  server: { id: "server", name: "Server", type: "app", cost: 100, icon: "Server", diff: "Beginner", desc: "Processes incoming user requests and runs the backend code." },
+  db: { id: "db", name: "Database", type: "data", cost: 300, icon: "Database", diff: "Beginner", desc: "Stores application data permanently." },
+  response: { id: "response", name: "Response", type: "network", cost: 0, icon: "ArrowLeftRight", diff: "Beginner", desc: "The data returned to the user." },
+  
+  // INTERMEDIATE
+  dns: { id: "dns", name: "DNS", type: "network", cost: 50, icon: "MapPin", diff: "Intermediate", desc: "Resolves domain names to IP addresses." },
+  lb: { id: "lb", name: "Load Balancer", type: "network", cost: 150, icon: "Share2", diff: "Intermediate", desc: "Distributes incoming traffic across multiple servers." },
+  gateway: { id: "gateway", name: "API Gateway", type: "network", cost: 150, icon: "DoorOpen", diff: "Intermediate", desc: "Single entry point for all API calls." },
+  redis: { id: "redis", name: "Redis Cache", type: "data", cost: 250, icon: "Zap", diff: "Intermediate", desc: "Stores frequently accessed data in memory for extreme speed." },
+  cdn: { id: "cdn", name: "CDN", type: "network", cost: 200, icon: "Cloud", diff: "Intermediate", desc: "Caches static assets (images, videos) at edge locations globally." },
+  objectstorage: { id: "objectstorage", name: "Object Storage", type: "data", cost: 200, icon: "FolderOpen", diff: "Intermediate", desc: "Stores large files, images, and videos (e.g. Amazon S3)." },
+  queue: { id: "queue", name: "Message Queue", type: "app", cost: 200, icon: "Layers", diff: "Intermediate", desc: "Buffers tasks for asynchronous processing." },
+  notification: { id: "notification", name: "Notification Svc", type: "app", cost: 100, icon: "Bell", diff: "Intermediate", desc: "Manages all outbound alerts and messages." },
+  email: { id: "email", name: "Email Service", type: "app", cost: 100, icon: "Mail", diff: "Intermediate", desc: "Sends transactional emails to users." },
+  push: { id: "push", name: "Push Notification", type: "app", cost: 100, icon: "MessageSquare", diff: "Intermediate", desc: "Sends alerts directly to user devices." },
+
+  // ADVANCED
+  kafka: { id: "kafka", name: "Apache Kafka", type: "app", cost: 400, icon: "Activity", diff: "Advanced", desc: "High-throughput distributed event streaming platform." },
+  rabbitmq: { id: "rabbitmq", name: "RabbitMQ", type: "app", cost: 350, icon: "List", diff: "Advanced", desc: "Robust message broker for decoupling services." },
+  elasticsearch: { id: "elasticsearch", name: "ElasticSearch", type: "data", cost: 500, icon: "Search", diff: "Advanced", desc: "Distributed, RESTful search and analytics engine." },
+  mysql: { id: "mysql", name: "MySQL", type: "data", cost: 300, icon: "Database", diff: "Advanced", desc: "Relational database management system." },
+  postgresql: { id: "postgresql", name: "PostgreSQL", type: "data", cost: 350, icon: "Database", diff: "Advanced", desc: "Advanced open source relational database." },
+  mongodb: { id: "mongodb", name: "MongoDB", type: "data", cost: 350, icon: "Database", diff: "Advanced", desc: "Document-oriented NoSQL database." },
+  cassandra: { id: "cassandra", name: "Cassandra", type: "data", cost: 450, icon: "Database", diff: "Advanced", desc: "Highly scalable, distributed NoSQL database." },
+  rediscluster: { id: "rediscluster", name: "Redis Cluster", type: "data", cost: 600, icon: "Zap", diff: "Advanced", desc: "Distributed Redis implementation for massive scale." },
+  docker: { id: "docker", name: "Docker", type: "app", cost: 100, icon: "Box", diff: "Advanced", desc: "Containerizes applications for consistent deployment." },
+  kubernetes: { id: "kubernetes", name: "Kubernetes", type: "app", cost: 500, icon: "Hexagon", diff: "Advanced", desc: "Automates deployment, scaling, and management of containers." },
+  servicediscovery: { id: "servicediscovery", name: "Service Discovery", type: "app", cost: 200, icon: "Compass", diff: "Advanced", desc: "Automatically detects devices and services on a network." },
+  microservices: { id: "microservices", name: "Microservices", type: "app", cost: 300, icon: "Grid", diff: "Advanced", desc: "Architectural style structuring an app as a collection of services." },
+  auth: { id: "auth", name: "Auth Service", type: "app", cost: 150, icon: "Shield", diff: "Advanced", desc: "Handles authentication and authorization (e.g. JWT, OAuth)." },
+  payment: { id: "payment", name: "Payment Service", type: "app", cost: 200, icon: "CreditCard", diff: "Advanced", desc: "Processes financial transactions securely." },
+  analytics: { id: "analytics", name: "Analytics", type: "app", cost: 250, icon: "PieChart", diff: "Advanced", desc: "Collects and analyzes user data." },
+  logging: { id: "logging", name: "Logging", type: "data", cost: 150, icon: "FileText", diff: "Advanced", desc: "Centralized log aggregation (e.g. ELK Stack)." },
+  monitor: { id: "monitor", name: "Monitoring", type: "data", cost: 150, icon: "Activity", diff: "Advanced", desc: "Tracks system health and metrics (e.g. Prometheus, Grafana)." },
+  autoscaling: { id: "autoscaling", name: "Auto Scaling", type: "app", cost: 300, icon: "Maximize", diff: "Advanced", desc: "Automatically adjusts computing resources based on load." },
+  ratelimiter: { id: "ratelimiter", name: "Rate Limiter", type: "network", cost: 150, icon: "Filter", diff: "Advanced", desc: "Controls the rate of traffic sent or received." },
+  search: { id: "search", name: "Search Service", type: "app", cost: 250, icon: "Search", diff: "Advanced", desc: "Provides full-text search capabilities." },
+  recommendation: { id: "recommendation", name: "Recommendation", type: "app", cost: 400, icon: "Star", diff: "Advanced", desc: "Provides personalized content using ML algorithms." },
+  video: { id: "video", name: "Video Encoding", type: "app", cost: 500, icon: "Video", diff: "Advanced", desc: "Transcodes video files into multiple formats/resolutions." },
+};

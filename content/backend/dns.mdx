@@ -1,0 +1,260 @@
+---
+title: "DNS (Domain Name System)"
+description: "The phonebook of the internet. Learn how human-readable names like quizkaal.com are translated into IP addresses."
+phase: "Internet & How It Works"
+time: "25 min"
+difficulty: "beginner"
+---
+
+<LessonHero 
+  title="DNS (Domain Name System)" 
+  module="Internet & How It Works" 
+  difficulty="Beginner" 
+  time="25 min" 
+  xp="50" 
+/>
+
+## 1. Introduction
+
+**What is this lesson?**
+In this lesson, we will learn about the **Domain Name System (DNS)**—the magical system that translates human-readable website names (like `google.com`) into computer-readable numbers (like `142.250.190.46`).
+
+**Why are we learning it?**
+Without DNS, you would have to memorize a long string of numbers for every website you want to visit. You wouldn't type `netflix.com`; you would type `54.239.28.85`.
+
+**Why should a backend engineer know this?**
+As a backend engineer, you will deploy servers, buy domain names, set up subdomains (like `api.yourstartup.com`), and configure load balancers. All of these require a deep understanding of DNS records and how DNS routing works.
+
+---
+
+## 2. Why This Exists
+
+**What problem existed before?**
+In the early days of the Internet (ARPANET), there were very few computers. Scientists maintained a single text file called `HOSTS.TXT` that contained the name and IP address of every computer on the network. They manually shared this file.
+
+**Why was this technology created?**
+As the internet exploded in the 1980s, millions of computers joined the network. A single text file became impossible to maintain, share, and update. DNS was created to solve this by building a globally distributed, decentralized system that automatically resolves names.
+
+**How did companies solve this problem?**
+Instead of a single file, DNS breaks the internet into a hierarchy (like a tree). If your computer doesn't know the IP address, it asks a local server. If that server doesn't know, it asks a higher-level server, all the way up to the Root servers.
+
+---
+
+## 3. Problems It Solves
+
+**Without DNS, human memory would fail.**
+Imagine memorizing the IP address of Google, Facebook, Twitter, and Netflix. If one of those companies changed their servers, their IP address would change, and you would never be able to reach them again unless they sent you a letter with their new IP!
+
+**With DNS, IP addresses can change freely.**
+Companies can change their servers, upgrade their hardware, or move to a different cloud provider (changing their IP address). As long as they update their DNS record, users keep typing `google.com` and never notice a difference.
+
+---
+
+## 4. Real Life Analogy
+
+<AnalogyCard title="The Contacts App on Your Phone">
+  DNS is exactly like the Contacts app on your smartphone.
+
+  When you want to call your friend **Rahul**, you don't type his 10-digit phone number (`9876543210`). You just open your Contacts app, tap "Rahul", and your phone automatically dials the underlying number.
+  
+  Similarly, when you type `quizkaal.com`, your browser asks the **DNS Server** (the internet's Contacts app) for the underlying IP address (`192.0.2.1`) and automatically connects to it.
+</AnalogyCard>
+
+---
+
+## 5. Interactive Visualization
+
+Click the button below to simulate exactly what happens when you type a URL into your browser. Watch how the request travels up the hierarchy!
+
+<DnsLookupVisualizer />
+
+Notice how the **DNS Resolver** caches the answer at the end! The next time you visit the site, it won't have to ask the Root and TLD servers again.
+
+---
+
+## 6. Step-by-Step Explanation
+
+When you type `quizkaal.com` into your browser, a beautiful sequence of events occurs in milliseconds:
+
+**Step 1: The Browser Cache**
+↓
+Your browser first checks its own internal memory (cache). "Have I visited quizkaal.com recently? Do I already know the IP address?" If yes, it connects immediately. If no, it asks the Operating System.
+
+**Step 2: The OS and The Resolver**
+↓
+Your computer's OS asks your Internet Service Provider's (ISP) **DNS Resolver**. The Resolver is a server whose only job is to go out to the internet and find the answer for you.
+
+**Step 3: The Root Server**
+↓
+If the Resolver doesn't know the answer, it asks a **Root Server**. The Root Server doesn't know the exact IP, but it says: *"I don't know the IP, but this is a `.com` website. Go ask the `.com` TLD Server."*
+
+**Step 4: The TLD Server**
+↓
+The Resolver asks the **Top-Level Domain (TLD) Server** for `.com`. The TLD Server says: *"I don't know the exact IP, but I know who manages quizkaal.com. Go ask their Authoritative Server."*
+
+**Step 5: The Authoritative Server**
+↓
+The Resolver asks the **Authoritative Server** (usually managed by AWS Route 53, Cloudflare, or GoDaddy). This server is the final boss. It holds the actual DNS records. It says: *"Yes! The IP address for quizkaal.com is 104.21.45.120."*
+
+**Step 6: The Connection**
+↓
+The Resolver saves (caches) this answer for the future and gives it back to your browser. Your browser now connects directly to `104.21.45.120`.
+
+---
+
+## 7. Deep Explanation: DNS Records
+
+When you buy a domain name (like `yourstartup.com`), you get access to a dashboard where you configure **DNS Records**. As a backend engineer, you will use these constantly.
+
+<ConceptBlock type="info" title="Common DNS Records">
+  **A Record (Address Record)**
+  Maps a domain name directly to an IPv4 address.
+  *Example:* `quizkaal.com` → `192.168.1.5`
+
+  **AAAA Record (Quad-A Record)**
+  Maps a domain name to an IPv6 address (the modern IP format).
+  *Example:* `quizkaal.com` → `2001:0db8:85a3:0000:0000:8a2e:0370:7334`
+
+  **CNAME (Canonical Name)**
+  Maps a domain to another domain. Useful for subdomains.
+  *Example:* `www.quizkaal.com` → `quizkaal.com`. If the IP for `quizkaal.com` changes, `www` automatically updates!
+
+  **MX Record (Mail Exchange)**
+  Tells the internet where to deliver emails sent to `@quizkaal.com`.
+  *Example:* `quizkaal.com` → `aspmx.l.google.com` (If you use Google Workspace for business email).
+</ConceptBlock>
+
+---
+
+## 8. Node.js Implementation
+
+As a Node.js backend engineer, you can interact with the DNS system programmatically using the built-in `dns` module.
+
+This is extremely useful when you are building tools that need to verify if a domain exists, or if you are building an email validation service.
+
+<CodeTabs>
+  <div label="dns-lookup.js (Node.js)">
+    ```javascript
+    // We import the built-in 'dns' module in Node.js
+    const dns = require('dns');
+
+    const domainName = 'google.com';
+
+    console.log(`Starting DNS lookup for: ${domainName}...`);
+
+    // dns.resolve4 specifically asks for the A Records (IPv4 addresses)
+    dns.resolve4(domainName, (err, addresses) => {
+      if (err) {
+        console.error(`Failed to resolve ${domainName}:`, err.message);
+        return;
+      }
+      
+      console.log(`Success! The IP addresses for ${domainName} are:`);
+      console.log(addresses);
+    });
+
+    // We can also look up the MX (Mail Exchange) records!
+    dns.resolveMx(domainName, (err, records) => {
+      if (err) return;
+      console.log(`\nMail Servers for ${domainName}:`);
+      records.forEach(record => {
+        console.log(`- ${record.exchange} (Priority: ${record.priority})`);
+      });
+    });
+    ```
+  </div>
+</CodeTabs>
+
+**Expected Output:**
+```bash
+Starting DNS lookup for: google.com...
+Success! The IP addresses for google.com are:
+[ '142.250.190.46' ]
+
+Mail Servers for google.com:
+- smtp.google.com (Priority: 10)
+```
+
+<ConceptBlock type="idea" title="Best Practice">
+  Always use `dns.resolve4()` instead of `dns.lookup()` in high-performance Node.js applications. `dns.lookup()` uses the operating system's underlying thread pool (which is limited), whereas `dns.resolve4()` always performs a network query asynchronously over the network, preventing your Node.js event loop from blocking!
+</ConceptBlock>
+
+---
+
+## 9. Interactive Playground
+
+Open your computer's terminal and type the following command to perform a manual DNS lookup just like a backend engineer!
+
+```bash
+# Mac / Linux / Windows
+nslookup netflix.com
+```
+
+Alternatively, use the `dig` command (available on Mac/Linux) for a deep dive into the DNS resolution process:
+
+```bash
+# This shows exactly which servers answered your request
+dig netflix.com +trace
+```
+
+---
+
+## 10. Common Mistakes
+
+<WarningCard title="Lowering TTL Too Late">
+  **The Mistake:** You are moving your backend to a new server tomorrow. You change your A Record to the new IP address, but users are still being sent to the old server!
+
+  **Why it happens:** DNS records have a **TTL (Time to Live)**. If your TTL is set to 24 hours, ISPs will cache your old IP address for 24 hours. Even if you change the record, the internet won't know about it until the cache expires.
+
+  **The Fix:** 48 hours before you migrate to a new server, lower your TTL to 5 minutes (300 seconds). Wait for the old cache to expire. Then, when you change the IP address, the internet will update in just 5 minutes!
+</WarningCard>
+
+---
+
+## 11. Best Practices
+
+**How Netflix & Amazon build this:**
+Global companies don't rely on a single DNS provider. They use multiple Enterprise DNS providers (like AWS Route 53 AND NS1) simultaneously. If one provider suffers a massive DDoS attack and goes offline, their domain still resolves via the backup provider.
+
+**Use CNAMEs for Subdomains**
+If you have `api.startup.com`, `app.startup.com`, and `blog.startup.com` all pointing to the same server, don't use A records for all of them. Point the A record to `startup.com`, and make the subdomains CNAMEs pointing to `startup.com`. If your server IP changes, you only update ONE record!
+
+---
+
+## 12. Performance & Security
+
+**Performance (Anycast Routing)**
+Modern DNS providers use **Anycast**. This means they broadcast the exact same IP address from 50 different data centers worldwide. When a user in Tokyo asks for your DNS record, the network automatically routes them to the Tokyo DNS server, resolving the name in 2 milliseconds instead of traveling to New York.
+
+**Security (DNS Spoofing & DNSSEC)**
+Hackers can sometimes "poison" a local DNS cache, forcing `bank.com` to resolve to the hacker's fake IP address. To prevent this, backend engineers use **DNSSEC** (Domain Name System Security Extensions), which adds cryptographic signatures to DNS records to guarantee they haven't been tampered with.
+
+
+---
+
+## 14. Practice Challenge
+
+**Mini Assignment:**
+1. Open your terminal.
+2. Run `nslookup amazon.com` and write down the IP addresses it returns.
+3. Open your browser and type one of those IP addresses directly into the URL bar (e.g., `http://54.239.28.85`).
+4. Watch what happens! (Some servers block direct IP access for security, but others will load the website perfectly).
+
+---
+
+## 15. Summary
+
+*   **DNS** is the internet's phonebook, translating `domain.com` into IP addresses.
+*   The hierarchy is: **Browser Cache → OS → Resolver (ISP) → Root Server → TLD Server → Authoritative Server**.
+*   **A Records** point to IPs. **CNAMEs** point to other domains. **MX Records** handle emails.
+*   **TTL (Time to Live)** determines how long a DNS answer is cached.
+
+---
+
+## 16. Next Lesson
+
+Now that we know how DNS finds the underlying IP Address of a server, how does that IP Address actually work? How do we know which country or network an IP address belongs to?
+
+In the next lesson, we will dive deep into **IP Addresses (IPv4 vs IPv6)** and understand how devices are uniquely identified on the internet!
+
+<CourseNavigation prev={{ slug: "http-https", title: "HTTP & HTTPS", emoji: "Lock" }} next={{ slug: "ip-address", title: "IP Address", emoji: "MapPin" }} lessonSlug="dns" />

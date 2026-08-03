@@ -1,16 +1,197 @@
 ---
 title: "Real-time Chat Application"
-description: "WebSockets, Redis Pub/Sub, scaling"
-phase: "Real-World Projects"
+description: "WebSockets, Socket.io, Redis Pub/Sub, and scaling real-time architectures."
+time: "2 hrs"
 difficulty: "advanced"
+xp: 200
+phase: "Real-World Projects"
 ---
 
-## Module Overview
+<LearningObjectives
+  objectives={[
+    "Understand why HTTP is insufficient for real-time applications",
+    "Implement bi-directional communication with Socket.io",
+    "Scale WebSocket connections across multiple servers using Redis Pub/Sub",
+    "Manage presence (online/offline status) and typing indicators"
+  ]}
+/>
 
-Welcome to **Real-time Chat Application**. This module covers websockets, redis pub/sub, scaling. 
+## Project Overview
 
-<Callout type="info" title="Content Coming Soon">
-This is a placeholder for the advanced deep-dive content. The interactive visualizations, code examples, and quizzes for this specific module are currently being authored and will be published shortly!
-</Callout>
+We're building a Discord-style chat application. Users can join rooms, send messages instantly, and see who is currently online.
 
-In the meantime, you can continue exploring the rest of the roadmap or review the previous lessons.
+### Why not HTTP?
+
+Standard HTTP is **stateless and unidirectional**. The client requests data, the server replies, and the connection closes. If Bob sends a message, the server has no way to "push" it to Alice unless Alice constantly asks the server, "Do I have new messages?" (Long Polling). 
+
+**WebSockets** provide a persistent, bi-directional connection. The server can push data to the client at any time.
+
+## 1. Basic WebSocket Setup (Socket.io)
+
+Socket.io is a popular library that wraps standard WebSockets and provides auto-reconnection, rooms, and broadcasting.
+
+```javascript
+// server.js
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: { origin: "http://localhost:3000" }
+});
+
+// Middleware for authentication
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+  const user = verifyJwt(token);
+  if (!user) return next(new Error("unauthorized"));
+  
+  socket.user = user; // Attach user data to the socket connection
+  next();
+});
+
+io.on('connection', (socket) => {
+  console.log(`User connected: ${socket.user.name}`);
+  
+  // Join a specific chat room
+  socket.on('join_room', (roomId) => {
+    socket.join(roomId);
+    console.log(`${socket.user.name} joined room ${roomId}`);
+  });
+  
+  // Listen for incoming messages
+  socket.on('send_message', async (data) => {
+    const { roomId, content } = data;
+    
+    const message = {
+      id: generateId(),
+      content,
+      senderId: socket.user.id,
+      senderName: socket.user.name,
+      timestamp: new Date()
+    };
+    
+    // 1. Save to database
+    await db.message.create({ data: message });
+    
+    // 2. Broadcast to everyone else in the room
+    socket.to(roomId).emit('receive_message', message);
+  });
+  
+  socket.on('disconnect', () => {
+    console.log(`User disconnected: ${socket.user.name}`);
+  });
+});
+
+server.listen(4000, () => console.log('Listening on port 4000'));
+```
+
+## 2. The Scaling Problem
+
+The code above works perfectly... until you have 10,000 concurrent users. A single Node.js server can only handle so many connections before running out of memory.
+
+So, you deploy **Server A** and **Server B** behind a Load Balancer.
+
+**The Problem:**
+1. Alice connects to Server A.
+2. Bob connects to Server B.
+3. They are in the same chat room.
+4. Alice sends a message to Server A.
+5. Server A broadcasts the message to everyone connected to Server A.
+6. **Bob never gets the message** because he is on Server B!
+
+## 3. The Solution: Redis Pub/Sub
+
+To solve this, we use Redis as a central message broker. When Server A receives a message, it publishes it to Redis. Server B is subscribed to Redis, receives the message, and forwards it to Bob.
+
+Socket.io has a built-in Redis Adapter for this exact architecture.
+
+```javascript
+// Scaled Server setup with Redis
+const { createAdapter } = require("@socket.io/redis-adapter");
+const { createClient } = require("redis");
+
+const pubClient = createClient({ url: process.env.REDIS_URL });
+const subClient = pubClient.duplicate();
+
+Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
+  // Tell Socket.io to use Redis for routing messages between servers
+  io.adapter(createAdapter(pubClient, subClient));
+  server.listen(4000);
+});
+```
+
+With just those 5 lines of code, Alice on Server A can now seamlessly message Bob on Server B. The architecture looks like this:
+
+```
+[Alice] <──ws──> [Server A] ──pub──┐
+                                   ▼
+                             [Redis Broker]
+                                   │
+[Bob]   <──ws──> [Server B] ◄──sub─┘
+```
+
+## 4. Presence (Who is online?)
+
+Tracking online status across multiple servers is tricky. We can use Redis Sets to store active users.
+
+```javascript
+// On connect
+io.on('connection', async (socket) => {
+  const userId = socket.user.id;
+  
+  // Add user to a Redis Set
+  await redis.sAdd("online_users", userId);
+  
+  // Notify friends
+  io.emit("user_status_change", { userId, status: "online" });
+  
+  socket.on('disconnect', async () => {
+    // Remove from Redis Set
+    await redis.sRem("online_users", userId);
+    io.emit("user_status_change", { userId, status: "offline" });
+  });
+});
+```
+
+> **Pro Tip:** What if the server crashes? The `disconnect` event won't fire, and the user will be stuck as "online" forever in Redis. To fix this, use Redis Keyspace Notifications or heartbeats with expiring keys (TTL).
+
+<InterviewPrep
+  questions={[
+    {
+      question: "How do you scale WebSockets horizontally across multiple Node.js instances?",
+      answer: "Since WebSockets are persistent, stateful connections, scaling horizontally requires two things: (1) Sticky Sessions at the Load Balancer layer to ensure the initial HTTP handshake and subsequent WebSocket upgrades go to the same server. (2) A Pub/Sub message broker (like Redis or RabbitMQ) connecting all the server instances. If Server A receives a message intended for a user on Server B, it publishes the message to Redis. Server B, subscribed to Redis, receives it and pushes it down the WebSocket to the correct user.",
+      difficulty: "advanced",
+      commonMistake: "Forgetting about the message broker and assuming a load balancer alone solves the problem."
+    },
+    {
+      question: "What is the difference between WebSockets and Server-Sent Events (SSE)?",
+      answer: "WebSockets provide full-duplex, bi-directional communication (client can send to server, server can push to client) over a single TCP connection. They require a custom protocol upgrade. Server-Sent Events (SSE) are strictly unidirectional (server pushes to client only), but they run over standard HTTP/1.1. SSE is much easier to set up, scales perfectly behind standard load balancers without Sticky Sessions, and has built-in auto-reconnection. Use WebSockets for chat or multiplayer games; use SSE for live sports scores or stock tickers where the client only needs to listen.",
+      difficulty: "intermediate",
+      commonMistake: "Thinking WebSockets are the only way to stream real-time data to a client."
+    }
+  ]}
+/>
+
+<PracticeExercise
+  title="Implement Typing Indicators"
+  description="Add typing indicators ('Alice is typing...') to the chat."
+  steps={[
+    "Client: Emit a 'typing' event when the user presses a key in the input field.",
+    "Server: Listen for 'typing' and broadcast it to the room using `socket.to(room).emit()`",
+    "Client: Set a 2-second debounce timeout. If the user stops typing for 2 seconds, emit a 'stop_typing' event.",
+    "Server: Broadcast 'stop_typing' to the room."
+  ]}
+/>
+
+<LessonSummary
+  keyPoints={[
+    "WebSockets enable persistent, bi-directional communication",
+    "Socket.io provides essential features like rooms and auto-reconnection over raw WebSockets",
+    "Scaling stateful connections requires a Pub/Sub broker (like Redis) to route messages between servers",
+    "Sticky sessions are required at the load balancer for WebSocket handshakes",
+    "Tracking presence reliably requires handling sudden server crashes (e.g., using Redis TTLs)"
+  ]}
+/>

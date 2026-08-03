@@ -1,0 +1,89 @@
+# Permissions & Camera
+
+Web apps live in a sandbox. Mobile apps have access to the physical hardware of the device—if the user gives you permission.
+
+## 1. Introduction
+
+Mobile apps can access the Camera, GPS, Microphone, Accelerometer, and Bluetooth. However, due to severe privacy concerns over the last decade, Apple and Google have locked down these hardware APIs behind a strict OS-level permissions system.
+
+## 2. Why this concept exists
+
+Without a permissions system, any flashlight app could silently record audio or track your location. As a mobile engineer, you must handle the complex flow of requesting access, explaining *why* you need it, and handling the scenario where the user clicks "Deny".
+
+## 3. Visual Explanation
+
+<ConceptCard 
+  title="The Permission Matrix" 
+  description="Permissions have three states: Not Determined (App hasn't asked yet), Granted, and Denied. If a user denies a permission, the OS will NEVER show them the prompt again. You must manually direct them to the Settings app."
+/>
+
+## 4. Internal Working: OS Manifests
+
+Before you can even ask the user, you must declare your intent to the OS during the compilation step.
+- **Android:** You declare `<uses-permission android:name="android.permission.CAMERA" />` in the `AndroidManifest.xml`.
+- **iOS:** You declare `NSCameraUsageDescription` in the `Info.plist` with a string explaining *why* you want it. If this string is missing, Apple will instantly reject your app from the App Store.
+
+## 5. Interactive Animation: Permission Request Flow
+
+Experience the actual OS permission flow. Click "Camera" or "Location" to see what happens when a user grants or denies access:
+
+<PermissionFlowDiagram />
+
+*The following mockup demonstrates a user interacting with a hardware-dependent feature (Chat with Image Attachments).*
+
+<InteractivePhoneMockup 
+  scenario="chat"
+  title="Hardware Access Flow"
+/>
+
+## 6. Code Examples: Requesting Camera
+
+How to request camera permissions across tracks:
+
+<MultiLangCodeBlock rnCodeBase64="Ly8gUmVhY3QgTmF0aXZlIChFeHBvIENhbWVyYSkKaW1wb3J0IHsgQ2FtZXJhIH0gZnJvbSAnZXhwby1jYW1lcmEnOwoKYXN5bmMgZnVuY3Rpb24gcmVxdWVzdENhbWVyYSgpIHsKICBjb25zdCB7IHN0YXR1cyB9ID0gYXdhaXQgQ2FtZXJhLnJlcXVlc3RDYW1lcmFQZXJtaXNzaW9uc0FzeW5jKCk7CiAgaWYgKHN0YXR1cyA9PT0gJ2dyYW50ZWQnKSB7CiAgICBjb25zb2xlLmxvZygiV2UgY2FuIHVzZSB0aGUgY2FtZXJhISIpOwogIH0gZWxzZSB7CiAgICBjb25zb2xlLmxvZygiVXNlciBkZW5pZWQgYWNjZXNzLiIpOwogIH0KfQ==" flutterCodeBase64="Ly8gRmx1dHRlciAocGVybWlzc2lvbl9oYW5kbGVyKQppbXBvcnQgJ3BhY2thZ2U6cGVybWlzc2lvbl9oYW5kbGVyL3Blcm1pc3Npb25faGFuZGxlci5kYXJ0JzsKCkZ1dHVyZTx2b2lkPiByZXF1ZXN0Q2FtZXJhKCkgYXN5bmMgewogIHZhciBzdGF0dXMgPSBhd2FpdCBQZXJtaXNzaW9uLmNhbWVyYS5yZXF1ZXN0KCk7CiAgaWYgKHN0YXR1cy5pc0dyYW50ZWQpIHsKICAgIHByaW50KCJXZSBjYW4gdXNlIHRoZSBjYW1lcmEhIik7CiAgfSBlbHNlIHsKICAgIHByaW50KCJVc2VyIGRlbmllZCBhY2Nlc3MuIik7CiAgfQp9" androidCodeBase64="Ly8gQW5kcm9pZCAoQWN0aXZpdHlSZXN1bHRDb250cmFjdHMpCnZhbCByZXF1ZXN0UGVybWlzc2lvbkxhdW5jaGVyID0gcmVnaXN0ZXJGb3JBY3Rpdml0eVJlc3VsdCgKICAgIEFjdGl2aXR5UmVzdWx0Q29udHJhY3RzLlJlcXVlc3RQZXJtaXNzaW9uKCkKKSB7IGlzR3JhbnRlZDogQm9vbGVhbiAtPgogICAgaWYgKGlzR3JhbnRlZCkgewogICAgICAgIHByaW50bG4oIldlIGNhbiB1c2UgdGhlIGNhbWVyYSEiKQogICAgfSBlbHNlIHsKICAgICAgICBwcmludGxuKCJVc2VyIGRlbmllZCBhY2Nlc3MuIikKICAgIH0KfQoKLy8gVHJpZ2dlciB0aGUgcHJvbXB0CnJlcXVlc3RQZXJtaXNzaW9uTGF1bmNoZXIubGF1bmNoKE1hbmlmZXN0LnBlcm1pc3Npb24uQ0FNRVJBKQ==" />
+
+**Explanation:**  
+Each framework provides an asynchronous API to trigger the native OS permission dialog. Execution pauses while the user decides. The code then resumes with a boolean result. The OS manages the actual UI of the prompt; you cannot style it.
+
+## 7. Real-world Examples
+
+- **Snapchat:** The entire app revolves around the camera. If you deny the camera permission on the first launch, Snapchat renders a massive, un-skippable screen forcing you to go to Settings to enable it.
+- **Google Maps:** Uses "Foreground Location" (While using the app) vs "Background Location" (Always). Apple and Google heavily scrutinize apps that request Background Location.
+
+## 8. Best Practices
+
+- **The Pre-Prompt:** Because the OS only lets you ask *once*, always show a custom UI "pre-prompt" explaining why you need the camera *before* triggering the scary OS-level prompt.
+- **Graceful Degradation:** If a user denies location in a weather app, don't crash. Fall back to letting them type their zip code manually.
+
+## 9. Common Mistakes
+
+- **Asking too early:** Don't ask for the Camera permission the literal second the app opens. Ask for it when the user clicks the "Take Photo" button. Context is key.
+- **Forgetting Info.plist:** A common reason for an immediate iOS app crash in production is forgetting to add the usage description string.
+
+## 10. Interview Questions
+
+<InterviewQuestion 
+  question="What happens if a user permanently denies a permission? How do you recover?"
+  answer="If a user clicks 'Deny', the OS will never show the prompt again. Future requests automatically return 'Denied'. To recover, you must detect the permanent denial and render a custom UI button that utilizes deep-linking APIs (e.g., Linking.openSettings() in React Native) to send the user directly to your app's page in the OS Settings app, where they must manually toggle the switch."
+  commonFollowUp="Why is the pre-prompt pattern so important for critical permissions?"
+/>
+
+<InterviewQuestion 
+  question="Explain the difference between Foreground and Background location permissions."
+  answer="Foreground location only tracks the user when the app is actively on the screen. Background location tracks them even when the app is swiped away (e.g., for Uber drivers). Background tracking is highly restricted; both Apple and Google require manual human review of your app to prove you actually need it, otherwise your app is rejected."
+  bestPractice="Never ask for Background location if Foreground location solves the business requirement."
+/>
+
+## 11. Knowledge Check
+
+<QuizWidget 
+  question="If a user clicks 'Deny' on the OS camera permission prompt, and later clicks the 'Take Photo' button in your app again, what happens?"
+  options={["The OS prompt appears again", "The OS prompt does not appear, and the request automatically returns 'Denied'", "The app crashes", "The camera opens anyway but in restricted mode"]}
+  correctAnswer="The OS prompt does not appear, and the request automatically returns 'Denied'"
+  explanation="To prevent apps from spamming users, the OS only shows the prompt once. If denied, all future requests automatically return 'denied'. You must build custom UI to direct the user to their phone's Settings app."
+  takeaway="You only get one shot at the OS prompt. Explain why you need the permission clearly before triggering it."
+/>
+
+## 12. Summary
+
+Accessing hardware is what makes mobile apps powerful, but it comes with immense responsibility. A senior mobile engineer understands how to handle the complex edge cases of the permission matrix without degrading the user experience.

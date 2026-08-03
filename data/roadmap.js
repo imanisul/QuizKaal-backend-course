@@ -5,17 +5,26 @@ export const roadmap = [
   // BACKEND ENGINEERING SECTION
   // =========================================
   {
-    phase: "Internet & Networking",
+    courseId: "backend-engineering",
+    phase: "Internet & How It Works",
     emoji: "Globe",
     description: "The core foundations of the web. Learn how data moves across the internet, HTTP, and networking protocols.",
     gradient: "linear-gradient(135deg, #3b82f6, #60a5fa)",
     lessons: [
-      { id: 1, slug: "how-the-web-works", emoji: "Network", title: "How the Web Works", summary: "DNS, TCP/IP, and basic routing", difficulty: "beginner", time: "25 min", tags: ["Networking", "DNS"] },
-      { id: 2, slug: "http-https", emoji: "Lock", title: "HTTP & HTTPS Deep Dive", summary: "Methods, status codes, headers, and TLS", difficulty: "intermediate", time: "30 min", tags: ["HTTP", "Security"] },
-      { id: 3, slug: "websockets-grpc", emoji: "Zap", title: "WebSockets & gRPC", summary: "Real-time communication and RPC", difficulty: "advanced", time: "40 min", tags: ["WebSockets", "gRPC"] },
+      { id: 1, slug: "what-is-the-internet", emoji: "Network", title: "What is the Internet?", summary: "The global network of networks", difficulty: "beginner", time: "10 min", tags: ["Networking", "Basics"] },
+      { id: 2, slug: "history-of-the-internet", emoji: "Clock", title: "History of the Internet", summary: "From ARPANET to modern web", difficulty: "beginner", time: "15 min", tags: ["History", "Networking"] },
+      { id: 3, slug: "how-data-travels", emoji: "Activity", title: "How Data Travels", summary: "Packets and routing across the globe", difficulty: "beginner", time: "20 min", tags: ["Packets", "Routing"] },
+      { id: 4, slug: "client-vs-server", emoji: "Server", title: "Client vs Server", summary: "The fundamental web architecture", difficulty: "beginner", time: "15 min", tags: ["Architecture"] },
+      { id: 5, slug: "http-https", emoji: "Lock", title: "HTTP & HTTPS", summary: "Methods, status codes, headers, and TLS", difficulty: "intermediate", time: "30 min", tags: ["HTTP", "Security"] },
+      { id: 6, slug: "dns", emoji: "Globe", title: "DNS", summary: "The phonebook of the internet", difficulty: "beginner", time: "20 min", tags: ["DNS", "Networking"] },
+      { id: 7, slug: "ip-address", emoji: "MapPin", title: "IP Address", summary: "IPv4 vs IPv6 and how they work", difficulty: "beginner", time: "20 min", tags: ["IP", "Networking"] },
+      { id: 8, slug: "ports", emoji: "DoorOpen", title: "Ports", summary: "How traffic gets to the right application", difficulty: "beginner", time: "15 min", tags: ["Ports", "Networking"] },
+      { id: 9, slug: "browser-request-flow", emoji: "Compass", title: "Browser Request Flow", summary: "What happens when you type a URL", difficulty: "intermediate", time: "25 min", tags: ["Browser", "HTTP"] },
+      { id: 10, slug: "complete-internet-flow", emoji: "Layers", title: "Complete Internet Flow", summary: "Putting it all together", difficulty: "intermediate", time: "30 min", tags: ["Architecture", "Networking"] },
     ]
   },
   {
+    courseId: "backend-engineering",
     phase: "API Design & Architecture",
     emoji: "Blocks",
     description: "Designing scalable, maintainable APIs using REST, GraphQL, and modern patterns.",
@@ -27,6 +36,7 @@ export const roadmap = [
     ]
   },
   {
+    courseId: "backend-engineering",
     phase: "Authentication & Security",
     emoji: "ShieldCheck",
     description: "Keep your users and data safe with bulletproof auth, sessions, and rate limiting.",
@@ -38,6 +48,7 @@ export const roadmap = [
     ]
   },
   {
+    courseId: "backend-engineering",
     phase: "Node.js Internals",
     emoji: "Cpu",
     description: "Go beyond basic Express. Master the event loop, streams, and multi-threading in Node.",
@@ -49,6 +60,7 @@ export const roadmap = [
     ]
   },
   {
+    courseId: "backend-engineering",
     phase: "Databases & Caching",
     emoji: "Database",
     description: "Store, retrieve, and scale your data using Postgres, MongoDB, and Redis.",
@@ -60,6 +72,7 @@ export const roadmap = [
     ]
   },
   {
+    courseId: "backend-engineering",
     phase: "Message Queues",
     emoji: "Mails",
     description: "Decouple services and handle asynchronous workflows reliably.",
@@ -70,6 +83,7 @@ export const roadmap = [
     ]
   },
   {
+    courseId: "backend-engineering",
     phase: "System Design",
     emoji: "Server",
     description: "Architect distributed systems capable of handling millions of users.",
@@ -84,9 +98,31 @@ export const roadmap = [
   },
 
   // =========================================
-  // AI ENGINEERING SECTION
+  // AI & PROMPT ENGINEERING (NEW COURSE)
   // =========================================
   {
+    courseId: "ai-prompt-engineering",
+    phase: "AI & Prompt Engineering",
+    emoji: "BrainCircuit",
+    description: "The complete guide to mastering AI, from basic concepts to advanced agent workflows.",
+    gradient: "linear-gradient(135deg, #8b5cf6, #d946ef)",
+    lessons: [
+      { id: 300, slug: "module-0-welcome", emoji: "Hand", title: "Module 0: What is AI?", summary: "Introduction to Artificial Intelligence", difficulty: "beginner", time: "15 min", tags: ["AI", "Basics"] },
+      { id: 301, slug: "module-1-how-ai-works", emoji: "Cpu", title: "Module 1: How AI Works", summary: "LLMs, tokens, and context windows", difficulty: "beginner", time: "25 min", tags: ["LLMs", "Tokens"] },
+      { id: 302, slug: "module-2-prompt-fundamentals", emoji: "Terminal", title: "Module 2: Prompt Fundamentals", summary: "Anatomy of a perfect prompt", difficulty: "beginner", time: "30 min", tags: ["Prompting", "Basics"] },
+      { id: 303, slug: "module-3-core-techniques", emoji: "Layers", title: "Module 3: Core Techniques", summary: "Zero-shot, Few-shot, Chain-of-thought", difficulty: "intermediate", time: "40 min", tags: ["Techniques", "Logic"] },
+      { id: 304, slug: "module-4-advanced-prompting", emoji: "Network", title: "Module 4: Advanced Prompting", summary: "Prompt chaining, RAG, and AI Agents", difficulty: "advanced", time: "50 min", tags: ["RAG", "Agents"] },
+      { id: 305, slug: "module-5-safety-ethics", emoji: "Shield", title: "Module 5: Safety & Ethics", summary: "Bias, privacy, and hallucination", difficulty: "beginner", time: "20 min", tags: ["Ethics", "Safety"] },
+      { id: 306, slug: "module-6-hands-on-projects", emoji: "Code", title: "Module 6: Hands-On Projects", summary: "Build real-world AI workflows", difficulty: "intermediate", time: "60 min", tags: ["Projects", "Hands-on"] },
+      { id: 307, slug: "module-7-future-of-ai", emoji: "Rocket", title: "Module 7: Future of AI", summary: "What's next and continuous learning", difficulty: "beginner", time: "15 min", tags: ["Future", "Trends"] },
+      { id: 308, slug: "prompt-library", emoji: "MessageSquare", title: "👨‍💻 Engineer Prompt Library", summary: "Hundreds of copy-paste professional prompts", difficulty: "intermediate", time: "Unlimited", tags: ["Prompts", "Library", "Tools"] }
+    ]
+  },
+
+  // =========================================
+  // AI ENGINEERING SECTION
+  {
+    courseId: "backend-engineering",
     phase: "AI Foundations",
     emoji: "Brain",
     description: "The math, concepts, and architectures powering modern AI.",
@@ -98,6 +134,7 @@ export const roadmap = [
     ]
   },
   {
+    courseId: "backend-engineering",
     phase: "LangChain Ecosystem",
     emoji: "Link",
     description: "Build robust AI applications connecting LLMs to data and tools.",
@@ -108,6 +145,7 @@ export const roadmap = [
     ]
   },
   {
+    courseId: "backend-engineering",
     phase: "Advanced RAG Architectures",
     emoji: "Search",
     description: "Master Retrieval-Augmented Generation. From Naive RAG to trending, bleeding-edge approaches.",
@@ -121,6 +159,7 @@ export const roadmap = [
     ]
   },
   {
+    courseId: "backend-engineering",
     phase: "Agentic AI & LangGraph",
     emoji: "Bot",
     description: "The frontier of AI: autonomous agents, multi-agent workflows, and reasoning.",
@@ -132,6 +171,7 @@ export const roadmap = [
     ]
   },
   {
+    courseId: "backend-engineering",
     phase: "Model Context Protocol",
     emoji: "Plug",
     description: "Standardizing how AI models connect to enterprise resources and tools.",
@@ -145,6 +185,7 @@ export const roadmap = [
   // PRODUCTION PROJECTS
   // =========================================
   {
+    courseId: "backend-engineering",
     phase: "Real-World Projects",
     emoji: "Code",
     description: "Build production-grade systems from scratch. Architecture, code, and deployment.",
@@ -155,11 +196,13 @@ export const roadmap = [
       { id: 33, slug: "enterprise-rag", emoji: "Search", title: "Enterprise RAG System", summary: "PDF chatting, citation, LangChain", difficulty: "expert", time: "2.5 hrs", tags: ["Project", "AI"] },
       { id: 34, slug: "multi-agent-platform", emoji: "Users", title: "Multi-Agent Research Tool", summary: "LangGraph, supervisor agents, memory", difficulty: "expert", time: "3 hrs", tags: ["Project", "Agents"] },
     ]
-  }
+  },
+
+
 ];
 
 export const allLessons = roadmap.flatMap((p) =>
-  p.lessons.map((l) => ({ ...l, phase: p.phase, phaseEmoji: p.emoji }))
+  p.lessons.map((l) => ({ ...l, phase: p.phase, phaseEmoji: p.emoji, courseId: p.courseId }))
 );
 
 export function getLessonBySlug(slug) {
@@ -167,9 +210,12 @@ export function getLessonBySlug(slug) {
 }
 
 export function getAdjacentLessons(slug) {
-  const idx = allLessons.findIndex((l) => l.slug === slug);
+  const currentLesson = allLessons.find((l) => l.slug === slug);
+  if (!currentLesson) return { prev: null, next: null };
+  const courseLessons = allLessons.filter((l) => l.courseId === currentLesson.courseId);
+  const idx = courseLessons.findIndex((l) => l.slug === slug);
   return {
-    prev: idx > 0 ? allLessons[idx - 1] : null,
-    next: idx >= 0 && idx < allLessons.length - 1 ? allLessons[idx + 1] : null,
+    prev: idx > 0 ? courseLessons[idx - 1] : null,
+    next: idx >= 0 && idx < courseLessons.length - 1 ? courseLessons[idx + 1] : null,
   };
 }

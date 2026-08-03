@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Database, Monitor, GitBranch, Zap, FileText, ArrowDown, Share2, Box, Send, Activity, ShieldAlert, Cpu } from "lucide-react";
+import { Database, Monitor, GitBranch, Zap, FileText, ArrowDown, Share2, Box, Send, Activity, ShieldAlert, Cpu, RefreshCw, ShieldCheck } from "lucide-react";
 
 // --- CH10: useEffect ---
 export function BeforeCh10() {
@@ -307,6 +307,52 @@ export function AfterCh16() {
           <div className="w-full text-center text-white text-[8px] mb-1 font-bold border-b border-slate-600 pb-1">App.js</div>
           <div className="w-full h-6 bg-slate-700 rounded border border-slate-600 text-[8px] text-emerald-300 flex items-center justify-center mt-auto font-mono">Render UI</div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+
+// --- CH17: API Calls ---
+export function BeforeCh17() {
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center bg-rose-950/20 p-4">
+      <h4 className="text-rose-400 text-xs font-bold mb-4 font-mono">White Screen (Sync Fetch)</h4>
+      <div className="w-24 h-24 bg-white/5 rounded-lg"></div>
+    </div>
+  );
+}
+
+export function AfterCh17() {
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center bg-emerald-950/20 p-4">
+      <h4 className="text-emerald-400 text-xs font-bold mb-4 font-mono">Async Render</h4>
+      <div className="w-24 h-24 bg-emerald-500/20 rounded-lg flex items-center justify-center animate-pulse">
+        <span className="text-[10px] text-emerald-400">Loading...</span>
+      </div>
+    </div>
+  );
+}
+
+// --- CH18: Auth ---
+export function BeforeCh18() {
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center bg-rose-950/20 p-4">
+      <h4 className="text-rose-400 text-xs font-bold mb-4 font-mono">Page Reloads on Login</h4>
+      <div className="w-24 h-24 border-2 border-dashed border-rose-500/30 rounded flex items-center justify-center">
+        <RefreshCw className="text-rose-500 animate-spin" size={24} />
+      </div>
+    </div>
+  );
+}
+
+export function AfterCh18() {
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center bg-emerald-950/20 p-4">
+      <h4 className="text-emerald-400 text-xs font-bold mb-4 font-mono">Context Updates UI Instantly</h4>
+      <div className="w-24 h-24 bg-emerald-500/20 rounded-lg flex flex-col items-center justify-center">
+        <ShieldCheck className="text-emerald-400 mb-2" size={24} />
+        <span className="text-[10px] text-emerald-300">Protected Data</span>
       </div>
     </div>
   );

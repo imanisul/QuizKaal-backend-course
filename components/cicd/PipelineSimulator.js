@@ -141,7 +141,7 @@ export default function PipelineSimulator() {
               {stage >= 4 && <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>→ Connecting to Amazon EC2 instance via SSH...</motion.div>}
               {stage >= 4 && <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.5 }}>→ Pulling latest docker image...</motion.div>}
               
-              {stage >= 5 && <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-success font-bold mt-2 bg-success/10 px-2 py-1 rounded inline-block">🚀 Deployment Successful. App is live on production!</motion.div>}
+              {stage >= 5 && <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-success font-bold mt-2 bg-success/10 px-2 py-1 rounded inline-block">Deployment Successful. App is live on production!</motion.div>}
             </AnimatePresence>
          </div>
       </div>

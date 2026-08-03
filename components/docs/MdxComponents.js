@@ -1,9 +1,14 @@
+import React from "react";
 import { Code } from "lucide-react";
 import HttpVisualizer from "@/components/lesson1/HttpVisualizer";
 import LifecycleTimeline from "@/components/lesson1/LifecycleTimeline";
 import MethodVisualizer from "@/components/lesson2/MethodVisualizer";
 import CopyButton from "@/components/ui/CopyButton";
 import Reveal from "@/components/ui/Reveal";
+import CompletionButton from "@/components/ui/CompletionButton";
+import QuizWidget from "@/components/interactive/QuizWidget";
+import CourseNavigation from "@/components/lesson/CourseNavigation";
+import LessonHero from "@/components/lesson/LessonHero";
 
 // Interactive Visual Simulator Components
 import AnimatedWorkflow from "@/components/interactive/AnimatedWorkflow";
@@ -23,7 +28,67 @@ import BackendFlowVisualizer from "@/components/interactive/BackendFlowVisualize
 import AuthVisualizer from "@/components/interactive/AuthVisualizer";
 import DatabaseVisualizer from "@/components/interactive/DatabaseVisualizer";
 
+import ConceptBlock from "@/components/ai-course/ConceptBlock";
+import InternetVisualizer from "@/components/interactive/InternetVisualizer";
+import KnowledgeCard from "@/components/ui/KnowledgeCard";
+import TimelineVisualizer from "@/components/interactive/TimelineVisualizer";
+import PacketFlowVisualizer from "@/components/interactive/PacketFlowVisualizer";
+import ClientServerVisualizer from "@/components/interactive/ClientServerVisualizer";
+import HttpRequestVisualizer from "@/components/interactive/HttpRequestVisualizer";
+import DnsLookupVisualizer from "@/components/interactive/DnsLookupVisualizer";
+import IpVisualizer from "@/components/interactive/IpVisualizer";
+import PortVisualizer from "@/components/interactive/PortVisualizer";
+import BrowserFlowVisualizer from "@/components/interactive/BrowserFlowVisualizer";
+import MegaNetworkVisualizer from "@/components/interactive/MegaNetworkVisualizer";
+
+// New Rich MDX Components
+import LearningObjectives from "@/components/mdx/LearningObjectives";
+import StepByStep from "@/components/mdx/StepByStep";
+import AnalogyCard from "@/components/mdx/AnalogyCard";
+import CodeTabs from "@/components/mdx/CodeTabs";
+import WarningCard from "@/components/mdx/WarningCard";
+import InterviewPrep from "@/components/mdx/InterviewPrep";
+import LessonSummary from "@/components/mdx/LessonSummary";
+import PracticeExercise from "@/components/mdx/PracticeExercise";
+
+
+import PlaceholderVisualizer from "@/components/interactive/PlaceholderVisualizer";
+
+// Map missing ones to PlaceholderVisualizer
+const GraphqlVisualizer = (props) => <PlaceholderVisualizer name="GraphQL Architecture Visualizer" {...props} />;
+const BTreeVisualizer = (props) => <PlaceholderVisualizer name="B-Tree Data Structure Visualizer" {...props} />;
+const EventLoopVisualizer = (props) => <PlaceholderVisualizer name="Event Loop Visualizer" {...props} />;
+const KafkaVisualizer = (props) => <PlaceholderVisualizer name="Apache Kafka Visualizer" {...props} />;
+const OauthFlowVisualizer = (props) => <PlaceholderVisualizer name="OAuth Flow Visualizer" {...props} />;
+const StreamVisualizer = (props) => <PlaceholderVisualizer name="Streams & Buffers Visualizer" {...props} />;
+const SecurityVisualizer = (props) => <PlaceholderVisualizer name="API Security Visualizer" {...props} />;
+const WorkerVisualizer = (props) => <PlaceholderVisualizer name="Worker Threads Visualizer" {...props} />;
+
 export const MdxComponents = {
+  LearningObjectives,
+  StepByStep,
+  AnalogyCard,
+  CodeTabs,
+  WarningCard,
+  InterviewPrep,
+  LessonSummary,
+  PracticeExercise,
+  ConceptBlock,
+  CourseNavigation,
+  LessonHero,
+  InternetVisualizer,
+  TimelineVisualizer,
+  PacketFlowVisualizer,
+  ClientServerVisualizer,
+  HttpRequestVisualizer,
+  DnsLookupVisualizer,
+  IpVisualizer,
+  PortVisualizer,
+  BrowserFlowVisualizer,
+  MegaNetworkVisualizer,
+  KnowledgeCard,
+  CompletionButton,
+  QuizWidget,
   HttpVisualizer,
   LifecycleTimeline,
   MethodVisualizer,
@@ -40,6 +105,19 @@ export const MdxComponents = {
   AIVisualizer,
   RestApiVisualizer,
   BackendFlowVisualizer,
+  GraphqlVisualizer,
+  BTreeVisualizer,
+  EventLoopVisualizer,
+  KafkaVisualizer,
+  OauthFlowVisualizer,
+  StreamVisualizer,
+  SecurityVisualizer,
+  WorkerVisualizer,
+  ApiFlowVisualizer: RestApiVisualizer,
+  MvcVisualizer: MVCVisualizer,
+  QueueVisualizer: MessageQueueVisualizer,
+  CacheVisualizer: RedisVisualizer,
+  AuthFlowVisualizer: AuthVisualizer,
   AuthVisualizer,
   DatabaseVisualizer,
   BackendFlowVisualizer,
@@ -77,7 +155,7 @@ export const MdxComponents = {
     const rawText = extractText(props.children);
 
     return (
-      <Reveal className="relative group my-8">
+      <Reveal className="relative group my-8 w-full overflow-hidden">
         <CopyButton text={rawText} />
         <pre {...props} className={`${props.className || ''} p-4 rounded-xl overflow-x-auto text-[14px] bg-[#0d1117] border border-white/10`} />
       </Reveal>
