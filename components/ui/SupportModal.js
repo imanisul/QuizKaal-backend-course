@@ -36,14 +36,7 @@ export default function SupportModal() {
       return true;
     };
 
-    scrollHandler = () => {
-      const scrollDepth = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
-      if (scrollDepth > 0.9 && checkTrigger() && !checkDismissed()) {
-        setIsOpen(true);
-        window.removeEventListener("scroll", scrollHandler);
-      }
-    };
-    window.addEventListener("scroll", scrollHandler);
+
 
     timer = setInterval(() => {
       if (checkTrigger() && !checkDismissed()) {
@@ -52,7 +45,6 @@ export default function SupportModal() {
     }, 300000);
 
     return () => {
-      window.removeEventListener("scroll", scrollHandler);
       clearInterval(timer);
     };
   }, []);
