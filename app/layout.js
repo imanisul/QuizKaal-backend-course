@@ -21,13 +21,21 @@ export const metadata = {
   title: "QuizKaal Learn — Premium Backend & AI Engineering Courses",
   description: siteConfig.description,
   icons: {
-    icon: "/icon.png",
-    shortcut: "/icon.png",
-    apple: "/apple-icon.png",
-    other: {
-      rel: 'apple-touch-icon-precomposed',
-      url: '/apple-icon.png',
-    },
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
+      { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
+    ],
+    shortcut: "/favicon.ico",
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      {
+        rel: 'apple-touch-icon-precomposed',
+        url: '/apple-touch-icon.png',
+      },
+    ],
   },
   verification: {
     google: "4eXEaFD7fJjwoB4ZxH7MaZksb6s65-xRPLC-xHviR4k",

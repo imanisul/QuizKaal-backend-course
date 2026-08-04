@@ -66,30 +66,30 @@ export default function TopNav() {
         <div className="w-full h-full max-w-full px-6 md:px-10 flex items-center justify-between">
           
           {/* LEFT: Logo (Flex-1 for balanced 3-column layout) */}
-          <div className="flex-1 flex justify-start items-center">
-            <Link href="/" className="flex items-center gap-3 group" aria-label="Go to Homepage">
+          <div className="flex-1 flex justify-start items-center shrink-0">
+            <Link href="/" className="flex items-center gap-2 md:gap-3 group shrink-0" aria-label="Go to Homepage">
               <motion.div 
-                className="relative rounded-[14px] p-0.5 bg-gradient-to-br from-white/20 to-white/0 shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+                className="relative rounded-[12px] md:rounded-[14px] p-0.5 bg-gradient-to-br from-white/20 to-white/0 shadow-[0_0_20px_rgba(255,255,255,0.05)] shrink-0"
                 whileHover={{ scale: 1.05, rotate: [0, -2, 2, 0] }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               >
                 <div className="absolute inset-0 bg-primary/40 blur-xl rounded-full group-hover:bg-primary/60 opacity-0 group-hover:opacity-100 transition-all duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-[14px] opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-[12px] md:rounded-[14px] opacity-0 group-hover:opacity-100 transition-all duration-500" />
                 <Image 
                   src="/logo.png" 
-                  alt="QuizKaal Learn" 
+                  alt="QuizKaal Learn Logo" 
                   width={52} 
                   height={52} 
                   priority
-                  className="rounded-[12px] relative z-10 linear-glass ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500" 
+                  className="w-9 h-9 sm:w-11 sm:h-11 md:w-[52px] md:h-[52px] rounded-[10px] md:rounded-[12px] relative z-10 linear-glass ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500 shrink-0" 
                 />
               </motion.div>
-              <div className="flex flex-col justify-center leading-tight ml-1.5">
-                <span className="text-[19px] md:text-[20px] font-extrabold tracking-tight group-hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.5)] transition-all duration-300">
+              <div className="flex flex-col justify-center leading-tight ml-1 md:ml-1.5 shrink-0">
+                <span className="text-[17px] sm:text-[19px] md:text-[20px] font-extrabold tracking-tight group-hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.5)] transition-all duration-300">
                   <span className="text-white">QuizKaal</span>
                   <span className="text-primary ml-1">Learn</span>
                 </span>
-                <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-textTertiary hidden sm:block group-hover:text-white/70 transition-colors mt-0.5">
+                <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.18em] text-textTertiary hidden sm:block group-hover:text-white/70 transition-colors mt-0.5">
                   Backend & AI Engineering
                 </span>
               </div>

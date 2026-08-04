@@ -43,23 +43,23 @@ export function GlobalNavbar() {
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group">
+          <Link href="/" className="flex items-center gap-2 md:gap-3 group shrink-0" aria-label="Go to Homepage">
             <motion.div 
-              className="relative rounded-xl p-0.5 bg-gradient-to-br from-white/20 to-white/0 shadow-[0_0_15px_rgba(255,255,255,0.05)] shrink-0"
+              className="relative rounded-[12px] md:rounded-xl p-0.5 bg-gradient-to-br from-white/20 to-white/0 shadow-[0_0_15px_rgba(255,255,255,0.05)] shrink-0"
               whileHover={{ scale: 1.05, rotate: [0, -2, 2, 0] }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             >
               <div className="absolute inset-0 bg-blue-500/40 blur-xl rounded-full group-hover:bg-blue-500/60 opacity-0 group-hover:opacity-100 transition-all duration-500" />
               <Image 
                 src="/logo.png" 
-                alt="QuizKaal Learn" 
+                alt="QuizKaal Learn Logo" 
                 width={38} 
                 height={38} 
                 priority
-                className="rounded-[10px] relative z-10 ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500 bg-neutral-900" 
+                className="w-9 h-9 sm:w-10 sm:h-10 md:w-[38px] md:h-[38px] rounded-[10px] relative z-10 ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500 bg-neutral-900 shrink-0" 
               />
             </motion.div>
-            <div className="flex flex-col justify-center leading-tight shrink-0">
+            <div className="flex flex-col justify-center leading-tight shrink-0 ml-1 md:ml-0">
               <span className="text-[17px] md:text-[19px] font-extrabold tracking-tight group-hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.5)] transition-all duration-300">
                 <span className="text-white">QuizKaal</span>
                 <span className="text-blue-500 ml-1">Learn</span>
