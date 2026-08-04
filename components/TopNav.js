@@ -31,9 +31,9 @@ export default function TopNav() {
         { href: "/cicd", label: "CI/CD Pipelines", desc: "Automate your deployments", icon: "GitMerge", color: "from-orange-500 to-red-500" },
         { href: "/agentic-ai", label: "Agentic AI", desc: "Build autonomous AI agents", icon: "Bot", color: "from-indigo-500 to-blue-600" },
         { href: "/genai", label: "GenAI Mastery", desc: "Build Generative AI apps", icon: "Sparkles", color: "from-pink-500 to-rose-500" },
-        { href: "/python-course", label: "Python Engineering", desc: "Python for Backend", icon: "Terminal", color: "from-yellow-400 to-amber-500" },
-        { href: "/java-course", label: "Java Engineering", desc: "Core Java to Spring", icon: "Coffee", color: "from-orange-600 to-red-600" },
-        { href: "/coming-soon?course=OOP+Concepts", label: "OOP Concepts", desc: "Object-Oriented design", icon: "Layers", color: "from-gray-500 to-gray-600", isComingSoon: true },
+        { href: "/coming-soon?course=Python", label: "Python Course", desc: "Python basic to advanced", icon: "Terminal", color: "from-yellow-400 to-amber-500" },
+        { href: "/coming-soon?course=Java", label: "Java Course", desc: "Core Java to Spring", icon: "Coffee", color: "from-orange-600 to-red-600" },
+        { href: "/coming-soon?course=OOPs+Concepts", label: "OOPs Concepts", desc: "Object-Oriented Programming", icon: "Layers", color: "from-gray-500 to-gray-600", isComingSoon: true },
       ]
     },
     { href: "/interview", label: "Interview Questions" },
