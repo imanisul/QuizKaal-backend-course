@@ -13,7 +13,6 @@ const CursorSpotlightWrapper = dynamic(() => import("@/components/CursorSpotligh
 const SupportModal = dynamic(() => import("@/components/ui/SupportModal"), { ssr: false });
 const LegalModalManager = dynamic(() => import("@/components/legal/LegalModalManager"), { ssr: false });
 const CookieBanner = dynamic(() => import("@/components/legal/CookieBanner"), { ssr: false });
-
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
 
@@ -63,7 +62,6 @@ export default function RootLayout({ children }) {
               {children}
             </main>
           </div>
-
         </LenisProvider>
 
       </body>

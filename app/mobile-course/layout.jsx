@@ -1,7 +1,5 @@
-import React from 'react';
 import { ProgressSidebar } from '@/components/mobile-ui/ProgressSidebar';
 import { CodeTabProvider } from '@/components/mobile-ui/CodeTabContext';
-import { AITutorChat } from '@/components/mobile-ui/AITutorChat';
 import MobileCourseProgressBar from '@/components/mobile-ui/MobileCourseProgressBar';
 
 export const metadata = {
@@ -30,7 +28,6 @@ export default function CourseLayout({ children }) {
           {children}
         </main>
       </div>
-      <AITutorChat />
     </CodeTabProvider>
   );
 }

@@ -70,7 +70,7 @@ const ICONS = {
 
 // Simple highlight component
 const HighlightText = ({ text, highlight }) => {
-  if (!highlight.trim()) return <span>{text}</span>;
+  if (!highlight || !highlight.trim()) return <span>{text}</span>;
   const regex = new RegExp(`(${highlight})`, "gi");
   const parts = text.split(regex);
   return (
@@ -92,10 +92,22 @@ export default function GlobalSearch() {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [aiResponse, setAiResponse] = useState(null);
+  const [isAiLoading, setIsAiLoading] = useState(false);
   
   const containerRef = useRef(null);
   const inputRef = useRef(null);
   const router = useRouter();
+
+  const handleAskQuizAI = () => {
+    if (!query.trim()) return;
+    setIsAiLoading(true);
+    setAiResponse(null);
+    setTimeout(() => {
+      setIsAiLoading(false);
+      setAiResponse(`KAI: I found several learning paths for "${query}". Check out the highlighted courses above, or dive into our interactive playgrounds to master this topic instantly!`);
+    }, 1500);
+  };
 
   // Cmd+K to open
   useEffect(() => {
@@ -129,6 +141,7 @@ export default function GlobalSearch() {
     if (!query.trim()) {
       setResults([]);
       setIsLoading(false);
+      setAiResponse(null);
       return;
     }
     
@@ -142,6 +155,7 @@ export default function GlobalSearch() {
       );
       setResults(filtered);
       setSelectedIndex(0);
+      setAiResponse(null);
       setIsLoading(false);
     }, 300);
     
@@ -292,6 +306,34 @@ export default function GlobalSearch() {
                   })}
                 </div>
               )}
+              
+              {/* QuizAI Mobile Integration */}
+              {query.trim() && (
+                <div className="mt-4 p-4 rounded-xl border border-indigo-500/30 bg-indigo-500/5 relative overflow-hidden">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sparkles className="text-indigo-400" size={16} />
+                    <span className="text-xs font-bold text-indigo-400">Ask KAI</span>
+                  </div>
+                  
+                  {isAiLoading ? (
+                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                      <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                      KAI is thinking...
+                    </div>
+                  ) : aiResponse ? (
+                    <div className="text-sm text-gray-200 leading-relaxed">
+                      {aiResponse}
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={handleAskQuizAI}
+                      className="w-full py-2.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 text-sm font-medium transition-colors"
+                    >
+                      Search with KAI instead
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </motion.div>
         )}
@@ -417,6 +459,35 @@ export default function GlobalSearch() {
                     </div>
                   );
                 })}
+              </div>
+            )}
+            
+            {/* QuizAI Desktop Integration */}
+            {query.trim() && (
+              <div className="mt-2 mx-2 mb-2 p-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 hover:bg-indigo-500/10 transition-colors">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles className="text-indigo-400" size={14} />
+                  <span className="text-xs font-bold text-indigo-400 tracking-wide">KAI</span>
+                </div>
+                
+                {isAiLoading ? (
+                  <div className="flex items-center gap-2 text-[13px] text-gray-400 py-1">
+                    <div className="w-3.5 h-3.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                    KAI is analyzing your request...
+                  </div>
+                ) : aiResponse ? (
+                  <div className="text-[13px] text-gray-200 leading-relaxed p-1 border-l-2 border-indigo-500/50 pl-2">
+                    {aiResponse}
+                  </div>
+                ) : (
+                  <button 
+                    onClick={handleAskQuizAI}
+                    className="w-full flex items-center justify-between py-1.5 px-2 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 text-[13px] font-medium transition-all"
+                  >
+                    <span>Ask KAI to find the best path</span>
+                    <span className="text-[10px] bg-indigo-500/20 px-1.5 py-0.5 rounded text-indigo-300">Free</span>
+                  </button>
+                )}
               </div>
             )}
           </motion.div>
