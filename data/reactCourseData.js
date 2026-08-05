@@ -33,19 +33,6 @@ function WelcomeMessage() {
     </div>
   );
 }`,
-        miniProject: {
-          title: "Hello World Card",
-          description: "Build your very first React component that renders a stylized greeting card to the screen.",
-          Component: Ch1App,
-          code: `export default function App() {
-  return (
-    <div style={{ padding: '24px', backgroundColor: '#2dd4bf', borderRadius: '12px', color: 'white' }}>
-      <h2>My First React App</h2>
-      <p>I just rendered this using the Virtual DOM!</p>
-    </div>
-  );
-}`
-        },
         interviewQuestions: [
           {
             question: "What is React and why do we use it?",
@@ -129,20 +116,6 @@ import App from './App.jsx';
 
 // Mount the App component inside the HTML element with id="root"
 createRoot(document.getElementById('root')).render(<App />);`,
-        miniProject: {
-          title: "Bootstrapping an App",
-          description: "Simulate modifying the root App.jsx file in a freshly scaffolded React project.",
-          Component: Ch2App,
-          code: `// App.jsx
-export default function App() {
-  return (
-    <main>
-      <h1>Vite + React</h1>
-      <p>Edit src/App.jsx and save to test HMR</p>
-    </main>
-  );
-}`
-        },
         interviewQuestions: [
           {
             question: "What is Vite and why use it over Create React App (CRA)?",
@@ -235,22 +208,6 @@ export default function App() {
     </div>
   );
 }`,
-        miniProject: {
-          title: "Dynamic User Badge",
-          description: "Use JSX expressions to inject variables and math operations directly into the UI.",
-          Component: Ch3App,
-          code: `export default function UserBadge() {
-  const user = { name: "John Doe", role: "Admin", points: 150 };
-  
-  return (
-    <div className="badge">
-      <h3>{user.name.toUpperCase()}</h3>
-      <p>Role: {user.role}</p>
-      <p>Score: {user.points * 10}XP</p>
-    </div>
-  );
-}`
-        },
         interviewQuestions: [
           {
             question: "What is JSX and is it valid JavaScript?",
@@ -337,28 +294,6 @@ function ContactForm() {
     </form>
   );
 }`,
-        miniProject: {
-          title: "Component Composition",
-          description: "Build a complex UI by composing multiple smaller components together.",
-          Component: Ch4App,
-          code: `function Avatar() {
-  return <div className="circle">A</div>;
-}
-
-function UserInfo() {
-  return <div><h4>Jane Doe</h4><p>Software Engineer</p></div>;
-}
-
-// Composing them together
-export default function ProfileCard() {
-  return (
-    <div style={{ display: 'flex', gap: '10px', border: '1px solid #ccc', padding: '10px' }}>
-      <Avatar />
-      <UserInfo />
-    </div>
-  );
-}`
-        },
         interviewQuestions: [
           {
             question: "What is a React component?",
@@ -437,31 +372,6 @@ function App() {
     </div>
   );
 }`,
-        miniProject: {
-          title: "Reusable Product Card",
-          description: "Create a reusable product card that accepts dynamic data via props.",
-          Component: Ch5App,
-          code: `function ProductCard({ title, price, isSoldOut }) {
-  return (
-    <div style={{ border: '1px solid #ddd', padding: '10px', width: '200px' }}>
-      <h3>{title}</h3>
-      <p>$\${price}</p>
-      <button disabled={isSoldOut}>
-        {isSoldOut ? 'Out of Stock' : 'Add to Cart'}
-      </button>
-    </div>
-  );
-}
-
-export default function Store() {
-  return (
-    <div style={{ display: 'flex', gap: '20px' }}>
-      <ProductCard title="Wireless Mouse" price={25} isSoldOut={false} />
-      <ProductCard title="Mechanical Keyboard" price={120} isSoldOut={true} />
-    </div>
-  );
-}`
-        },
         interviewQuestions: [
           {
             question: "What are props in React?",
@@ -555,25 +465,6 @@ function Counter() {
     </div>
   );
 }`,
-        miniProject: {
-          title: "Interactive Counter",
-          description: "Build a counter with increment, decrement, and reset functionality using useState.",
-          Component: Ch6App,
-          code: `import { useState } from 'react';
-
-export default function SmartCounter() {
-  const [count, setCount] = useState(0);
-  
-  return (
-    <div style={{ textAlign: 'center', padding: '20px' }}>
-      <h2>Count: {count}</h2>
-      <button onClick={() => setCount(count - 1)}>-</button>
-      <button onClick={() => setCount(0)} style={{ margin: '0 10px' }}>Reset</button>
-      <button onClick={() => setCount(count + 1)}>+</button>
-    </div>
-  );
-}`
-        },
         interviewQuestions: [
           {
             question: "What does useState do and why do we need it in React?",
@@ -656,27 +547,6 @@ export default function SmartCounter() {
   // Pass the function (don't call it immediately!)
   return <button onClick={handleClick}>Toggle Light</button>;
 }`,
-        miniProject: {
-          title: "Color Flipper",
-          description: "Change the background color of a box randomly when a button is clicked.",
-          Component: Ch7App,
-          code: `import { useState } from 'react';
-
-export default function ColorFlipper() {
-  const [color, setColor] = useState('#e2e8f0');
-  
-  const handleFlip = () => {
-    const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-    setColor(randomColor);
-  };
-  
-  return (
-    <div style={{ backgroundColor: color, padding: '50px', transition: '0.3s' }}>
-      <button onClick={handleFlip}>Flip Color</button>
-    </div>
-  );
-}`
-        },
         interviewQuestions: [
           {
             question: "How is event handling in React different from vanilla JavaScript?",
@@ -766,30 +636,6 @@ export default function ColorFlipper() {
     </div>
   );
 }`,
-        miniProject: {
-          title: "Secret Password Reveal",
-          description: "Build a component that toggles the visibility of secret text based on a button click.",
-          Component: Ch8App,
-          code: `import { useState } from 'react';
-
-export default function SecretMessage() {
-  const [showSecret, setShowSecret] = useState(false);
-  
-  return (
-    <div>
-      <button onClick={() => setShowSecret(!showSecret)}>
-        {showSecret ? 'Hide Secret' : 'Reveal Secret'}
-      </button>
-      
-      {showSecret && (
-        <div style={{ marginTop: '20px', padding: '10px', background: '#ffe4e6' }}>
-          The secret code is: 42
-        </div>
-      )}
-    </div>
-  );
-}`
-        },
         interviewQuestions: [
           {
             question: "What is conditional rendering in React?",
@@ -878,31 +724,6 @@ export default function SecretMessage() {
     </ul>
   );
 }`,
-        miniProject: {
-          title: "Simple Todo List",
-          description: "Render a list of items using map(), and ensure each item has a proper key.",
-          Component: Ch9App,
-          code: `export default function TeamRoster() {
-  const members = [
-    { id: 'm1', name: 'Alice', role: 'Developer' },
-    { id: 'm2', name: 'Bob', role: 'Designer' },
-    { id: 'm3', name: 'Charlie', role: 'Manager' }
-  ];
-  
-  return (
-    <div>
-      <h3>Team Members</h3>
-      <ul>
-        {members.map(member => (
-          <li key={member.id} style={{ marginBottom: '8px' }}>
-            <strong>{member.name}</strong> - {member.role}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}`
-        },
         interviewQuestions: [
           {
             question: "How do you render a list of items in React?",
@@ -1002,23 +823,6 @@ function DataFetcher() {
 
   return <div>{data ? data.title : 'Loading...'}</div>;
 }`,
-        miniProject: {
-          title: "API Sync Simulator",
-          description: "A component that subscribes to an external API when mounted, and properly tears down the connection on unmount to prevent memory leaks.",
-          Component: Ch10App,
-          code: `function ChatRoom({ roomId }) {
-  useEffect(() => {
-    const connection = createConnection(roomId);
-    connection.connect();
-    
-    return () => {
-      connection.disconnect();
-    };
-  }, [roomId]); // Re-connects when roomId changes
-
-  return <h1>Welcome to room {roomId}!</h1>;
-}`
-        },
         interviewQuestions: [
           {
             question: "What is the purpose of the useEffect hook?",
@@ -1101,26 +905,6 @@ function DataFetcher() {
     />
   );
 }`,
-        miniProject: {
-          title: "Live Form Validator",
-          description: "A form input that immediately validates text as the user types, disabling submission if criteria are not met.",
-          Component: Ch11App,
-          code: `function EmailInput() {
-  const [email, setEmail] = useState("");
-  const isValid = email.includes("@");
-
-  return (
-    <form onSubmit={e => e.preventDefault()}>
-      <input 
-        value={email} 
-        onChange={e => setEmail(e.target.value)} 
-      />
-      <button disabled={!isValid}>Submit</button>
-      {!isValid && <p>Please enter a valid email.</p>}
-    </form>
-  );
-}`
-        },
         interviewQuestions: [
           {
             question: "What is a 'Controlled Component' in React?",
@@ -1207,21 +991,6 @@ function DataFetcher() {
     </>
   );
 }`,
-        miniProject: {
-          title: "Shared Global Filter",
-          description: "A dashboard where a top-level search bar filters data in a completely separate list component by lifting state to their parent.",
-          Component: Ch12App,
-          code: `function Dashboard() {
-  const [query, setQuery] = useState("");
-  
-  return (
-    <div>
-      <SearchBar query={query} onChange={setQuery} />
-      <DataList filter={query} />
-    </div>
-  );
-}`
-        },
         interviewQuestions: [
           {
             question: "What does 'Lifting State Up' mean in React?",
@@ -1299,21 +1068,6 @@ function Toolbar() {
   const theme = useContext(ThemeContext);
   return <div>Current theme: {theme}</div>;
 }`,
-        miniProject: {
-          title: "Theme Switcher",
-          description: "Implement a global dark/light mode toggle that instantly updates deep nested components without passing props.",
-          Component: Ch13App,
-          code: `const UserContext = createContext();
-
-export default function App() {
-  const [user, setUser] = useState({ name: 'Alice' });
-  return (
-    <UserContext.Provider value={user}>
-      <Layout />
-    </UserContext.Provider>
-  );
-}`
-        },
         interviewQuestions: [
           {
             question: "What specific problem does the Context API solve?",
@@ -1399,23 +1153,6 @@ export default function App() {
     </>
   );
 }`,
-        miniProject: {
-          title: "Stopwatch Timer",
-          description: "Use a ref to store a setInterval ID so you can clear it later, without triggering re-renders when the ID changes.",
-          Component: Ch14App,
-          code: `function Timer() {
-  const [count, setCount] = useState(0);
-  const timerId = useRef(null);
-
-  const start = () => {
-    timerId.current = setInterval(() => setCount(c => c + 1), 1000);
-  };
-  
-  const stop = () => clearInterval(timerId.current);
-
-  return <button onClick={start}>Start</button>;
-}`
-        },
         interviewQuestions: [
           {
             question: "What is the primary difference between `useRef` and `useState`?",
@@ -1499,22 +1236,6 @@ function App() {
     </BrowserRouter>
   );
 }`,
-        miniProject: {
-          title: "Dynamic Routing",
-          description: "Capture URL parameters to dynamically load user profiles.",
-          Component: Ch15App,
-          code: `import { useParams } from 'react-router-dom';
-
-function UserProfile() {
-  const { userId } = useParams();
-  
-  useEffect(() => {
-    // Fetch data for userId
-  }, [userId]);
-
-  return <h1>Profile: {userId}</h1>;
-}`
-        },
         interviewQuestions: [
           {
             question: "What is Client-Side Routing and how does React Router enable it?",
@@ -1601,25 +1322,6 @@ function MyComponent() {
   const width = useWindowWidth();
   return <p>Window is {width}px wide</p>;
 }`,
-        miniProject: {
-          title: "useFetch Logic Abstraction",
-          description: "Abstract repetitive API fetching logic into a clean, reusable custom hook that returns data, loading, and error states.",
-          Component: Ch16App,
-          code: `function useFetch(url) {
-  const [data, setData] = useState(null);
-  
-  useEffect(() => {
-    fetch(url).then(r => r.json()).then(setData);
-  }, [url]);
-  
-  return data;
-}
-
-function App() {
-  const data = useFetch('/api/users');
-  return data ? <UserList users={data} /> : <Spinner />;
-}`
-        },
         interviewQuestions: [
           {
             question: "What exactly defines a Custom Hook in React?",
@@ -1712,12 +1414,6 @@ function App() {
   if (loading) return <p>Loading...</p>;
   return <div>{user.name}</div>;
 }`,
-        miniProject: {
-          title: "API Sync Simulator",
-          description: "Simulate fetching user data from a remote server with loading states and error handling.",
-          Component: Ch17App,
-          code: `// Implementation details hidden for brevity`
-        },
         interviewQuestions: [
           {
             question: "Why should you fetch data inside useEffect?",
@@ -1755,12 +1451,6 @@ function App() {
   
   return children;
 }`,
-        miniProject: {
-          title: "Auth Gateway Simulator",
-          description: "A simulated login flow that grants a token and unlocks a protected dashboard.",
-          Component: Ch18App,
-          code: `// Auth simulation code`
-        },
         interviewQuestions: [
           {
             question: "Where is the safest place to store a JWT in a React app?",
@@ -1811,12 +1501,6 @@ function Dashboard() {
     </>
   );
 }`,
-        miniProject: {
-          title: "Render Profiler",
-          description: "See exactly how useMemo prevents an expensive sorting algorithm from freezing the UI during simple text input.",
-          Component: Ch19App,
-          code: `// Profiler app code`
-        },
         interviewQuestions: [
           {
             question: "Why don't we wrap EVERY component in React.memo?",
@@ -1857,12 +1541,6 @@ test('button click changes text', () => {
   fireEvent.click(btn);
   expect(screen.getByText(/clicked!/i)).toBeInTheDocument();
 });`,
-        miniProject: {
-          title: "Test Suite Runner",
-          description: "An interactive mini test runner showing passing and failing assertions.",
-          Component: Ch20App,
-          code: `// Test runner sim`
-        },
         interviewQuestions: [
           {
             question: "What is the guiding philosophy of React Testing Library?",
@@ -1905,12 +1583,6 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npx vercel --prod --token=\${{ secrets.VERCEL_TOKEN }}`,
-        miniProject: {
-          title: "CI/CD Pipeline Sim",
-          description: "Watch a simulated pipeline go through Build, Test, and Deploy phases.",
-          Component: Ch21App,
-          code: `// Pipeline sim`
-        },
         interviewQuestions: [
           {
             question: "What does 'npm run build' actually do?",
@@ -1957,12 +1629,6 @@ jobs:
     return this.props.children;
   }
 }`,
-        miniProject: {
-          title: "Crash & Recover",
-          description: "Trigger a runtime error in a child component and watch the boundary catch it gracefully.",
-          Component: Ch22App,
-          code: `// Error boundary sim`
-        },
         interviewQuestions: [
           {
             question: "Can you write an Error Boundary using Hooks?",
@@ -2005,12 +1671,6 @@ function App() {
     </div>
   );
 }`,
-        miniProject: {
-          title: "Network Chunk Simulator",
-          description: "Visualize how different JS bundles are fetched over the network as you navigate between lazy-loaded routes.",
-          Component: Ch23App,
-          code: `// Lazy load sim`
-        },
         interviewQuestions: [
           {
             question: "What is Suspense in React?",
@@ -2053,12 +1713,6 @@ function BearCounter() {
   const bears = useStore((state) => state.bears)
   return <h1>{bears} around here ...</h1>
 }`,
-        miniProject: {
-          title: "Global Store Explorer",
-          description: "Interact with a Zustand global store and watch specific UI slices re-render.",
-          Component: Ch24App,
-          code: `// Zustand sim`
-        },
         interviewQuestions: [
           {
             question: "Why has the community largely moved away from Redux towards Zustand and Redux Toolkit?",
@@ -2096,12 +1750,6 @@ function BearCounter() {
 //  ├─ shared/        # Reusable UI (Buttons, Inputs)
 //  └─ pages/         # Route definitions composing features
 `,
-        miniProject: {
-          title: "Architecture Sandbox",
-          description: "Explore a simulated file system implementing Feature-Sliced Design.",
-          Component: Ch25App,
-          code: `// Arch sim`
-        },
         interviewQuestions: [
           {
             question: "What is the 'Container/Presenter' pattern?",
@@ -2137,12 +1785,6 @@ function BearCounter() {
 // 3. Global Cart State Management (Zustand/Redux)
 // 4. Protected Checkout Route
 // 5. Full RTL Test Coverage`,
-        miniProject: {
-          title: "E-commerce Showcase",
-          description: "Interact with a miniature, fully-featured e-commerce frontend demonstrating all course concepts combined.",
-          Component: Ch26App,
-          code: `// Capstone sim`
-        },
         interviewQuestions: [
           {
             question: "How do you prepare for a Senior React Developer interview?",

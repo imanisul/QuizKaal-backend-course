@@ -12,52 +12,52 @@ export default function PromptBuilder() {
   const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
+    const generateMockResponse = () => {
+      setIsTyping(true);
+      let mockAns = "";
+      
+      const up = userPrompt.toLowerCase();
+      const cx = context.toLowerCase();
+
+      if (up.includes("refund")) {
+        if (cx.includes("30 days")) {
+          if (temperature > 0.8) {
+            mockAns = "Hey there! Based on the context provided, you can definitely get a refund as long as it's within 30 days and you have a receipt. Hope that helps!";
+          } else {
+            mockAns = "According to the context, refunds are allowed within 30 days of purchase with a valid receipt.";
+          }
+        } else {
+          mockAns = "I cannot answer this based on the provided context.";
+        }
+      } else {
+        mockAns = "I'm sorry, I don't see information about that in the context.";
+      }
+
+      if (!systemPrompt.includes("helpful")) {
+        mockAns = mockAns.toUpperCase(); // Just a funny mock behavior if they change system prompt
+      }
+
+      // Simulate streaming
+      setResponse("");
+      const words = mockAns.split(" ");
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < words.length) {
+          setResponse((prev) => prev + (prev ? " " : "") + words[i]);
+          i++;
+        } else {
+          clearInterval(interval);
+          setIsTyping(false);
+        }
+      }, 100);
+    };
+
     // Debounce the generation slightly
     const timer = setTimeout(() => {
       generateMockResponse();
     }, 500);
     return () => clearTimeout(timer);
   }, [systemPrompt, userPrompt, context, temperature]);
-
-  const generateMockResponse = () => {
-    setIsTyping(true);
-    let mockAns = "";
-    
-    const up = userPrompt.toLowerCase();
-    const cx = context.toLowerCase();
-
-    if (up.includes("refund")) {
-      if (cx.includes("30 days")) {
-        if (temperature > 0.8) {
-          mockAns = "Hey there! Based on the context provided, you can definitely get a refund as long as it's within 30 days and you have a receipt. Hope that helps!";
-        } else {
-          mockAns = "According to the context, refunds are allowed within 30 days of purchase with a valid receipt.";
-        }
-      } else {
-        mockAns = "I cannot answer this based on the provided context.";
-      }
-    } else {
-      mockAns = "I'm sorry, I don't see information about that in the context.";
-    }
-
-    if (!systemPrompt.includes("helpful")) {
-      mockAns = mockAns.toUpperCase(); // Just a funny mock behavior if they change system prompt
-    }
-
-    // Simulate streaming
-    setResponse("");
-    const words = mockAns.split(" ");
-    let i = 0;
-    const interval = setInterval(() => {
-      if (i < words.length) {
-        setResponse((prev) => prev + (prev ? " " : "") + words[i]);
-        i++;
-      } else {
-        clearInterval(interval);
-        setIsTyping(false);
-      }
-    }, 100);
-  };
 
   return (
     <div className="glass-card p-6 border border-white/10 bg-background/50 rounded-3xl flex flex-col md:flex-row gap-6">

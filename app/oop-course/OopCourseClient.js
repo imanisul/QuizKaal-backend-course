@@ -4,19 +4,20 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { 
-  BookOpen, Code, Play, CheckCircle, Circle, ArrowRight,
-  Monitor, Layout, GitBranch, Cpu, Database, Zap, Layers, RefreshCw,
-  Home, ChevronLeft, Menu, X, Lightbulb, Globe, AlertTriangle, ShieldCheck, FileText, FastForward
+  BookOpen, Code, Play, CheckCircle, ArrowRight,
+  Layers, Lightbulb, Globe, AlertTriangle, ShieldCheck, FileText, FastForward,
+  ChevronLeft, Menu, X, Building, Star, ClipboardList, CheckSquare
 } from "lucide-react";
 
-import { curriculum } from "@/data/reactCourseData";
-import AnimatedVisual from "@/components/react-course/AnimatedVisuals";
+import { curriculum } from "@/data/oopCourseData";
+import AnimatedVisual from "@/components/oop-course/AnimatedVisuals";
 import CourseHeader from '@/components/ui/CourseHeader';
 import BeforeAfterAnimation from "@/components/react-course/BeforeAfterAnimation";
 import InterviewQuestionsList from "@/components/react-course/InterviewQuestionsList";
+import MultiLangCode from "@/components/oop-course/MultiLangCode";
 import { progressEngine, useProgress as useGlobalProgress } from "@/utils/progressEngine";
 
-export default function ReactCoursePage() {
+export default function OopCourseClient() {
   const [mounted, setMounted] = useState(false);
   const [activeChapter, setActiveChapter] = useState("ch1");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -25,49 +26,29 @@ export default function ReactCoursePage() {
 
   const allChapterIds = curriculum.flatMap(g => g.chapters.map(ch => ch.id));
 
-  // Derive progress from the global engine
   const progress = {};
   allChapterIds.forEach(id => {
     progress[id] = progressEngine.isCompleted(id) ? 'Completed' : 'Not Started';
   });
 
+  const allChapters = curriculum.flatMap(g => g.chapters);
+  const activeChapterData = allChapters.find(ch => ch.id === activeChapter) || allChapters[0];
+  const activeGroup = curriculum.find(g => g.chapters.some(ch => ch.id === activeChapter)) || curriculum[0];
+
   useEffect(() => {
     setMounted(true);
-
+    
     const handleHashChange = () => {
       const hash = window.location.hash.replace("#", "");
-      if (hash) {
-        setTimeout(() => {
-          scrollToChapter(hash);
-        }, 100);
+      if (hash && allChapters.some(ch => ch.id === hash)) {
+        setActiveChapter(hash);
       }
     };
 
     handleHashChange();
     window.addEventListener("hashchange", handleHashChange);
     return () => window.removeEventListener("hashchange", handleHashChange);
-  }, []);
-
-  // Setup scroll listener to highlight active chapter
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = document.querySelectorAll("section[id]");
-      let currentActiveId = "ch1";
-      
-      for (const section of sections) {
-        const rect = section.getBoundingClientRect();
-        // If the section's top is within the viewport's top half
-        if (rect.top <= 200 && rect.bottom >= 200) {
-          currentActiveId = section.id;
-          break;
-        }
-      }
-      setActiveChapter(currentActiveId);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [allChapters]);
 
   const totalChapters = curriculum.reduce((acc, g) => acc + g.chapters.length, 0);
   const completedChapters = Object.values(progress).filter(p => p === "Completed").length;
@@ -77,9 +58,8 @@ export default function ReactCoursePage() {
     const isCurrentlyCompleted = progressEngine.isCompleted(id);
     
     if (!isCurrentlyCompleted) {
-      progressEngine.markComplete(id, 'react-course', 50);
+      progressEngine.markComplete(id, 'oop', 50);
       
-      // Auto-scroll to next chapter
       const allChapters = curriculum.flatMap(g => g.chapters);
       const idx = allChapters.findIndex(c => c.id === id);
       if (idx !== -1 && idx < allChapters.length - 1) {
@@ -89,31 +69,20 @@ export default function ReactCoursePage() {
         }, 400);
       }
     }
-    // Note: We no longer allow un-completing a lesson (one-way progress)
   };
 
   const scrollToChapter = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      const offset = 100;
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = element.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
-      const offsetPosition = elementPosition - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth"
-      });
-      setActiveChapter(id);
-      setIsMobileMenuOpen(false); // Close mobile menu when navigating
-    }
+    setActiveChapter(id);
+    setIsMobileMenuOpen(false);
+    window.location.hash = id;
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
   };
 
   return (
     <div className="min-h-screen bg-transparent text-textPrimary flex flex-col font-sans relative">
-      
-      {/* Course Progress Banner (Static) */}
       <div className="w-full bg-bgElevated border-b border-borderStrong py-3 px-4 sm:px-6 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3 sm:space-x-4">
@@ -125,27 +94,27 @@ export default function ReactCoursePage() {
               <ChevronLeft size={20} />
             </Link>
             <button 
-              className="lg:hidden p-2 bg-primaryDim text-primary rounded-lg hover:bg-primary/20 transition-colors"
+              className="lg:hidden p-2 bg-gray-500/20 text-gray-400 rounded-lg hover:bg-gray-500/40 transition-colors"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
-            <div className="hidden sm:flex w-10 h-10 rounded-xl bg-primaryDim items-center justify-center text-primary shadow-lg shadow-primary/20 shrink-0">
-              <Code size={24} />
+            <div className="hidden sm:flex w-10 h-10 rounded-xl bg-gray-500/20 items-center justify-center text-gray-300 shadow-lg shadow-gray-500/20 shrink-0">
+              <Layers size={24} />
             </div>
             <div>
-              <h1 className="font-bold text-sm sm:text-lg tracking-tight text-white line-clamp-1">React Mastery Course</h1>
+              <h1 className="font-bold text-sm sm:text-lg tracking-tight text-white line-clamp-1">OOPs Mastery Course</h1>
               <p className="hidden sm:block text-xs text-textSecondary">Interactive Learning Module</p>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1.5 w-1/3 min-w-[100px] max-w-xs shrink-0 ml-2">
             <div className="flex justify-between w-full text-[10px] sm:text-xs font-semibold text-textSecondary">
               <span className="hidden sm:inline">Progress</span>
-              <span className="text-primary ml-auto">{progressPercent}%</span>
+              <span className="text-gray-400 ml-auto">{progressPercent}%</span>
             </div>
             <div className="h-1.5 bg-bgCard rounded-full w-full overflow-hidden">
               <motion.div 
-                className="h-full bg-primary origin-left"
+                className="h-full bg-gray-400 origin-left"
                 initial={{ width: 0 }}
                 animate={{ width: `${progressPercent}%` }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
@@ -156,8 +125,6 @@ export default function ReactCoursePage() {
       </div>
 
       <div className="flex-1 flex max-w-7xl w-full mx-auto relative">
-        
-        {/* Sticky Sidebar */}
         <aside className="w-80 hidden lg:block shrink-0 border-r border-borderStrong global-sticky-sidebar overflow-y-auto custom-scrollbar p-6">
           <nav className="space-y-10">
             {curriculum.map((group) => (
@@ -177,7 +144,7 @@ export default function ReactCoursePage() {
                           onClick={() => scrollToChapter(chapter.id)}
                           className={`w-full text-left px-3 py-2.5 rounded-xl flex items-center gap-3 transition-all duration-300 group
                             ${isActive 
-                              ? 'bg-primaryDim text-white font-semibold shadow-sm' 
+                              ? 'bg-gray-500/20 text-white font-semibold shadow-sm' 
                               : 'hover:bg-bgElevated text-textSecondary hover:text-white'
                             }`}
                         >
@@ -195,7 +162,7 @@ export default function ReactCoursePage() {
                           <span className="flex-1 text-sm line-clamp-1">{chapter.title}</span>
                           
                           {isActive && (
-                            <motion.div layoutId="active-indicator" className="w-1.5 h-1.5 rounded-full bg-primary" />
+                            <motion.div layoutId="active-indicator" className="w-1.5 h-1.5 rounded-full bg-gray-400" />
                           )}
                         </button>
                       </li>
@@ -207,7 +174,6 @@ export default function ReactCoursePage() {
           </nav>
         </aside>
 
-        {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
           <div className="lg:hidden fixed inset-0 z-40 bg-black/80 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)}>
             <motion.div 
@@ -242,7 +208,7 @@ export default function ReactCoursePage() {
                               onClick={() => scrollToChapter(chapter.id)}
                               className={`w-full text-left px-3 py-2.5 rounded-xl flex items-center gap-3 transition-all duration-300 group
                                 ${isActive 
-                                  ? 'bg-primaryDim text-white font-semibold shadow-sm' 
+                                  ? 'bg-gray-500/20 text-white font-semibold shadow-sm' 
                                   : 'hover:bg-bgElevated text-textSecondary hover:text-white'
                                 }`}
                             >
@@ -260,7 +226,7 @@ export default function ReactCoursePage() {
                               <span className="flex-1 text-sm leading-tight">{chapter.title}</span>
                               
                               {isActive && (
-                                <motion.div layoutId="mobile-active-indicator" className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                <motion.div layoutId="mobile-active-indicator" className="w-1.5 h-1.5 rounded-full bg-gray-400" />
                               )}
                             </button>
                           </li>
@@ -274,19 +240,17 @@ export default function ReactCoursePage() {
           </div>
         )}
 
-        {/* Main Content Area */}
-        <main className="flex-1 global-page-pt p-4 sm:p-6 lg:p-12 lg:pl-20 pb-40 max-w-full overflow-hidden">
+        <main className="flex-1 global-page-pt p-4 sm:p-6 lg:p-12 lg:pl-20 pb-40 max-w-full overflow-x-hidden">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="max-w-5xl mx-auto space-y-24 sm:space-y-32"
           >
-            {/* Unified Course Header */}
             <div className="pt-8">
               <CourseHeader 
-                title="React Mastery"
-                description="A complete, self-contained interactive learning module. Master modern React with guided concepts, mental models, and hands-on mini projects."
-                icon={Code}
+                title="OOPs Mastery"
+                description="Master Object-Oriented Programming principles with interactive visualizations, multi-language code snippets, and real-world analogies."
+                icon={Layers}
                 completedCount={completedChapters}
                 totalLessons={totalChapters}
                 nextLessonTitle={
@@ -299,29 +263,29 @@ export default function ReactCoursePage() {
                     .flatMap(g => g.chapters)
                     .find(ch => progress[ch.id] !== "Completed")?.id || "")
                 }
-                themeColor="from-[#61DAFB] to-[#00B4D8]"
-                bgGlow="from-[#61DAFB]/20 to-[#00B4D8]/20"
+                themeColor="from-gray-500 to-gray-700"
+                bgGlow="from-gray-500/20 to-gray-700/20"
               />
             </div>
 
-            {/* Render Chapter Placeholders */}
-            {curriculum.map(group => 
-              group.chapters.map(chapter => (
+            {activeChapterData && (() => {
+              const chapter = activeChapterData;
+              const group = activeGroup;
+              return (
                 <motion.section 
                   key={chapter.id} 
                   id={chapter.id} 
                   className="scroll-mt-32 pb-16 relative"
-                  initial={{ opacity: 0.2, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "0px" }}
-                  transition={{ duration: 0.5 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
                 >
                   <div className="flex items-center gap-5 mb-10">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/30 to-primary/10 text-primary flex items-center justify-center shadow-sm border border-primary/20">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-gray-500/30 to-gray-500/10 text-gray-300 flex items-center justify-center shadow-sm border border-gray-500/20">
                       <chapter.icon size={28} />
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-primary tracking-widest uppercase mb-1">
+                      <div className="text-sm font-bold text-gray-400 tracking-widest uppercase mb-1">
                         {group.level}
                       </div>
                       <h2 className="text-3xl font-extrabold text-white">{chapter.title}</h2>
@@ -329,8 +293,7 @@ export default function ReactCoursePage() {
                   </div>
 
                   <div className="bg-bgCard rounded-3xl p-8 lg:p-10 border border-borderStrong shadow-xl text-center text-textSecondary relative overflow-hidden group">
-                    {/* Decorative gradient blur */}
-                    <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 blur-3xl rounded-full pointer-events-none transition-transform group-hover:scale-150 duration-700"></div>
+                    <div className="absolute -top-24 -right-24 w-48 h-48 bg-gray-500/10 blur-3xl rounded-full pointer-events-none transition-transform group-hover:scale-150 duration-700"></div>
 
                     {chapter.definition ? (
                       <div className="text-left space-y-6 mt-6">
@@ -341,7 +304,6 @@ export default function ReactCoursePage() {
                           </p>
                         </div>
 
-                        {/* NEW: Before / After Animation block */}
                         {chapter.beforeAfter && (
                           <BeforeAfterAnimation 
                             beforeDesc={chapter.beforeAfter.problem}
@@ -351,12 +313,11 @@ export default function ReactCoursePage() {
                           />
                         )}
 
-                        {/* Extended Educational Content Grid */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10 mt-6">
                           {chapter.whyItExists && (
-                            <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-primary/50 transition-colors">
+                            <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-blue-500/50 transition-colors">
                               <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                                <div className="p-2 bg-primaryDim text-primary rounded-lg"><Lightbulb size={18}/></div>
+                                <div className="p-2 bg-blue-500/20 text-blue-400 rounded-lg"><Lightbulb size={18}/></div>
                                 Why This Exists
                               </h4>
                               <p className="text-sm leading-relaxed text-textSecondary">{chapter.whyItExists}</p>
@@ -366,7 +327,7 @@ export default function ReactCoursePage() {
                             <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-indigo-500/50 transition-colors">
                               <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
                                 <div className="p-2 bg-indigo-500/20 text-indigo-400 rounded-lg"><Globe size={18}/></div>
-                                How Companies Use It
+                                Real World Analogy
                               </h4>
                               <p className="text-sm leading-relaxed text-textSecondary">{chapter.realWorld}</p>
                             </div>
@@ -389,112 +350,131 @@ export default function ReactCoursePage() {
                               <p className="text-sm leading-relaxed text-textSecondary">{chapter.performanceSecurity}</p>
                             </div>
                           )}
+                          {chapter.industryExample && (
+                            <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-cyan-500/50 transition-colors">
+                              <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
+                                <div className="p-2 bg-cyan-500/20 text-cyan-400 rounded-lg"><Building size={18}/></div>
+                                Industry Example
+                              </h4>
+                              <p className="text-sm leading-relaxed text-textSecondary">{chapter.industryExample}</p>
+                            </div>
+                          )}
+                          {chapter.bestPractices && (
+                            <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-yellow-500/50 transition-colors">
+                              <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
+                                <div className="p-2 bg-yellow-500/20 text-yellow-400 rounded-lg"><Star size={18}/></div>
+                                Best Practices
+                              </h4>
+                              <p className="text-sm leading-relaxed text-textSecondary">{chapter.bestPractices}</p>
+                            </div>
+                          )}
                         </div>
 
                         
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10 mt-6">
-                          {/* Internals */}
-                          <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col h-full hover:border-secondary/50 transition-colors">
+                        {/* Memory Visualization — Full Width */}
+                        <div className="relative z-10 mt-6">
+                          <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-secondary/50 transition-colors">
                             <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                              <div className="p-2 bg-secondaryDim text-secondary rounded-lg"><Cpu size={18}/></div>
-                              How it works
+                              <div className="p-2 bg-secondaryDim text-secondary rounded-lg"><Layers size={18}/></div>
+                              Memory Visualization
                             </h4>
-                            <p className="text-sm leading-relaxed mb-6 flex-1 text-textSecondary">{chapter.internals}</p>
-                            <div className="w-full h-32 rounded-xl overflow-hidden group-hover:shadow-[0_0_15px_rgba(124,58,237,0.2)] transition-shadow">
+                            <p className="text-sm leading-relaxed mb-6 text-textSecondary">{chapter.internals}</p>
+                            <div className="w-full rounded-xl group-hover:shadow-[0_0_15px_rgba(124,58,237,0.2)] transition-shadow">
                                <AnimatedVisual topicId={chapter.id} />
                             </div>
                           </div>
-                          
-                          {/* Mini Project */}
-                          <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col h-full hover:border-warning/50 transition-colors">
-                            <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                              <div className="p-2 bg-warningDim text-warning rounded-lg"><Play size={18}/></div>
-                              Mini Project: {chapter.miniProject.title}
-                            </h4>
-                            <p className="text-sm leading-relaxed mb-6 flex-1 text-textSecondary">{chapter.miniProject.description}</p>
-                            {chapter.miniProject.Component ? (
-                               <div className="mt-auto w-full rounded-xl overflow-hidden shadow-lg border border-white/10 bg-black/20">
-                                 <chapter.miniProject.Component />
-                               </div>
-                            ) : (
-                               <div className="mt-auto w-full bg-[#0d1117] rounded-xl border border-white/5 overflow-hidden">
-                                 <div className="bg-white/5 px-4 py-2 text-xs font-mono text-textTertiary border-b border-white/5">solution.jsx</div>
-                                 <pre className="text-[12px] sm:text-xs font-mono text-[#c9d1d9] overflow-x-auto p-4 custom-scrollbar">
-                                   <code>{chapter.miniProject.code}</code>
-                                 </pre>
-                               </div>
-                            )}
-                          </div>
                         </div>
 
-                        {/* Code Example */}
-                        <div className="p-6 bg-[#0d1117] rounded-2xl border border-borderStrong shadow-sm text-left mt-6">
-                          <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                            <div className="p-2 bg-successDim text-success rounded-lg"><Code size={18}/></div>
-                            Code Example
-                          </h4>
-                          <pre className="text-[13px] sm:text-sm font-mono text-[#c9d1d9] overflow-x-auto p-5 bg-black/40 rounded-xl leading-relaxed border border-white/5 custom-scrollbar">
-                            <code>{chapter.codeExample}</code>
-                          </pre>
-                        </div>
+                        {/* Mini Project — Full Width */}
+                        {chapter.miniProject && (
+                          <div className="relative z-10 mt-6">
+                            <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-warning/50 transition-colors">
+                              <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
+                                <div className="p-2 bg-warningDim text-warning rounded-lg"><Play size={18}/></div>
+                                Mini Project: {chapter.miniProject.title}
+                              </h4>
+                              <p className="text-sm leading-relaxed mb-6 text-textSecondary">{chapter.miniProject.description}</p>
+                              {chapter.miniProject.Component ? (
+                                 <div className="w-full rounded-xl shadow-lg border border-white/10 bg-black/20">
+                                   <chapter.miniProject.Component />
+                                 </div>
+                              ) : (
+                                 <div className="w-full bg-[#0d1117] rounded-xl border border-white/5 overflow-hidden">
+                                   <div className="bg-white/5 px-4 py-2 text-xs font-mono text-textTertiary border-b border-white/5">solution</div>
+                                   <pre className="text-[12px] sm:text-xs font-mono text-[#c9d1d9] overflow-x-auto p-4 custom-scrollbar">
+                                     <code>{chapter.miniProject.code}</code>
+                                   </pre>
+                                 </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Multi-language code snippet */}
+                        {chapter.multiLangCode && (
+                           <div className="mt-6 relative z-10">
+                              <MultiLangCode code={chapter.multiLangCode} />
+                           </div>
+                        )}
                         
-                        {/* Interview Questions */}
                         {chapter.interviewQuestions && (
                           <InterviewQuestionsList questions={chapter.interviewQuestions} />
+                        )}
+
+                        {(chapter.quiz || chapter.assignment) && (
+                           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10 mt-6">
+                              {chapter.quiz && (
+                                <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col h-full hover:border-pink-500/50 transition-colors">
+                                   <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
+                                     <div className="p-2 bg-pink-500/20 text-pink-400 rounded-lg"><CheckSquare size={18}/></div>
+                                     Interactive Quiz
+                                   </h4>
+                                   <div className="space-y-4">
+                                      {chapter.quiz.map((q, qIdx) => (
+                                         <div key={qIdx} className="p-4 bg-black/40 rounded-xl border border-white/5">
+                                            <p className="text-sm font-semibold text-gray-200 mb-3">{q.question}</p>
+                                            <div className="space-y-2">
+                                               {q.options.map((opt, oIdx) => (
+                                                  <button key={oIdx} className="w-full text-left p-3 rounded-lg text-xs border border-white/10 hover:bg-white/5 transition-colors">
+                                                     {opt}
+                                                  </button>
+                                               ))}
+                                            </div>
+                                         </div>
+                                      ))}
+                                   </div>
+                                </div>
+                              )}
+                              {chapter.assignment && (
+                                <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col h-full hover:border-purple-500/50 transition-colors">
+                                   <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
+                                     <div className="p-2 bg-purple-500/20 text-purple-400 rounded-lg"><ClipboardList size={18}/></div>
+                                     Homework / Assignment
+                                   </h4>
+                                   <div className="text-sm leading-relaxed text-textSecondary space-y-3">
+                                      <p className="font-semibold text-gray-300">{chapter.assignment.title}</p>
+                                      <p>{chapter.assignment.task}</p>
+                                      {chapter.assignment.hints && (
+                                         <div className="p-3 bg-purple-900/20 border border-purple-500/20 rounded-lg text-purple-200 text-xs">
+                                            <strong>Hint:</strong> {chapter.assignment.hints}
+                                         </div>
+                                      )}
+                                   </div>
+                                </div>
+                              )}
+                           </div>
                         )}
                       </div>
                     ) : (
                       <>
                         <p className="mb-8 text-lg">Content for this chapter is coming soon.</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left mt-10 relative z-10">
-                          <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm hover:shadow-md transition-shadow">
-                            <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                              <div className="p-2 bg-primaryDim text-primary rounded-lg"><BookOpen size={18}/></div>
-                              Definition
-                            </h4>
-                            <div className="space-y-2">
-                              <div className="h-3 bg-borderStrong rounded w-full animate-pulse"></div>
-                              <div className="h-3 bg-borderStrong rounded w-5/6 animate-pulse"></div>
-                              <div className="h-3 bg-borderStrong rounded w-4/6 animate-pulse"></div>
-                            </div>
-                          </div>
-                          
-                          <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm hover:shadow-md transition-shadow">
-                            <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                              <div className="p-2 bg-secondaryDim text-secondary rounded-lg"><Cpu size={18}/></div>
-                              Internals
-                            </h4>
-                            <div className="w-full h-24 bg-borderStrong rounded-xl animate-pulse flex items-center justify-center text-textTertiary text-xs font-mono">Animated Diagram</div>
-                          </div>
-                          
-                          <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm hover:shadow-md transition-shadow">
-                            <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                              <div className="p-2 bg-successDim text-success rounded-lg"><Code size={18}/></div>
-                              Code Example
-                            </h4>
-                            <div className="space-y-2">
-                              <div className="h-3 bg-borderStrong rounded w-full animate-pulse"></div>
-                              <div className="h-3 bg-borderStrong rounded w-3/4 animate-pulse"></div>
-                              <div className="h-3 bg-borderStrong rounded w-5/6 animate-pulse"></div>
-                            </div>
-                          </div>
-                          
-                          <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm hover:shadow-md transition-shadow">
-                            <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                              <div className="p-2 bg-warningDim text-warning rounded-lg"><Play size={18}/></div>
-                              Mini Project
-                            </h4>
-                            <div className="w-full h-24 bg-borderStrong rounded-xl animate-pulse flex items-center justify-center text-textTertiary text-xs font-mono">Interactive Sandbox</div>
-                          </div>
-                        </div>
                       </>
                     )}
-                        {/* Summary and Next Lesson */}
                         {(chapter.summary || chapter.nextLesson) && (
-                          <div className="mt-8 space-y-4 relative z-10">
+                          <div className="mt-8 space-y-4 relative z-10 text-left">
                             {chapter.summary && (
-                              <div className="p-5 bg-primary/5 rounded-xl border border-primary/20 flex gap-4 items-start">
-                                <div className="p-2 bg-primary/20 text-primary rounded-lg shrink-0 mt-0.5"><FileText size={16}/></div>
+                              <div className="p-5 bg-gray-500/5 rounded-xl border border-gray-500/20 flex gap-4 items-start">
+                                <div className="p-2 bg-gray-500/20 text-gray-400 rounded-lg shrink-0 mt-0.5"><FileText size={16}/></div>
                                 <div>
                                   <h4 className="font-bold text-white mb-1 text-sm">Summary</h4>
                                   <p className="text-sm text-textSecondary leading-relaxed">{chapter.summary}</p>
@@ -502,8 +482,8 @@ export default function ReactCoursePage() {
                               </div>
                             )}
                             {chapter.nextLesson && (
-                              <div className="p-5 bg-secondary/5 rounded-xl border border-secondary/20 flex gap-4 items-start">
-                                <div className="p-2 bg-secondary/20 text-secondary rounded-lg shrink-0 mt-0.5"><FastForward size={16}/></div>
+                              <div className="p-5 bg-blue-500/5 rounded-xl border border-blue-500/20 flex gap-4 items-start">
+                                <div className="p-2 bg-blue-500/20 text-blue-400 rounded-lg shrink-0 mt-0.5"><FastForward size={16}/></div>
                                 <div>
                                   <h4 className="font-bold text-white mb-1 text-sm">Up Next</h4>
                                   <p className="text-sm text-textSecondary leading-relaxed">{chapter.nextLesson}</p>
@@ -519,7 +499,7 @@ export default function ReactCoursePage() {
                         className={`px-8 py-3.5 rounded-xl font-bold transition-all duration-300 flex items-center gap-2 ${
                           progress[chapter.id] === 'Completed' 
                           ? 'bg-successDim text-success border border-success/30'
-                          : 'bg-primary text-white hover:bg-primary/90 shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5'
+                          : 'bg-gray-600 text-white hover:bg-gray-500 shadow-xl shadow-gray-500/20 hover:shadow-gray-500/40 hover:-translate-y-0.5'
                         }`}
                       >
                         {progress[chapter.id] === 'Completed' ? (
@@ -531,8 +511,8 @@ export default function ReactCoursePage() {
                     </div>
                   </div>
                 </motion.section>
-              ))
-            )}
+              );
+            })()}
           </motion.div>
         </main>
       </div>

@@ -33,7 +33,7 @@ export default function TopNav() {
         { href: "/genai", label: "GenAI Mastery", desc: "Build Generative AI apps", icon: "Sparkles", color: "from-pink-500 to-rose-500" },
         { href: "/coming-soon?course=Python", label: "Python Course", desc: "Python basic to advanced", icon: "Terminal", color: "from-yellow-400 to-amber-500" },
         { href: "/coming-soon?course=Java", label: "Java Course", desc: "Core Java to Spring", icon: "Coffee", color: "from-orange-600 to-red-600" },
-        { href: "/coming-soon?course=OOPs+Concepts", label: "OOPs Concepts", desc: "Object-Oriented Programming", icon: "Layers", color: "from-gray-500 to-gray-600", isComingSoon: true },
+        { href: "/oop-course", label: "OOPs Concepts", desc: "Object-Oriented Programming", icon: "Layers", color: "from-gray-500 to-gray-600" },
       ]
     },
     { href: "/interview", label: "Interview Questions" },

@@ -26,7 +26,7 @@ const COURSES = [
 
   { id: "cicd", title: "CI/CD Pipelines", desc: "Automate your deployments", color: "from-orange-500 to-red-500", icon: GitMerge, link: "/cicd", complete: true },
   { id: "genai", title: "GenAI Mastery", desc: "Build Generative AI apps", color: "from-pink-500 to-rose-500", icon: Sparkles, link: "/genai", complete: true },
-  { id: "oop", title: "OOPs Concepts", desc: "Object-Oriented Programming", color: "from-gray-500 to-gray-600", icon: Layers, link: "/coming-soon" },
+  { id: "oop", title: "OOPs Concepts", desc: "Object-Oriented Programming", color: "from-gray-500 to-gray-600", icon: Layers, link: "/oop-course", complete: true },
   { id: "python-course", title: "Python Course", desc: "Python basic to advanced", color: "from-yellow-400 to-amber-500", icon: Terminal, link: "/coming-soon?course=Python" },
   { id: "java-course", title: "Java Course", desc: "Core Java to Spring", color: "from-orange-600 to-red-600", icon: Coffee, link: "/coming-soon?course=Java" },
 ];

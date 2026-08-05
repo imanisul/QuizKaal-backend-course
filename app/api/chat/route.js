@@ -4,8 +4,31 @@ import { searchKnowledgeBase, getLocalContext } from '@/lib/kai-indexer';
 
 export const maxDuration = 30; // 30 seconds max duration
 
+// Simple in-memory rate limiter (10 requests per minute per IP)
+const rateLimitMap = new Map();
+const RATE_LIMIT = 10;
+const WINDOW_MS = 60 * 1000;
+
 export async function POST(req) {
   try {
+    // 0. Rate Limiting Check
+    const ip = req.headers.get('x-forwarded-for') || 'anonymous';
+    const now = Date.now();
+    const userRecord = rateLimitMap.get(ip);
+    
+    if (userRecord) {
+      if (now - userRecord.startTime < WINDOW_MS) {
+        if (userRecord.count >= RATE_LIMIT) {
+          return new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), { status: 429 });
+        }
+        userRecord.count += 1;
+      } else {
+        rateLimitMap.set(ip, { count: 1, startTime: now });
+      }
+    } else {
+      rateLimitMap.set(ip, { count: 1, startTime: now });
+    }
+
     const { messages, pathname } = await req.json();
     const lastMessage = messages[messages.length - 1].content;
 
