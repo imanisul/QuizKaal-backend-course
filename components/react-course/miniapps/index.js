@@ -474,7 +474,7 @@ export function Ch23App() {
   return (
     <div className="p-4 bg-slate-900 rounded border border-slate-700 text-slate-300 text-center">
       <h3 className="font-bold mb-2">Lazy Loading Chunk</h3>
-      <div className="text-xs font-mono p-2 bg-slate-800 rounded">await import('./HeavyComponent.js') -> lazy()</div>
+      <div className="text-xs font-mono p-2 bg-slate-800 rounded">await import('./HeavyComponent.js') -&gt; lazy()</div>
     </div>
   );
 }
