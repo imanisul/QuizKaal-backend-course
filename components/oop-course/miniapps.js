@@ -109,7 +109,7 @@ export function Ch10App() {
 }
 
 export function Ch11App() {
-  return <div className="p-4 bg-gray-900 rounded text-white text-center font-mono">file.open('data.txt') -> read() -> file.close()</div>;
+  return <div className="p-4 bg-gray-900 rounded text-white text-center font-mono">file.open('data.txt') -&gt; read() -&gt; file.close()</div>;
 }
 
 export function Ch12App() {
