@@ -79,7 +79,7 @@ export default function FeaturedPromptCard({ prompt, onCopy, onPreview }) {
             </div>
           </div>
 
-          <div className="w-full md:w-[400px] shrink-0 relative z-10 group/preview cursor-pointer" onClick={() => onPreview(prompt)}>
+          <div role="button" tabIndex={0} className="w-full md:w-[400px] shrink-0 relative z-10 group/preview cursor-pointer" onClick={() => onPreview(prompt)} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPreview(prompt); }}}>
             <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-cyan-500/20 blur-2xl -z-10 group-hover/preview:blur-3xl transition-all duration-500" />
             <div className="bg-black/80 border border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden backdrop-blur-md">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-cyan-400" />

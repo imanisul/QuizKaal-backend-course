@@ -28,7 +28,7 @@ export default function OopCourseClient() {
 
   const progress = {};
   allChapterIds.forEach(id => {
-    progress[id] = progressEngine.isCompleted(id) ? 'Completed' : 'Not Started';
+    progress[id] = progressEngine.isCompleted(id, globalState) ? 'Completed' : 'Not Started';
   });
 
   const allChapters = curriculum.flatMap(g => g.chapters);

@@ -84,7 +84,7 @@ export default function SystemDesignLesson({ params }) {
   const prevSlug = currentIndex > 0 ? TOPICS_LIST[currentIndex - 1] : null;
   const nextSlug = currentIndex < TOPICS_LIST.length - 1 ? TOPICS_LIST[currentIndex + 1] : null;
   const isFinal = currentIndex === TOPICS_LIST.length - 1;
-  const isCompleted = progressEngine.isCompleted(slug);
+  const isCompleted = progressEngine.isCompleted(slug, globalState);
 
   useEffect(() => { setIsLoaded(true); }, []);
 

@@ -90,7 +90,7 @@ export default function PromptBuilderInteractive() {
                 key={step.id}
                 className={`transition-all duration-300 ${isActive ? "opacity-100 scale-100" : isCompleted ? "opacity-60 scale-95" : "opacity-30 scale-95 pointer-events-none"}`}
               >
-                <div className="flex items-center justify-between mb-3 cursor-pointer" onClick={() => isCompleted && setActiveStep(step.id)}>
+                <div role="button" tabIndex={0} className="flex items-center justify-between mb-3 cursor-pointer" onClick={() => isCompleted && setActiveStep(step.id)} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if(isCompleted) setActiveStep(step.id); }}}>
                   <h4 className={`font-bold m-0 flex items-center gap-2 ${isActive ? "text-cyan-400" : "text-white"}`}>
                     {isCompleted ? <CheckCircle2 size={16} className="text-success" /> : null}
                     {step.title}

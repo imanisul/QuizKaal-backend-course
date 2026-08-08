@@ -3,6 +3,17 @@ import { lessonData } from "../data/lessons";
 import Script from "next/script";
 import SystemDesignClient from "./SystemDesignClient";
 
+export function generateMetadata({ params }) {
+  const { slug } = params;
+  const rawData = lessonData[slug] || {};
+  const formattedTitle = slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  return generateSEOMetadata({
+    title: rawData.title ? `${rawData.title} | System Design` : `${formattedTitle} System Design`,
+    description: rawData.description || `Learn the architecture and system design of ${formattedTitle} on QuizKaal.`,
+    path: `/system-design/${slug}`,
+  });
+}
+
 export default function SystemDesignPage({ params }) {
   const { slug } = params;
   const rawData = lessonData[slug] || {};

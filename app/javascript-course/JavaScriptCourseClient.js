@@ -9,14 +9,17 @@ import {
   Home, ChevronLeft, Menu, X, Lightbulb, Globe, AlertTriangle, ShieldCheck, FileText, FastForward
 } from "lucide-react";
 
-import { curriculum } from "@/data/reactCourseData";
-import AnimatedVisual from "@/components/react-course/AnimatedVisuals";
+import { curriculum } from "@/data/javascriptCourseData";
+import AnimatedVisual from "@/components/javascript-course/AnimatedVisuals";
 import CourseHeader from '@/components/ui/CourseHeader';
 import BeforeAfterAnimation from "@/components/react-course/BeforeAfterAnimation";
 import InterviewQuestionsList from "@/components/react-course/InterviewQuestionsList";
+import LineByLineCode from "@/components/javascript-course/LineByLineCode";
+import QuizEngine from "@/components/javascript-course/QuizEngine";
+import JSAssignmentRunner from "@/components/javascript-course/JSAssignmentRunner";
 import { progressEngine, useProgress as useGlobalProgress } from "@/utils/progressEngine";
 
-export default function ReactCoursePage() {
+export default function JavaScriptCourseClient() {
   const [mounted, setMounted] = useState(false);
   const [activeChapter, setActiveChapter] = useState("ch1");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -77,7 +80,7 @@ export default function ReactCoursePage() {
     const isCurrentlyCompleted = progressEngine.isCompleted(id);
     
     if (!isCurrentlyCompleted) {
-      progressEngine.markComplete(id, 'react-course', 50);
+      progressEngine.markComplete(id, 'javascript-course', 50);
       
       // Auto-scroll to next chapter
       const allChapters = curriculum.flatMap(g => g.chapters);
@@ -284,9 +287,9 @@ export default function ReactCoursePage() {
             {/* Unified Course Header */}
             <div className="pt-8">
               <CourseHeader 
-                title="React Mastery"
-                description="A complete, self-contained interactive learning module. Master modern React with guided concepts, mental models, and hands-on mini projects."
-                icon={Code}
+                title="JavaScript Mastery"
+                description="Deep dive into the JS Engine, Call Stack, Event Loop, Closures, Promises, and the DOM with live interactive animations."
+                icon={Zap}
                 completedCount={completedChapters}
                 totalLessons={totalChapters}
                 nextLessonTitle={
@@ -299,8 +302,8 @@ export default function ReactCoursePage() {
                     .flatMap(g => g.chapters)
                     .find(ch => progress[ch.id] !== "Completed")?.id || "")
                 }
-                themeColor="from-[#61DAFB] to-[#00B4D8]"
-                bgGlow="from-[#61DAFB]/20 to-[#00B4D8]/20"
+                themeColor="from-yellow-400 to-amber-500"
+                bgGlow="from-yellow-400/20 to-amber-500/20"
               />
             </div>
 
@@ -332,168 +335,163 @@ export default function ReactCoursePage() {
                     {/* Decorative gradient blur */}
                     <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 blur-3xl rounded-full pointer-events-none transition-transform group-hover:scale-150 duration-700"></div>
 
-                    {chapter.definition ? (
-                      <div className="text-left space-y-6 mt-6">
-                        <div className="bg-bgElevated p-6 rounded-2xl border border-borderStrong shadow-inner relative">
-                          <h4 className="text-xs font-bold uppercase tracking-widest text-textTertiary mb-3">Definition</h4>
-                          <p className="text-lg leading-relaxed text-textPrimary">
-                            {chapter.definition}
-                          </p>
+                    <div className="text-left space-y-6 mt-6">
+                      
+                      {/* 1. Large Feature Visualizer */}
+                      <div className="w-full min-h-[400px] lg:min-h-[500px] bg-bgElevated rounded-2xl border border-borderStrong shadow-[0_0_25px_rgba(124,58,237,0.15)] flex flex-col overflow-hidden relative z-10 group mb-10 transition-all hover:shadow-[0_0_35px_rgba(124,58,237,0.3)]">
+                        <div className="bg-black/40 px-6 py-4 border-b border-borderStrong flex items-center justify-between z-20">
+                          <h4 className="font-bold flex items-center gap-3 text-white text-lg">
+                            <div className="p-2 bg-secondaryDim text-secondary rounded-lg"><Monitor size={20}/></div>
+                            Interactive Environment: {chapter.title}
+                          </h4>
                         </div>
+                        <div className="flex-1 w-full h-full relative p-2 md:p-6 bg-gradient-to-b from-bgElevated to-bgCard">
+                          <AnimatedVisual topicId={chapter.id} />
+                        </div>
+                      </div>
 
-                        {/* NEW: Before / After Animation block */}
-                        {chapter.beforeAfter && (
-                          <BeforeAfterAnimation 
-                            beforeDesc={chapter.beforeAfter.problem}
-                            afterDesc={chapter.beforeAfter.solution}
-                            BeforeComp={chapter.beforeAfter.BeforeComp}
-                            AfterComp={chapter.beforeAfter.AfterComp}
-                          />
+                      <div className="bg-bgElevated p-6 rounded-2xl border border-borderStrong shadow-inner relative">
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-textTertiary mb-3">
+                          {chapter.concept?.title || "Concept"}
+                        </h4>
+                        <p className="text-lg leading-relaxed text-textPrimary">
+                          {chapter.concept?.content}
+                        </p>
+                      </div>
+
+                      {/* Before / After Animation block */}
+                      {chapter.beforeAfter && (
+                        <BeforeAfterAnimation 
+                          beforeDesc={chapter.beforeAfter.problem}
+                          afterDesc={chapter.beforeAfter.solution}
+                          BeforeComp={chapter.beforeAfter.BeforeComp}
+                          AfterComp={chapter.beforeAfter.AfterComp}
+                        />
+                      )}
+
+                      {/* Extended Educational Content Grid */}
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10 mt-6">
+                        {chapter.whyItExists && (
+                          <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-primary/50 transition-colors">
+                            <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
+                              <div className="p-2 bg-primaryDim text-primary rounded-lg"><Lightbulb size={18}/></div>
+                              Why This Exists
+                            </h4>
+                            <p className="text-sm leading-relaxed text-textSecondary">{chapter.whyItExists}</p>
+                          </div>
                         )}
-
-                        {/* Extended Educational Content Grid */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10 mt-6">
-                          {chapter.whyItExists && (
-                            <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-primary/50 transition-colors">
-                              <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                                <div className="p-2 bg-primaryDim text-primary rounded-lg"><Lightbulb size={18}/></div>
-                                Why This Exists
-                              </h4>
-                              <p className="text-sm leading-relaxed text-textSecondary">{chapter.whyItExists}</p>
-                            </div>
-                          )}
-                          {chapter.realWorld && (
-                            <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-indigo-500/50 transition-colors">
-                              <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                                <div className="p-2 bg-indigo-500/20 text-indigo-400 rounded-lg"><Globe size={18}/></div>
-                                How Companies Use It
-                              </h4>
-                              <p className="text-sm leading-relaxed text-textSecondary">{chapter.realWorld}</p>
-                            </div>
-                          )}
-                          {chapter.commonMistakes && (
-                            <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-rose-500/50 transition-colors">
-                              <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                                <div className="p-2 bg-rose-500/20 text-rose-400 rounded-lg"><AlertTriangle size={18}/></div>
-                                Common Mistakes
-                              </h4>
-                              <p className="text-sm leading-relaxed text-textSecondary">{chapter.commonMistakes}</p>
-                            </div>
-                          )}
-                          {chapter.performanceSecurity && (
-                            <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-emerald-500/50 transition-colors">
-                              <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                                <div className="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg"><ShieldCheck size={18}/></div>
-                                Performance & Security
-                              </h4>
-                              <p className="text-sm leading-relaxed text-textSecondary">{chapter.performanceSecurity}</p>
-                            </div>
-                          )}
-                        </div>
-
-                        
-                        <div className={`grid grid-cols-1 ${chapter.miniProject ? 'lg:grid-cols-2' : ''} gap-6 relative z-10 mt-6`}>
-                          {/* Visual Explanation */}
-                          <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col h-full hover:border-secondary/50 transition-colors">
+                        {chapter.internals && (
+                          <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-secondary/50 transition-colors">
                             <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
                               <div className="p-2 bg-secondaryDim text-secondary rounded-lg"><Cpu size={18}/></div>
-                              How it works
+                              How it works Internally
                             </h4>
-                            <p className="text-sm leading-relaxed mb-6 flex-1 text-textSecondary">{chapter.internals}</p>
-                            <div className="w-full h-32 rounded-xl overflow-hidden group-hover:shadow-[0_0_15px_rgba(124,58,237,0.2)] transition-shadow">
-                               <AnimatedVisual topicId={chapter.id} />
-                            </div>
+                            <p className="text-sm leading-relaxed text-textSecondary">{chapter.internals}</p>
                           </div>
-                          
-                          {/* Mini Project */}
-                          {chapter.miniProject && (
-                            <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col h-full hover:border-warning/50 transition-colors">
-                              <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                                <div className="p-2 bg-warningDim text-warning rounded-lg"><Play size={18}/></div>
-                                Mini Project: {chapter.miniProject.title}
-                              </h4>
-                              <p className="text-sm leading-relaxed mb-6 flex-1 text-textSecondary">{chapter.miniProject.description}</p>
-                              {chapter.miniProject.Component ? (
-                                 <div className="mt-auto w-full rounded-xl overflow-hidden shadow-lg border border-white/10 bg-black/20">
-                                   <chapter.miniProject.Component />
-                                 </div>
-                              ) : (
-                                 <div className="mt-auto w-full bg-[#0d1117] rounded-xl border border-white/5 overflow-hidden">
-                                   <div className="bg-white/5 px-4 py-2 text-xs font-mono text-textTertiary border-b border-white/5">solution.jsx</div>
-                                   <pre className="text-[12px] sm:text-xs font-mono text-[#c9d1d9] overflow-x-auto p-4 custom-scrollbar">
-                                     <code>{chapter.miniProject.code}</code>
-                                   </pre>
-                                 </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Code Example */}
-                        <div className="p-6 bg-[#0d1117] rounded-2xl border border-borderStrong shadow-sm text-left mt-6">
-                          <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                            <div className="p-2 bg-successDim text-success rounded-lg"><Code size={18}/></div>
-                            Code Example
-                          </h4>
-                          <pre className="text-[13px] sm:text-sm font-mono text-[#c9d1d9] overflow-x-auto p-5 bg-black/40 rounded-xl leading-relaxed border border-white/5 custom-scrollbar">
-                            <code>{chapter.codeExample}</code>
-                          </pre>
-                        </div>
-                        
-                        {/* Interview Questions */}
-                        {chapter.interviewQuestions && (
-                          <InterviewQuestionsList questions={chapter.interviewQuestions} />
+                        )}
+                        {chapter.realWorld && (
+                          <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-indigo-500/50 transition-colors">
+                            <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
+                              <div className="p-2 bg-indigo-500/20 text-indigo-400 rounded-lg"><Globe size={18}/></div>
+                              Real World Example
+                            </h4>
+                            <p className="text-sm leading-relaxed text-textSecondary">{chapter.realWorld}</p>
+                          </div>
+                        )}
+                        {chapter.commonMistakes && (
+                          <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-rose-500/50 transition-colors">
+                            <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
+                              <div className="p-2 bg-rose-500/20 text-rose-400 rounded-lg"><AlertTriangle size={18}/></div>
+                              Common Mistakes
+                            </h4>
+                            <p className="text-sm leading-relaxed text-textSecondary">{chapter.commonMistakes}</p>
+                          </div>
+                        )}
+                        {chapter.performanceSecurity && (
+                          <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm flex flex-col hover:border-emerald-500/50 transition-colors">
+                            <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
+                              <div className="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg"><ShieldCheck size={18}/></div>
+                              Performance & Security
+                            </h4>
+                            <p className="text-sm leading-relaxed text-textSecondary">{chapter.performanceSecurity}</p>
+                          </div>
                         )}
                       </div>
-                    ) : (
-                      <>
-                        <p className="mb-8 text-lg">Content for this chapter is coming soon.</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left mt-10 relative z-10">
-                          <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm hover:shadow-md transition-shadow">
-                            <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                              <div className="p-2 bg-primaryDim text-primary rounded-lg"><BookOpen size={18}/></div>
-                              Definition
-                            </h4>
-                            <div className="space-y-2">
-                              <div className="h-3 bg-borderStrong rounded w-full animate-pulse"></div>
-                              <div className="h-3 bg-borderStrong rounded w-5/6 animate-pulse"></div>
-                              <div className="h-3 bg-borderStrong rounded w-4/6 animate-pulse"></div>
-                            </div>
-                          </div>
+
+                      {/* Mini Project (Large) */}
+                      {chapter.miniProject && (
+                        <div className="mt-10 p-8 bg-bgElevated rounded-3xl border border-warning/30 shadow-[0_0_20px_rgba(234,179,8,0.1)] flex flex-col relative z-10 overflow-hidden">
+                          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-warning to-orange-500"></div>
+                          <h4 className="text-2xl font-bold flex items-center gap-3 mb-4 text-white">
+                            <div className="p-3 bg-warningDim text-warning rounded-xl"><Play size={24}/></div>
+                            Mini Project: {chapter.miniProject.title}
+                          </h4>
+                          <p className="text-base leading-relaxed mb-8 text-textSecondary">{chapter.miniProject.description}</p>
                           
-                          <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm hover:shadow-md transition-shadow">
-                            <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                              <div className="p-2 bg-secondaryDim text-secondary rounded-lg"><Cpu size={18}/></div>
-                              Internals
-                            </h4>
-                            <div className="w-full h-24 bg-borderStrong rounded-xl animate-pulse flex items-center justify-center text-textTertiary text-xs font-mono">Animated Diagram</div>
-                          </div>
-                          
-                          <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm hover:shadow-md transition-shadow">
-                            <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                              <div className="p-2 bg-successDim text-success rounded-lg"><Code size={18}/></div>
-                              Code Example
-                            </h4>
-                            <div className="space-y-2">
-                              <div className="h-3 bg-borderStrong rounded w-full animate-pulse"></div>
-                              <div className="h-3 bg-borderStrong rounded w-3/4 animate-pulse"></div>
-                              <div className="h-3 bg-borderStrong rounded w-5/6 animate-pulse"></div>
-                            </div>
-                          </div>
-                          
-                          <div className="p-6 bg-bgElevated rounded-2xl border border-borderStrong shadow-sm hover:shadow-md transition-shadow">
-                            <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
-                              <div className="p-2 bg-warningDim text-warning rounded-lg"><Play size={18}/></div>
-                              Mini Project
-                            </h4>
-                            <div className="w-full h-24 bg-borderStrong rounded-xl animate-pulse flex items-center justify-center text-textTertiary text-xs font-mono">Interactive Sandbox</div>
-                          </div>
+                          {/* Mini Project Viewer implementation (we can build a separate component or inline it) */}
+                          {chapter.miniProject.Component ? (
+                              <div className="w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-[#0d1117] min-h-[400px]">
+                                <chapter.miniProject.Component />
+                              </div>
+                          ) : (
+                              <div className="w-full bg-[#0d1117] rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
+                                <div className="bg-white/5 px-4 py-3 text-sm font-mono text-textTertiary border-b border-white/5 flex items-center gap-2">
+                                  <FileText size={16}/> project.js
+                                </div>
+                                <pre className="text-sm font-mono text-[#c9d1d9] overflow-x-auto p-6 custom-scrollbar">
+                                  <code>{chapter.miniProject.code}</code>
+                                </pre>
+                              </div>
+                          )}
                         </div>
-                      </>
-                    )}
-                        {/* Summary and Next Lesson */}
-                        {(chapter.summary || chapter.nextLesson) && (
-                          <div className="mt-8 space-y-4 relative z-10">
+                      )}
+
+                      {/* Code Example / Line-by-Line */}
+                      {(chapter.codeSnippet || chapter.lineByLineExplanation) && (
+                        <div className="mt-10 relative z-10">
+                          {chapter.lineByLineExplanation ? (
+                            <LineByLineCode 
+
+                                codeLines={chapter.lineByLineExplanation.code.split('\n')} 
+                                explanations={chapter.lineByLineExplanation.explanations} 
+                              />
+                            ) : chapter.codeSnippet ? (
+                              <div className="p-6 bg-[#0d1117] rounded-2xl border border-borderStrong shadow-sm text-left">
+                                <h4 className="font-bold flex items-center gap-3 mb-4 text-white">
+                                  <div className="p-2 bg-successDim text-success rounded-lg"><Code size={18}/></div>
+                                  Code Example
+                                </h4>
+                                <pre className="text-[13px] sm:text-sm font-mono text-[#c9d1d9] overflow-x-auto p-5 bg-black/40 rounded-xl leading-relaxed border border-white/5 custom-scrollbar">
+                                  <code>{chapter.codeSnippet}</code>
+                                </pre>
+                              </div>
+                            ) : null}
+                          </div>
+                        )}
+                        
+                        {/* Quizzes */}
+                        {chapter.quizzes && chapter.quizzes.length > 0 && (
+                          <div className="mt-6 relative z-10">
+                            <QuizEngine quizzes={chapter.quizzes} />
+                          </div>
+                        )}
+
+                        {/* Assignment */}
+                        {chapter.assignment && (
+                          <JSAssignmentRunner assignment={chapter.assignment} />
+                        )}
+
+                        {/* Interview Questions */}
+                        {chapter.interviewQs && (
+                          <div className="mt-6 relative z-10">
+                            <InterviewQuestionsList questions={chapter.interviewQs} />
+                          </div>
+                        )}
+                      </div>
+                        
+                      {/* Summary and Next Lesson */}
+                      {(chapter.summary || chapter.nextLesson) && (
+                        <div className="mt-8 space-y-4 relative z-10">
                             {chapter.summary && (
                               <div className="p-5 bg-primary/5 rounded-xl border border-primary/20 flex gap-4 items-start">
                                 <div className="p-2 bg-primary/20 text-primary rounded-lg shrink-0 mt-0.5"><FileText size={16}/></div>

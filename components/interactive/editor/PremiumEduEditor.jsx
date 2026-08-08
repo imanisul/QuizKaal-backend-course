@@ -21,7 +21,8 @@ export default function PremiumEduEditor({
   onReset,
   executionState = null, // { isRunning, currentLine, variables, output, error, success }
   explanations = {}, // { 1: { title: "print()", desc: "..."} }
-  className = ""
+  className = "",
+  hideOutputPanel = false
 }) {
   const [code, setCode] = useState(initialCode);
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -33,6 +34,12 @@ export default function PremiumEduEditor({
 
   // Line click detection
   const handleEditorClick = (e) => {
+    // Focus the textarea if we click empty space in the container
+    const textarea = e.currentTarget.querySelector('textarea');
+    if (textarea && e.target !== textarea) {
+      textarea.focus();
+    }
+
     // If not in learning mode or no explanations, ignore
     if (Object.keys(explanations).length === 0) return;
     
@@ -151,7 +158,7 @@ export default function PremiumEduEditor({
 
           {/* Actual Code Editor */}
           <div 
-            className="flex-1 overflow-auto custom-scrollbar relative p-4"
+            className="flex-1 overflow-auto custom-scrollbar relative"
             onClick={handleEditorClick}
             style={{ fontSize: `${fontSize}px`, lineHeight: 1.5 }}
           >
@@ -173,13 +180,26 @@ export default function PremiumEduEditor({
               ref={editorRef}
               value={code}
               onValueChange={setCode}
-              highlight={code => Prism.highlight(code, Prism.languages[language] || Prism.languages.javascript, language)}
-              padding={0}
+              highlight={code => {
+                try {
+                  const grammar = Prism.languages[language] || Prism.languages.javascript;
+                  return grammar ? Prism.highlight(code, grammar, language) : code;
+                } catch(e) {
+                  return code;
+                }
+              }}
+              padding={16}
               style={{
                 fontFamily: '"Fira Code", "JetBrains Mono", monospace',
                 minHeight: '100%',
                 outline: 'none',
                 color: theme === "dark" ? "#c9d1d9" : "#24292f"
+              }}
+              textareaProps={{
+                spellCheck: false,
+                autoCapitalize: 'none',
+                autoCorrect: 'off',
+                autoComplete: 'off'
               }}
               className="editor-container"
             />
@@ -187,9 +207,10 @@ export default function PremiumEduEditor({
         </div>
 
         {/* Output Panel OR Explanation Panel */}
-        <div className={`w-full md:w-[400px] flex-shrink-0 flex flex-col border-t md:border-t-0 md:border-l ${theme === "dark" ? "bg-[#161b22] border-white/10" : "bg-gray-50 border-gray-200"}`}>
-          
-          <AnimatePresence mode="wait">
+        {(!hideOutputPanel || (Object.keys(explanations).length > 0)) && (
+          <div className={`w-full md:w-[400px] flex-shrink-0 flex flex-col border-t md:border-t-0 md:border-l ${theme === "dark" ? "bg-[#161b22] border-white/10" : "bg-gray-50 border-gray-200"}`}>
+            
+            <AnimatePresence mode="wait">
             {selectedLine && explanations[selectedLine] ? (
               <motion.div 
                 key="explanation"
@@ -269,15 +290,18 @@ export default function PremiumEduEditor({
             )}
           </AnimatePresence>
         </div>
+        )}
       </div>
       
       {/* Styles to override textarea focus and syntax highlighting visibility */}
       <style dangerouslySetInnerHTML={{__html: `
         .editor-container textarea {
           outline: none !important;
+          min-height: 100% !important;
         }
         .editor-container pre {
           pointer-events: none;
+          min-height: 100% !important;
         }
       `}} />
     </div>

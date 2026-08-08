@@ -5,7 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { allLessons, getLessonBySlug } from "@/data/roadmap";
-import { Menu, X, ChevronDown, Server, Smartphone, BrainCircuit, Code2, GitMerge, Sparkles, Bot, Globe, Layers, Database, Terminal, Coffee, Rocket, ArrowRight } from "lucide-react";
+import { Menu, X, ChevronDown, Server, Smartphone, BrainCircuit, Code2, GitMerge, Sparkles, Bot, Globe, Layers, Database, Terminal, Coffee, Rocket, ArrowRight, Zap } from "lucide-react";
 import GlobalSearch from "./GlobalSearch";
 
 export default function TopNav() {
@@ -28,6 +28,7 @@ export default function TopNav() {
         { href: "/mobile-course", label: "Mobile Engineering", desc: "Build iOS & Android apps", icon: "Smartphone", color: "from-emerald-500 to-teal-500" },
         { href: "/ai-prompt-engineering", label: "AI & Prompt Eng.", desc: "Master LLMs & prompting", icon: "BrainCircuit", color: "from-violet-500 to-fuchsia-500" },
         { href: "/react-course", label: "React Mastery", desc: "Modern frontend development", icon: "Code2", color: "from-sky-400 to-blue-500" },
+        { href: "/javascript-course", label: "JavaScript Mastery", desc: "Deep dive JS Engine & ES6+", icon: "Zap", color: "from-yellow-300 to-yellow-500" },
         { href: "/cicd", label: "CI/CD Pipelines", desc: "Automate your deployments", icon: "GitMerge", color: "from-orange-500 to-red-500" },
         { href: "/agentic-ai", label: "Agentic AI", desc: "Build autonomous AI agents", icon: "Bot", color: "from-indigo-500 to-blue-600" },
         { href: "/genai", label: "GenAI Mastery", desc: "Build Generative AI apps", icon: "Sparkles", color: "from-pink-500 to-rose-500" },

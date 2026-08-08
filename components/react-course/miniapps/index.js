@@ -405,13 +405,112 @@ export function Ch16App() {
   );
 }
 
-export function Ch17App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">API Sync Simulator coming soon</div>; }
-export function Ch18App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">Auth Gateway Simulator coming soon</div>; }
-export function Ch19App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">Render Profiler coming soon</div>; }
-export function Ch20App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">Test Suite Runner coming soon</div>; }
-export function Ch21App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">CI/CD Pipeline Sim coming soon</div>; }
-export function Ch22App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">Crash & Recover Sim coming soon</div>; }
-export function Ch23App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">Network Chunk Sim coming soon</div>; }
-export function Ch24App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">Global Store Explorer coming soon</div>; }
-export function Ch25App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">Architecture Sandbox coming soon</div>; }
-export function Ch26App() { return <div className="p-4 text-center text-slate-500 bg-slate-900 rounded border border-dashed border-slate-700">E-commerce Showcase coming soon</div>; }
+export function Ch17App() {
+  const [data, setData] = useState(null);
+  const fetchApi = () => { setData('Loading...'); setTimeout(() => setData({ user: 'Alex', id: 1 }), 1000); };
+  return (
+    <div className="p-4 bg-slate-900 rounded border border-slate-700 text-slate-300 text-center">
+      <h3 className="font-bold mb-2">API Sync Simulator</h3>
+      <button onClick={fetchApi} className="px-4 py-2 bg-blue-600 rounded text-white mb-2">Fetch Data</button>
+      <div className="font-mono text-sm">{data ? JSON.stringify(data) : 'No data'}</div>
+    </div>
+  );
+}
+
+export function Ch18App() {
+  const [auth, setAuth] = useState(false);
+  return (
+    <div className="p-4 bg-slate-900 rounded border border-slate-700 text-slate-300 text-center">
+      <h3 className="font-bold mb-2">Auth Gateway</h3>
+      {auth ? <div className="text-emerald-400">✅ Authenticated (Token active)</div> : <div className="text-red-400">❌ Not Authenticated</div>}
+      <button onClick={() => setAuth(!auth)} className="mt-2 px-4 py-2 bg-slate-700 rounded text-white">{auth ? 'Logout' : 'Login'}</button>
+    </div>
+  );
+}
+
+export function Ch19App() {
+  return (
+    <div className="p-4 bg-slate-900 rounded border border-slate-700 text-slate-300 text-center">
+      <h3 className="font-bold mb-2">Render Profiler</h3>
+      <p className="text-xs">Simulating React DevTools Profiler tracing a slow component...</p>
+      <div className="w-full bg-slate-800 h-2 mt-2 rounded overflow-hidden">
+        <div className="bg-blue-500 h-full w-1/2 animate-pulse"></div>
+      </div>
+    </div>
+  );
+}
+
+export function Ch20App() {
+  const [passed, setPassed] = useState(false);
+  return (
+    <div className="p-4 bg-slate-900 rounded border border-slate-700 text-slate-300 text-center">
+      <h3 className="font-bold mb-2">Test Suite Runner</h3>
+      <button onClick={() => setPassed(true)} className="px-4 py-2 bg-green-600 rounded text-white mb-2">Run Tests</button>
+      <div>{passed ? '✅ 15/15 passing' : 'Waiting for test run...'}</div>
+    </div>
+  );
+}
+
+export function Ch21App() {
+  return (
+    <div className="p-4 bg-slate-900 rounded border border-slate-700 text-slate-300 text-center flex justify-center gap-2 text-sm">
+      <div className="p-2 border border-blue-500 rounded">Build</div> ➡️
+      <div className="p-2 border border-purple-500 rounded">Test</div> ➡️
+      <div className="p-2 border border-green-500 rounded">Deploy</div>
+    </div>
+  );
+}
+
+export function Ch22App() {
+  return (
+    <div className="p-4 bg-slate-900 rounded border border-slate-700 text-slate-300 text-center">
+      <h3 className="font-bold mb-2">Crash Boundary</h3>
+      <div className="p-2 bg-red-900 text-red-200 border border-red-500 rounded">Error caught by ErrorBoundary. Fallback UI shown.</div>
+    </div>
+  );
+}
+
+export function Ch23App() {
+  return (
+    <div className="p-4 bg-slate-900 rounded border border-slate-700 text-slate-300 text-center">
+      <h3 className="font-bold mb-2">Lazy Loading Chunk</h3>
+      <div className="text-xs font-mono p-2 bg-slate-800 rounded">await import('./HeavyComponent.js') -> lazy()</div>
+    </div>
+  );
+}
+
+export function Ch24App() {
+  return (
+    <div className="p-4 bg-slate-900 rounded border border-slate-700 text-slate-300 text-center">
+      <h3 className="font-bold mb-2">Redux Store</h3>
+      <div className="text-xs font-mono p-2 bg-slate-800 rounded text-left">
+        {`{ user: { loggedIn: true }, cart: { items: 3 } }`}
+      </div>
+    </div>
+  );
+}
+
+export function Ch25App() {
+  return (
+    <div className="p-4 bg-slate-900 rounded border border-slate-700 text-slate-300 text-center">
+      <h3 className="font-bold mb-2">Architecture Sandbox</h3>
+      <div className="flex gap-2 justify-center text-xs">
+        <div className="p-2 bg-slate-800 rounded border border-slate-600">UI Layer</div>
+        <div className="p-2 bg-slate-800 rounded border border-slate-600">Logic Layer</div>
+        <div className="p-2 bg-slate-800 rounded border border-slate-600">Data Layer</div>
+      </div>
+    </div>
+  );
+}
+
+export function Ch26App() {
+  return (
+    <div className="p-4 bg-slate-900 rounded border border-slate-700 text-slate-300 text-center">
+      <h3 className="font-bold mb-2">E-commerce Showcase (Final)</h3>
+      <div className="grid grid-cols-2 gap-2 mt-2">
+        <div className="h-16 bg-slate-800 rounded border border-slate-600 flex items-center justify-center">Product</div>
+        <div className="h-16 bg-slate-800 rounded border border-slate-600 flex items-center justify-center">Cart</div>
+      </div>
+    </div>
+  );
+}
