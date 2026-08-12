@@ -5,6 +5,12 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Hexagon, Atom, Coffee, Code2, Cpu, Clock, Star, PlayCircle, Circle, Server, Terminal, BrainCircuit } from 'lucide-react';
 import { usePlayground } from '@/context/PlaygroundContext';
+import { useState, useEffect } from 'react';
+import { JS_VILLAGE_GAMES } from '@/data/jsVillageData';
+import { JAVA_CASTLE_GAMES } from '@/data/javaCastleData';
+import { REACT_ISLANDS_GAMES } from '@/data/reactIslandsData';
+import { CPP_MOUNTAINS_GAMES } from '@/data/cppMountainsData';
+import { JUNGLE_LEVELS } from '@/app/playground/python-jungle/data/levels';
 
 const KINGDOMS = [
   {
@@ -136,7 +142,37 @@ const KINGDOMS = [
 ];
 
 export default function PlaygroundOverworld() {
-  const { xp } = usePlayground();
+  const { xp, completedLevels } = usePlayground();
+  const [pythonJungleCompleted, setPythonJungleCompleted] = useState(0);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("pythonJungleSave");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.completedLevels) {
+          setPythonJungleCompleted(parsed.completedLevels.length);
+        }
+      }
+    } catch(e) {}
+  }, []);
+
+  const getProgress = (kingdomId) => {
+    switch (kingdomId) {
+      case 'python-jungle':
+        return Math.min(100, Math.round((pythonJungleCompleted / (JUNGLE_LEVELS.length || 1)) * 100));
+      case 'java-castle':
+        return Math.min(100, Math.round((completedLevels.filter(id => id.startsWith('java-')).length / (JAVA_CASTLE_GAMES.length || 1)) * 100));
+      case 'react-islands':
+        return Math.min(100, Math.round((completedLevels.filter(id => id.startsWith('react-')).length / (REACT_ISLANDS_GAMES.length || 1)) * 100));
+      case 'js-village':
+        return Math.min(100, Math.round((completedLevels.filter(id => id.startsWith('js-')).length / (JS_VILLAGE_GAMES.length || 1)) * 100));
+      case 'cpp-mountains':
+        return Math.min(100, Math.round((completedLevels.filter(id => id.startsWith('cpp-')).length / (CPP_MOUNTAINS_GAMES.length || 1)) * 100));
+      default:
+        return 0;
+    }
+  };
 
   return (
     <div className="flex-1 w-full relative overflow-hidden bg-[#0A0A0B] flex flex-col items-center justify-center min-h-[calc(100vh-64px)] py-16">
@@ -250,10 +286,10 @@ export default function PlaygroundOverworld() {
                       <div className="w-full mt-auto mb-6">
                         <div className="flex justify-between text-[11px] font-black tracking-wider uppercase text-neutral-500 mb-2">
                           <span>Progress</span>
-                          <span>0%</span>
+                          <span>{getProgress(kingdom.id)}%</span>
                         </div>
                         <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
-                          <div className={`h-full w-0 ${kingdom.buttonGradient} rounded-full`} />
+                          <div className={`h-full ${kingdom.buttonGradient} rounded-full transition-all duration-1000`} style={{ width: `${getProgress(kingdom.id)}%` }} />
                         </div>
                       </div>
 

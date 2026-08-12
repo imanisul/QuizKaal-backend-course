@@ -56,7 +56,7 @@ export default function JavaLevelRenderer({ levelData }) {
       } else {
         playError();
         setCodeError(levelData.codeChallenge.errorMsg);
-        setTerminalOutput(prev => prev + `Exception in thread "main" java.lang.Error: Unresolved compilation problem.\n\n${levelData.codeChallenge.errorMsg}\n\nProcess finished with exit code 1.`);
+        setTerminalOutput(prev => prev + `Exception in thread "main" java.lang.Error: Unresolved compilation problem.\n\n💡 Tip: ${levelData.codeChallenge.errorMsg}\n\nProcess finished with exit code 1.`);
       }
     }, 800);
   };

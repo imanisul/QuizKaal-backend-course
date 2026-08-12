@@ -47,7 +47,7 @@ export default function ReactLevelRenderer({ levelData }) {
       setCodeError('');
     } else {
       playError();
-      setCodeError(levelData.codeChallenge.errorMsg);
+      setCodeError(`💡 Tip: ${levelData.codeChallenge.errorMsg}`);
     }
   };
 

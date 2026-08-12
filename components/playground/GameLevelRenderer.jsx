@@ -51,7 +51,7 @@ export default function GameLevelRenderer({ levelData }) {
       setCodeSuccess(true);
       setTimeout(() => setStage('quiz'), 2000);
     } catch (e) {
-      setCodeError('Oops! Check your spelling.');
+      setCodeError(levelData.codeChallenge?.errorMsg || 'Oops! Check your spelling and logic.');
       playError();
     }
   };

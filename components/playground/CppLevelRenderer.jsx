@@ -53,7 +53,7 @@ export default function CppLevelRenderer({ levelData }) {
       } else {
         playError();
         setCodeError(levelData.codeChallenge.errorMsg);
-        setTerminalOutput(prev => prev + `error: invalid syntax or missing logic.\n\n${levelData.codeChallenge.errorMsg}\n\nProcess finished with exit code 1.`);
+        setTerminalOutput(prev => prev + `error: invalid syntax or missing logic.\n\n💡 Tip: ${levelData.codeChallenge.errorMsg}\n\nProcess finished with exit code 1.`);
       }
     }, 800);
   };

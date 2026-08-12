@@ -34,8 +34,8 @@ export default function PythonEditor({ missionCode, onComplete }) {
           setExecutionState({
             isRunning: false,
             currentLine: null,
-            output: "Running script...\n\nProcess exited with error.",
-            error: missionCode?.failureMessage || "SyntaxError: Check your code logic.",
+            output: "Running script...\n\nProcess exited with error.\n\n💡 Tip: " + (missionCode?.failureMessage || "Check your code logic and syntax. Use print statements to debug!"),
+            error: "Execution Failed",
             success: false
           });
         }
