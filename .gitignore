@@ -5,3 +5,15 @@ build/
 .env
 .env.local
 .DS_Store
+
+# Test artifacts
+playwright-report/
+test-results/
+coverage/
+
+# Logs
+*.log
+dev.log
+
+# Cache
+cache/

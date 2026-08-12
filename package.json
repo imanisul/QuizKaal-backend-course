@@ -8,7 +8,15 @@
     "start": "next start",
     "lint": "next lint",
     "postbuild": "next-sitemap",
-    "test:content": "node scripts/validate-content.js"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:content": "node scripts/validate-content.js",
+    "ci:validate-assets": "node scripts/ci/validate-assets.js",
+    "ci:validate-links": "node scripts/ci/validate-links.js",
+    "ci:validate-seo": "node scripts/ci/validate-seo.js",
+    "ci:detect-secrets": "node scripts/ci/detect-secrets.js",
+    "ci:validate-a11y": "node scripts/ci/validate-accessibility.js"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.90",
@@ -47,6 +55,7 @@
     "@playwright/test": "^1.62.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
+    "@vitejs/plugin-react": "^6.0.5",
     "autoprefixer": "10.4.19",
     "eslint": "^8.57.1",
     "eslint-config-next": "14.2.35",

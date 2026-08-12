@@ -1,0 +1,102 @@
+name: QuizKaal Smoke Test
+
+on:
+  # Run after CI passes on main (post-deployment health check)
+  workflow_run:
+    workflows: ["QuizKaal CI"]
+    branches: [main]
+    types: [completed]
+
+  # Allow manual trigger for on-demand health checks
+  workflow_dispatch:
+
+jobs:
+  smoke-test:
+    name: Production Health Check
+    runs-on: ubuntu-latest
+    # Only run if the CI workflow succeeded (or manual trigger)
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    timeout-minutes: 5
+
+    steps:
+      - name: ⏳ Wait for deployment propagation
+        run: sleep 30
+
+      - name: 🏠 Check homepage
+        run: |
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" --max-time 30 https://quizkaal.in)
+          echo "Homepage status: $STATUS"
+          if [ "$STATUS" -ne 200 ]; then
+            echo "❌ Homepage returned status $STATUS"
+            exit 1
+          fi
+          echo "✅ Homepage is accessible"
+
+      - name: 📄 Check robots.txt
+        run: |
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" --max-time 15 https://quizkaal.in/robots.txt)
+          echo "robots.txt status: $STATUS"
+          if [ "$STATUS" -ne 200 ]; then
+            echo "⚠️ robots.txt returned status $STATUS"
+          else
+            echo "✅ robots.txt is accessible"
+          fi
+
+      - name: 🗺️ Check sitemap
+        run: |
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" --max-time 15 https://quizkaal.in/sitemap.xml)
+          echo "sitemap.xml status: $STATUS"
+          if [ "$STATUS" -ne 200 ]; then
+            echo "⚠️ sitemap.xml returned status $STATUS"
+          else
+            echo "✅ sitemap.xml is accessible"
+          fi
+
+      - name: 📚 Check key course pages
+        run: |
+          PAGES=(
+            "/backend-engineering"
+            "/system-design"
+            "/react-course"
+            "/roadmap"
+          )
+          FAILED=0
+          for page in "${PAGES[@]}"; do
+            STATUS=$(curl -o /dev/null -s -w "%{http_code}" --max-time 15 "https://quizkaal.in${page}")
+            if [ "$STATUS" -eq 200 ]; then
+              echo "✅ ${page} → ${STATUS}"
+            else
+              echo "❌ ${page} → ${STATUS}"
+              FAILED=1
+            fi
+          done
+          if [ "$FAILED" -eq 1 ]; then
+            echo ""
+            echo "⚠️ Some pages returned non-200 status codes"
+            # Don't fail — pages may have different routing on static export
+          fi
+
+      - name: 🖼️ Check static assets
+        run: |
+          ASSETS=(
+            "/favicon.ico"
+            "/logo.png"
+            "/android-chrome-192x192.png"
+          )
+          for asset in "${ASSETS[@]}"; do
+            STATUS=$(curl -o /dev/null -s -w "%{http_code}" --max-time 15 "https://quizkaal.in${asset}")
+            if [ "$STATUS" -eq 200 ]; then
+              echo "✅ ${asset} → ${STATUS}"
+            else
+              echo "⚠️ ${asset} → ${STATUS}"
+            fi
+          done
+
+      - name: 📊 Smoke Test Summary
+        if: always()
+        run: |
+          echo "## 🏥 QuizKaal Production Health Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Target:** https://quizkaal.in" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Time:** $(date -u)" >> $GITHUB_STEP_SUMMARY

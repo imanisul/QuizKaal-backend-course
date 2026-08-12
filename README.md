@@ -1,5 +1,9 @@
 # Backend Engineering Course (Next.js)
 
+[![QuizKaal CI](https://github.com/imanisul/QuizKaal-backend-course/actions/workflows/ci.yml/badge.svg)](https://github.com/imanisul/QuizKaal-backend-course/actions/workflows/ci.yml)
+
+> 📖 For CI/CD pipeline documentation, see [CI_CD.md](./CI_CD.md)
+
 ## Run it
 
 ```bash
