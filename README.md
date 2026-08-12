@@ -29,3 +29,4 @@ Open http://localhost:3000
 3. In `app/lessons/[slug]/page.js`, add a branch that renders it for that slug.
 
 Optimizations already wired up: Next.js `next/font` self-hosts Inter + JetBrains Mono (no external font request, no layout shift), static params pre-render every lesson route at build time, and Tailwind purges unused CSS automatically.
+ 
