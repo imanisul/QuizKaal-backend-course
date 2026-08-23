@@ -5,13 +5,15 @@ import { Clock, Trophy, CheckCircle, Circle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useProgress, progressEngine } from "@/utils/progressEngine";
 
-export default function LessonHero({ lesson }) {
+export default function LessonHero({ lesson, ...props }) {
   const state = useProgress();
-  const completed = state.completedLessons.includes(lesson.slug);
+  // Fallback to props if lesson is not provided (e.g. from MDX directly)
+  const safeLesson = lesson || props || {};
+  const completed = safeLesson.slug ? state.completedLessons.includes(safeLesson.slug) : false;
 
   const handleToggle = () => {
-    if (!completed) {
-      progressEngine.markComplete(lesson.slug, lesson.courseId || "backend-engineering", lesson.xp || 50);
+    if (!completed && safeLesson.slug) {
+      progressEngine.markComplete(safeLesson.slug, safeLesson.courseId || "backend-engineering", safeLesson.xp || 50);
     }
   };
 
@@ -22,8 +24,8 @@ export default function LessonHero({ lesson }) {
     expert: "text-rose-400 bg-rose-400/10 border-rose-400/20",
   };
 
-  const diffStr = lesson.difficulty || "beginner";
-  const diffClass = difficultyColors[diffStr] || difficultyColors.beginner;
+  const diffStr = safeLesson.difficulty || "beginner";
+  const diffClass = difficultyColors[diffStr?.toLowerCase()] || difficultyColors.beginner;
 
   return (
     <div className="relative overflow-hidden bg-[#111113] border border-white/5 rounded-3xl p-8 mb-12 shadow-2xl">
@@ -35,7 +37,7 @@ export default function LessonHero({ lesson }) {
         <div className="max-w-3xl">
           <div className="flex items-center gap-3 mb-4">
             <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest bg-white/5 border border-white/10 text-gray-300">
-              Module: {lesson.phase || "Backend"}
+              Module: {safeLesson.phase || safeLesson.module || "Backend"}
             </span>
             <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest border ${diffClass}`}>
               {diffStr}
@@ -43,18 +45,18 @@ export default function LessonHero({ lesson }) {
           </div>
           
           <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4 text-white">
-            {lesson.title}
+            {safeLesson.title}
           </h1>
           <p className="text-xl text-textSecondary leading-relaxed mb-6">
-            {lesson.summary || lesson.description}
+            {safeLesson.summary || safeLesson.description}
           </p>
 
           <div className="flex flex-wrap items-center gap-6 text-sm font-semibold text-gray-400">
             <div className="flex items-center gap-2">
-              <Clock size={16} className="text-primary" /> {lesson.time || "15 min"}
+              <Clock size={16} className="text-primary" /> {safeLesson.time || "15 min"}
             </div>
             <div className="flex items-center gap-2">
-              <Trophy size={16} className="text-yellow-400" /> {lesson.xp || "50"} XP
+              <Trophy size={16} className="text-yellow-400" /> {safeLesson.xp || "50"} XP
             </div>
           </div>
         </div>
