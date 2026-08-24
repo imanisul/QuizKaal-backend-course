@@ -7,6 +7,29 @@ module.exports = {
   
   // Custom transform to prioritize specific courses and ensure proper structure
   transform: async (config, path) => {
+    // Only allow specific top-level navigation pages
+    const allowedPaths = [
+      '/',
+      '/roadmap',
+      '/backend-engineering',
+      '/system-design',
+      '/mobile-course',
+      '/ai-prompt-engineering',
+      '/react-course',
+      '/javascript-course',
+      '/cicd',
+      '/agentic-ai',
+      '/genai',
+      '/python-course',
+      '/java-course',
+      '/oop-course',
+      '/interview'
+    ];
+
+    if (!allowedPaths.includes(path)) {
+      return null;
+    }
+
     let priority = config.priority;
     let changefreq = config.changefreq;
 
@@ -37,3 +60,4 @@ module.exports = {
     ],
   },
 };
+
