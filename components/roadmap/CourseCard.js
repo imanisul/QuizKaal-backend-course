@@ -9,7 +9,7 @@ export default function CourseCard({ course, onClick }) {
   return (
     <motion.div
       onClick={onClick}
-      className={`group relative overflow-hidden rounded-[1.5rem] border transition-all duration-500 cursor-pointer flex flex-col h-full bg-[#0a0a0a]/50
+      className={`group relative overflow-hidden rounded-3xl border transition-all duration-500 cursor-pointer flex flex-col h-full bg-[#0a0a0a]/50
         ${isLive 
           ? "border-primary/30 hover:border-primary shadow-lg hover:shadow-[0_0_30px_rgba(79,70,229,0.25)]" 
           : "border-white/10 hover:border-white/20 hover:bg-[#121212]/80"
@@ -36,10 +36,10 @@ export default function CourseCard({ course, onClick }) {
           </div>
 
           <div className="flex flex-col items-end gap-2">
-            <span className={`text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full border ${isLive ? "bg-success/10 text-success border-success/30 animate-pulse" : "bg-warning/10 text-warning border-warning/30"}`}>
+            <span className={`text-xs font-bold tracking-widest uppercase px-2 py-0.5 rounded-full border ${isLive ? "bg-success/10 text-success border-success/30 animate-pulse" : "bg-warning/10 text-warning border-warning/30"}`}>
               {isLive ? "Available" : "Coming Soon"}
             </span>
-            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border 
+            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border 
               ${course.difficulty === 'Beginner' ? 'border-success/30 text-success bg-success/10' : 
                 course.difficulty === 'Intermediate' ? 'border-warning/30 text-warning bg-warning/10' : 
                 'border-error/30 text-error bg-error/10'}`}>
@@ -76,12 +76,12 @@ export default function CourseCard({ course, onClick }) {
 
       {/* Card Footer (Action) */}
       <div className={`p-4 border-t flex items-center justify-between transition-colors duration-300
-        ${isLive ? "bg-success/5 border-success/20 group-hover:bg-success/10" : "bg-white/[0.02] border-white/5 group-hover:bg-white/[0.05]"}
+        ${isLive ? "bg-success border-success group-hover:bg-success/90" : "bg-white/[0.02] border-white/5 group-hover:bg-white/[0.05]"}
       `}>
-        <span className={`text-xs font-bold uppercase tracking-wider ${isLive ? "text-success" : "text-textTertiary"}`}>
+        <span className={`text-sm font-bold ${isLive ? "text-white" : "text-textTertiary"}`}>
           {isLive ? "Continue Learning" : "Notify Me"}
         </span>
-        <div className={`p-1.5 rounded-full transition-transform duration-300 group-hover:translate-x-1 ${isLive ? "bg-success/20 text-success" : "bg-white/10 text-textTertiary"}`}>
+        <div className={`p-1.5 rounded-full transition-transform duration-300 group-hover:translate-x-1 ${isLive ? "bg-white/20 text-white" : "bg-white/10 text-textTertiary"}`}>
           <ArrowRight size={14} />
         </div>
       </div>

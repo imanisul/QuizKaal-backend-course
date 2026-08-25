@@ -92,20 +92,8 @@ export default function RoadmapContent() {
               </div>
 
               {/* SEARCH & FILTER BAR (All in one horizontal row) */}
-              <div className="flex flex-col md:flex-row items-center gap-4 bg-white/[0.02] p-2 rounded-[2rem] border border-white/10 shadow-xl backdrop-blur-md">
-                
-                {/* Search Bar */}
-                <div className="relative w-full md:w-72 shrink-0">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-textTertiary w-5 h-5" />
-                  <input 
-                    type="text" 
-                    placeholder="Search courses..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-black/40 border border-white/5 rounded-full py-3.5 pl-12 pr-6 text-sm text-white placeholder-textTertiary focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
-                  />
-                </div>
-                
+              <div className="flex flex-col md:flex-row items-center gap-4 bg-white/[0.02] p-2 rounded-3xl border border-white/10 shadow-xl backdrop-blur-md">
+
                 {/* Scrollable Filter Chips */}
                 <div className="w-full overflow-x-auto scrollbar-hide flex items-center gap-2 px-2 pb-2 md:pb-0">
                   {filters.map(filter => {
@@ -164,17 +152,17 @@ export default function RoadmapContent() {
               <div className="flex gap-6 shrink-0 bg-white/5 p-6 rounded-2xl border border-white/10">
                 <div className="flex flex-col gap-1">
                   <span className="text-2xl font-black text-white">{selectedCourse.modules}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-textTertiary">Modules</span>
+                  <span className="text-xs font-bold uppercase tracking-widest text-textTertiary">Modules</span>
                 </div>
                 <div className="w-px bg-white/10" />
                 <div className="flex flex-col gap-1">
                   <span className="text-2xl font-black text-white">{selectedCourse.lessons}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-textTertiary">Lessons</span>
+                  <span className="text-xs font-bold uppercase tracking-widest text-textTertiary">Lessons</span>
                 </div>
                 <div className="w-px bg-white/10" />
                 <div className="flex flex-col gap-1">
                   <span className="text-2xl font-black text-white text-right">{selectedCourse.duration}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-textTertiary text-right">Est. Time</span>
+                  <span className="text-xs font-bold uppercase tracking-widest text-textTertiary text-right">Est. Time</span>
                 </div>
               </div>
             </motion.div>
@@ -286,27 +274,27 @@ export default function RoadmapContent() {
                 <div className="flex flex-col items-center">
                   <Globe className="w-8 h-8 text-primary mb-4" />
                   <div className="text-4xl font-black text-white mb-2"><AnimatedCounter target={12} /></div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-textTertiary">Tech Stacks</div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-textTertiary">Tech Stacks</div>
                 </div>
                 <div className="flex flex-col items-center">
                   <ShieldCheck className="w-8 h-8 text-success mb-4" />
                   <div className="text-4xl font-black text-white mb-2"><AnimatedCounter target={totalLessons} /></div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-textTertiary">Total Lessons</div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-textTertiary">Total Lessons</div>
                 </div>
                 <div className="flex flex-col items-center">
                   <Zap className="w-8 h-8 text-warning mb-4" />
                   <div className="text-4xl font-black text-white mb-2"><AnimatedCounter target={250} /></div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-textTertiary">Projects</div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-textTertiary">Projects</div>
                 </div>
                 <div className="flex flex-col items-center">
                   <Trophy className="w-8 h-8 text-accent mb-4" />
                   <div className="text-4xl font-black text-white mb-2">XP</div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-textTertiary">Global Leveling</div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-textTertiary">Global Leveling</div>
                 </div>
               </div>
 
               <div className="text-center mb-12">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-textTertiary mb-8">Universal Skills Covered</h3>
+                <h3 className="text-base font-bold text-textSecondary mb-8">Universal Skills Covered</h3>
                 <SkillGrid />
               </div>
             </motion.section>

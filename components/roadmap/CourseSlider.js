@@ -56,24 +56,6 @@ export default function CourseSlider({ title, subtitle, icon: Icon, courses, onC
           </div>
           {subtitle && <p className="text-sm text-textSecondary">{subtitle}</p>}
         </div>
-        
-        {/* Desktop Navigation Arrows */}
-        <div className="hidden md:flex items-center gap-2">
-          <button 
-            onClick={scrollLeft}
-            className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center bg-white/5 hover:bg-white/10 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50"
-            aria-label="Scroll left"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <button 
-            onClick={scrollRight}
-            className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center bg-white/5 hover:bg-white/10 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50"
-            aria-label="Scroll right"
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
       </div>
 
       {/* Slider Container */}
@@ -103,6 +85,23 @@ export default function CourseSlider({ title, subtitle, icon: Icon, courses, onC
         {/* Fade Edges for visual polish */}
         <div className="absolute top-0 bottom-0 left-0 w-8 bg-gradient-to-r from-[#0a0a0c] to-transparent pointer-events-none hidden md:block" />
         <div className="absolute top-0 bottom-0 right-0 w-8 bg-gradient-to-l from-[#0a0a0c] to-transparent pointer-events-none hidden md:block" />
+
+        {/* Center Navigation Arrows */}
+        <button 
+          onClick={scrollLeft}
+          className="hidden md:flex absolute top-1/2 -translate-y-1/2 left-4 z-20 w-14 h-14 rounded-full border border-white/10 items-center justify-center bg-black/60 hover:bg-black/90 text-white transition-all focus:outline-none focus:ring-2 focus:ring-primary/50 shadow-[0_0_20px_rgba(0,0,0,0.8)] backdrop-blur-md opacity-80 hover:opacity-100 hover:scale-105"
+          aria-label="Scroll left"
+        >
+          <ChevronLeft size={28} />
+        </button>
+
+        <button 
+          onClick={scrollRight}
+          className="hidden md:flex absolute top-1/2 -translate-y-1/2 right-4 z-20 w-14 h-14 rounded-full border border-white/10 items-center justify-center bg-black/60 hover:bg-black/90 text-white transition-all focus:outline-none focus:ring-2 focus:ring-primary/50 shadow-[0_0_20px_rgba(0,0,0,0.8)] backdrop-blur-md opacity-80 hover:opacity-100 hover:scale-105"
+          aria-label="Scroll right"
+        >
+          <ChevronRight size={28} />
+        </button>
       </div>
     </section>
   );
