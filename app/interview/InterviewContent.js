@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { 
   Terminal, ShieldCheck, Smartphone, Atom, Coffee, Code2, Cpu, 
   Server, Network, Database, Cloud, BrainCircuit, Globe, Layers, 
-  Monitor, Wifi, HardDrive, GitBranch, Users, ArrowRight, Play, CheckCircle
+  Monitor, Wifi, HardDrive, GitBranch, Users, ArrowRight, Clock, CheckCircle
 } from "lucide-react";
 import Link from "next/link";
 import StaggerReveal, { StaggerItem } from "@/components/ui/StaggerReveal";
@@ -35,7 +35,7 @@ export default function InterviewContent() {
             <div className="flex flex-col items-center text-center mb-20">
               <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.05)]">
                 <Terminal size={14} className="text-primary" />
-                <span className="text-[11px] font-bold uppercase tracking-widest text-primary">Interview Preparation</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-primary">Interview Preparation</span>
               </div>
               
               <h1 className="text-[clamp(3rem,6vw,5rem)] font-black tracking-tighter leading-[1.05] mb-6 text-white drop-shadow-2xl max-w-4xl">
@@ -59,7 +59,7 @@ export default function InterviewContent() {
                   <motion.div
                     whileHover={{ y: -5, scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`h-full bg-white/[0.03] backdrop-blur-xl border border-white/10 hover:border-white/20 rounded-[2rem] p-6 transition-all duration-300 relative overflow-hidden flex flex-col ${category.shadow} hover:shadow-2xl`}
+                    className={`h-full bg-white/[0.03] backdrop-blur-xl border border-white/10 hover:border-white/20 rounded-3xl p-6 transition-all duration-300 relative overflow-hidden flex flex-col ${category.shadow} hover:shadow-2xl`}
                   >
                     {/* Hover Glow */}
                     <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
@@ -82,9 +82,9 @@ export default function InterviewContent() {
 
                     {/* Content */}
                     <div className="flex-1 relative z-10">
-                      <h3 className="text-2xl font-bold text-white mb-3 tracking-tight group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/70 transition-all duration-300">
+                      <h2 className="text-2xl font-bold text-white mb-3 tracking-tight group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/70 transition-all duration-300">
                         {category.name}
-                      </h3>
+                      </h2>
                       <p className="text-sm text-textSecondary mb-6 line-clamp-2 leading-relaxed">
                         {category.description}
                       </p>
@@ -99,13 +99,14 @@ export default function InterviewContent() {
                         </div>
                         <div className="w-1 h-1 rounded-full bg-white/20" />
                         <div className="flex items-center gap-1.5">
-                          <Play size={14} className="text-textTertiary" />
+                          <Clock size={14} className="text-textTertiary" />
                           <span className="text-xs font-semibold text-textSecondary">{category.time}</span>
                         </div>
                       </div>
                       
-                      <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary/20 group-hover:text-primary transition-colors text-white/50">
-                        <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
+                      <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full group-hover:bg-primary group-hover:text-white transition-all text-textSecondary font-bold text-sm">
+                        <span>Start Practice</span>
+                        <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
                   </motion.div>
@@ -117,9 +118,9 @@ export default function InterviewContent() {
 
 
           <StaggerItem>
-             <div className="mt-20 max-w-2xl mx-auto p-8 rounded-3xl bg-gradient-to-b from-white/5 to-transparent border border-white/10 text-center relative overflow-hidden backdrop-blur-md">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-primary to-transparent" />
-                <ShieldCheck size={40} className="mx-auto text-primary mb-6" />
+             <div className="mt-20 max-w-2xl mx-auto p-8 rounded-3xl bg-gradient-to-b from-white/5 to-transparent border border-white/10 text-left relative overflow-hidden backdrop-blur-md">
+                <div className="absolute top-0 left-8 w-32 h-1 bg-gradient-to-r from-primary to-transparent" />
+                <ShieldCheck size={40} className="text-primary mb-6" />
                 <h3 className="text-2xl font-bold text-white mb-4">You're in good hands</h3>
                 <p className="text-base text-textSecondary leading-relaxed">
                   These questions are compiled from real interviews at top tech companies. Remember: Interviewers care more about your problem-solving approach and thought process than rote memorization. Talk through your trade-offs.
