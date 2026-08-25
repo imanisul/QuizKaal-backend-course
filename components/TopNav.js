@@ -90,7 +90,7 @@ export default function TopNav() {
                   <span className="text-white">QuizKaal</span>
                   <span className="text-primary ml-1">Learn</span>
                 </span>
-                <span className="text-xs md:text-sm font-bold uppercase tracking-[0.18em] text-textTertiary hidden sm:block group-hover:text-white/70 transition-colors mt-0.5">
+                <span className="text-xs md:text-sm font-bold text-textTertiary hidden sm:block group-hover:text-white/70 transition-colors mt-0.5">
                   Backend & AI Engineering
                 </span>
               </div>
