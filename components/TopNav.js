@@ -63,11 +63,11 @@ export default function TopNav() {
 
   return (
     <>
-      <nav className={`glass-nav fixed top-0 left-0 right-0 w-full z-[100] h-[68px] md:h-[72px] border-b transition-all duration-300 ${scrolled ? "bg-[#0a0a0c]/80 backdrop-blur-xl border-white/10 shadow-sm" : "bg-transparent border-transparent"}`}>
-        <div className="w-full h-full max-w-full px-6 md:px-10 flex items-center justify-between">
+      <nav className={`glass-nav fixed top-0 left-0 right-0 w-full z-[100] h-16 md:h-[72px] border-b transition-all duration-300 ${scrolled ? "bg-[#030712]/80 backdrop-blur-xl border-white/[0.08] shadow-sm" : "bg-transparent border-transparent"}`}>
+        <div className="w-full h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           
           {/* LEFT: Logo (Flex-1 for balanced 3-column layout) */}
-          <div className="flex-1 flex justify-start items-center shrink-0">
+          <div className="flex-1 flex justify-start items-center shrink-0 min-w-[200px]">
             <Link href="/" className="flex items-center gap-2 md:gap-3 group shrink-0" aria-label="Go to Homepage">
               <motion.div 
                 className="relative rounded-xl md:rounded-2xl p-0.5 bg-gradient-to-br from-white/20 to-white/0 shadow-[0_0_20px_rgba(255,255,255,0.05)] shrink-0"
@@ -82,37 +82,37 @@ export default function TopNav() {
                   width={52} 
                   height={52} 
                   priority
-                  className="w-9 h-9 sm:w-11 sm:h-11 md:w-14 md:h-14 rounded-lg md:rounded-xl relative z-10 linear-glass ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500 shrink-0" 
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl relative z-10 linear-glass ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500 shrink-0" 
                 />
               </motion.div>
               <div className="flex flex-col justify-center leading-tight ml-1 md:ml-1.5 shrink-0">
-                <span className="text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight group-hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.5)] transition-all duration-300">
+                <span className="text-xl font-bold tracking-tight group-hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.5)] transition-all duration-300">
                   <span className="text-white">QuizKaal</span>
                   <span className="text-primary ml-1">Learn</span>
                 </span>
-                <span className="text-xs md:text-sm font-bold text-textTertiary hidden sm:block group-hover:text-white/70 transition-colors mt-0.5">
-                  Backend & AI Engineering
+                <span className="text-[10px] font-semibold text-textTertiary tracking-wide hidden sm:block group-hover:text-white/70 transition-colors mt-0.5">
+                  BACKEND & AI ENGINEERING
                 </span>
               </div>
             </Link>
           </div>
 
           {/* CENTER: Desktop Nav (Flex-none to stay perfectly centered) */}
-          <div className="hidden lg:flex flex-none items-center justify-center gap-6 xl:gap-7">
+          <div className="hidden lg:flex flex-none items-center justify-center gap-4 lg:gap-6">
             {links.map((link) => {
               if (link.isDropdown) {
                 const isActive = link.sublinks.some(sub => pathname === sub.href);
                 return (
                   <div key={link.label} className="relative group py-2 cursor-pointer">
                     <div className="flex items-center gap-1.5 -translate-y-0.5 group-hover:-translate-y-1 transition-transform duration-300">
-                      <span className={`text-base tracking-wide font-medium transition-colors duration-300 ${isActive ? "text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" : "text-textSecondary group-hover:text-white"}`}>
+                      <span className={`relative text-[15px] font-medium transition-colors duration-300 ${isActive ? "text-primary drop-shadow-[0_0_8px_rgba(79,70,229,0.3)]" : "text-textSecondary group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(79,70,229,0.5)]"}`}>
                         {link.label}
+                        {isActive && (
+                          <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-[2px] bg-primary rounded-full shadow-[0_0_8px_rgba(79,70,229,0.8)]" transition={{ type: "spring", stiffness: 400, damping: 30 }} />
+                        )}
                       </span>
-                      <ChevronDown size={14} className="text-textTertiary group-hover:text-white transition-colors" />
+                      <ChevronDown size={14} className={`transition-all duration-300 ${isActive ? "text-primary" : "text-textTertiary group-hover:text-white"} group-hover:-rotate-180`} />
                     </div>
-                    {isActive && (
-                      <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-[2px] bg-primary rounded-t shadow-[0_0_8px_rgba(79,70,229,0.8)]" transition={{ type: "spring", stiffness: 400, damping: 30 }} />
-                    )}
                     
                     {/* Dropdown Menu (Rich Mega Menu) */}
                     <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top scale-95 group-hover:scale-100 w-[600px] z-50">
@@ -181,14 +181,13 @@ export default function TopNav() {
               return (
                 <Link key={link.href} href={link.href} prefetch={true} className="relative group py-2">
                   <div className="inline-block -translate-y-0.5 group-hover:-translate-y-1 transition-transform duration-300">
-                    <span className={`text-base tracking-wide font-medium transition-colors duration-300 ${isActive ? "text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" : "text-textSecondary group-hover:text-white"}`}>
+                    <span className={`relative text-[15px] font-medium transition-colors duration-300 ${isActive ? "text-primary drop-shadow-[0_0_8px_rgba(79,70,229,0.3)]" : "text-textSecondary group-hover:text-white group-hover:drop-shadow-[0_0_8px_rgba(79,70,229,0.5)]"}`}>
                       {link.label}
+                      {isActive && (
+                        <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-[2px] bg-primary rounded-full shadow-[0_0_8px_rgba(79,70,229,0.8)]" transition={{ type: "spring", stiffness: 400, damping: 30 }} />
+                      )}
                     </span>
                   </div>
-                  {isActive && (
-                    <motion.div layoutId="nav-underline" className="absolute -bottom-1 left-0 right-0 h-[2px] bg-primary rounded-t shadow-[0_0_8px_rgba(79,70,229,0.8)]" transition={{ type: "spring", stiffness: 400, damping: 30 }} />
-                  )}
-                  <div className="absolute -bottom-1 left-0 right-0 h-[2px] bg-white/20 rounded-t scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center" />
                 </Link>
               );
             })}

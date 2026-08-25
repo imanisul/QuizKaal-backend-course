@@ -340,11 +340,11 @@ export default function GlobalSearch() {
       </AnimatePresence>
 
       {/* Desktop Search Bar */}
-      <div ref={containerRef} className="hidden lg:block relative z-[100] w-full lg:w-[220px] xl:w-[260px] mr-2">
+      <div ref={containerRef} className="hidden lg:block relative z-[100] w-[250px] lg:w-[280px] mr-2">
         
         {/* Search Bar Input */}
         <div 
-          className={`relative flex items-center h-10 w-full rounded-full border transition-all duration-300 ${
+          className={`relative flex items-center h-[42px] w-full rounded-xl border transition-all duration-300 ${
             isOpen ? 'bg-[#0f0f12] border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.15)]' : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'
           }`}
         >
@@ -360,7 +360,7 @@ export default function GlobalSearch() {
             onFocus={() => setIsOpen(true)}
             onKeyDown={handleKeyDown}
             placeholder="Search..."
-            className="w-full h-full bg-transparent pl-9 pr-14 text-[13px] text-white placeholder-gray-500 focus:outline-none rounded-full font-medium"
+            className="w-full h-full bg-transparent pl-10 pr-14 text-[13px] text-white placeholder-gray-500 focus:outline-none rounded-xl font-medium"
           />
           
           {/* Loading Spinner or Shortcut / Clear Button */}
@@ -375,8 +375,8 @@ export default function GlobalSearch() {
                 <X size={14} />
               </button>
             ) : (
-              <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md border border-white/10 bg-white/5 text-[10px] font-mono text-gray-400 font-bold uppercase shadow-sm">
-                <span className="text-[11px]">⌘</span>K
+              <div className="flex items-center gap-1 px-2 py-1 rounded-lg border border-white/10 bg-white/5 text-[11px] font-mono text-gray-400 font-bold uppercase shadow-sm">
+                <span className="text-[12px]">⌘</span>K
               </div>
             )}
           </div>
