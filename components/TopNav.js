@@ -70,27 +70,27 @@ export default function TopNav() {
           <div className="flex-1 flex justify-start items-center shrink-0">
             <Link href="/" className="flex items-center gap-2 md:gap-3 group shrink-0" aria-label="Go to Homepage">
               <motion.div 
-                className="relative rounded-[12px] md:rounded-[14px] p-0.5 bg-gradient-to-br from-white/20 to-white/0 shadow-[0_0_20px_rgba(255,255,255,0.05)] shrink-0"
+                className="relative rounded-xl md:rounded-2xl p-0.5 bg-gradient-to-br from-white/20 to-white/0 shadow-[0_0_20px_rgba(255,255,255,0.05)] shrink-0"
                 whileHover={{ scale: 1.05, rotate: [0, -2, 2, 0] }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
               >
                 <div className="absolute inset-0 bg-primary/40 blur-xl rounded-full group-hover:bg-primary/60 opacity-0 group-hover:opacity-100 transition-all duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-[12px] md:rounded-[14px] opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-xl md:rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
                 <Image 
                   src="/logo.png" 
                   alt="QuizKaal Learn Logo" 
                   width={52} 
                   height={52} 
                   priority
-                  className="w-9 h-9 sm:w-11 sm:h-11 md:w-[52px] md:h-[52px] rounded-[10px] md:rounded-[12px] relative z-10 linear-glass ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500 shrink-0" 
+                  className="w-9 h-9 sm:w-11 sm:h-11 md:w-14 md:h-14 rounded-lg md:rounded-xl relative z-10 linear-glass ring-1 ring-white/10 group-hover:ring-white/30 transition-all duration-500 shrink-0" 
                 />
               </motion.div>
               <div className="flex flex-col justify-center leading-tight ml-1 md:ml-1.5 shrink-0">
-                <span className="text-[17px] sm:text-[19px] md:text-[20px] font-extrabold tracking-tight group-hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.5)] transition-all duration-300">
+                <span className="text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight group-hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.5)] transition-all duration-300">
                   <span className="text-white">QuizKaal</span>
                   <span className="text-primary ml-1">Learn</span>
                 </span>
-                <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.18em] text-textTertiary hidden sm:block group-hover:text-white/70 transition-colors mt-0.5">
+                <span className="text-xs md:text-sm font-bold uppercase tracking-[0.18em] text-textTertiary hidden sm:block group-hover:text-white/70 transition-colors mt-0.5">
                   Backend & AI Engineering
                 </span>
               </div>
@@ -105,7 +105,7 @@ export default function TopNav() {
                 return (
                   <div key={link.label} className="relative group py-2 cursor-pointer">
                     <div className="flex items-center gap-1.5 -translate-y-0.5 group-hover:-translate-y-1 transition-transform duration-300">
-                      <span className={`text-[15px] tracking-wide font-medium transition-colors duration-300 ${isActive ? "text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" : "text-textSecondary group-hover:text-white"}`}>
+                      <span className={`text-base tracking-wide font-medium transition-colors duration-300 ${isActive ? "text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" : "text-textSecondary group-hover:text-white"}`}>
                         {link.label}
                       </span>
                       <ChevronDown size={14} className="text-textTertiary group-hover:text-white transition-colors" />
@@ -147,16 +147,16 @@ export default function TopNav() {
                               </div>
                               <div className="flex flex-col relative z-10 w-full justify-center">
                                 <div className="flex items-center gap-2">
-                                  <span className={`font-bold transition-colors ${sub.featured ? "text-[16px] text-white" : "text-[14px] text-gray-200"} ${!sub.disabled && "group-hover/card:text-white"}`}>
+                                  <span className={`font-bold transition-colors ${sub.featured ? "text-base text-white" : "text-sm text-gray-200"} ${!sub.disabled && "group-hover/card:text-white"}`}>
                                     {sub.label}
                                   </span>
                                   {sub.featured && (
-                                    <span className="text-[9px] font-bold uppercase tracking-widest text-primary bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded-full">
+                                    <span className="text-xs font-bold uppercase tracking-widest text-primary bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded-full">
                                       Featured
                                     </span>
                                   )}
                                 </div>
-                                <span className={`mt-0.5 leading-tight ${sub.featured ? "text-[13px] text-gray-400" : "text-[12px] text-gray-500"} ${!sub.disabled && "group-hover/card:text-gray-400"}`}>
+                                <span className={`mt-0.5 leading-tight ${sub.featured ? "text-sm text-gray-400" : "text-xs text-gray-500"} ${!sub.disabled && "group-hover/card:text-gray-400"}`}>
                                   {sub.desc}
                                 </span>
                               </div>
@@ -181,7 +181,7 @@ export default function TopNav() {
               return (
                 <Link key={link.href} href={link.href} prefetch={true} className="relative group py-2">
                   <div className="inline-block -translate-y-0.5 group-hover:-translate-y-1 transition-transform duration-300">
-                    <span className={`text-[15px] tracking-wide font-medium transition-colors duration-300 ${isActive ? "text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" : "text-textSecondary group-hover:text-white"}`}>
+                    <span className={`text-base tracking-wide font-medium transition-colors duration-300 ${isActive ? "text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" : "text-textSecondary group-hover:text-white"}`}>
                       {link.label}
                     </span>
                   </div>
@@ -246,7 +246,7 @@ export default function TopNav() {
                       >
                         <button 
                           onClick={() => setMobileCoursesOpen(!mobileCoursesOpen)}
-                          className="w-full text-left px-4 py-3 rounded-xl text-[15px] font-medium text-textSecondary hover:text-white flex items-center justify-between"
+                          className="w-full text-left px-4 py-3 rounded-xl text-base font-medium text-textSecondary hover:text-white flex items-center justify-between"
                         >
                           {link.label}
                           <ChevronDown size={16} className={`transition-transform duration-300 ${mobileCoursesOpen ? "rotate-180 text-white" : "text-textTertiary"}`} />
@@ -275,7 +275,7 @@ export default function TopNav() {
                                     <div className="flex items-center gap-2">
                                       {sub.label}
                                       {sub.featured && (
-                                        <span className="text-[8px] font-bold uppercase tracking-widest text-primary border border-primary/20 px-1 py-0.5 rounded">
+                                        <span className="text-xs font-bold uppercase tracking-widest text-primary border border-primary/20 px-1 py-0.5 rounded">
                                           Featured
                                         </span>
                                       )}
@@ -299,7 +299,7 @@ export default function TopNav() {
                     >
                       <Link
                         href={link.href}
-                        className={`block px-4 py-3 rounded-xl text-[15px] font-medium ${
+                        className={`block px-4 py-3 rounded-xl text-base font-medium ${
                           pathname === link.href
                             ? "text-white bg-white/[0.06]"
                             : "text-textSecondary hover:text-white"

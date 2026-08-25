@@ -231,7 +231,9 @@ export default function PlatformHomepage() {
             {FEATURES.map((feature, idx) => (
               <Reveal key={idx} delay={idx * 0.05}>
                 <div className="p-6 rounded-3xl bg-bgCard border border-white/5 flex flex-col h-full hover:-translate-y-1 hover:border-white/10 transition-all">
-                  <feature.icon size={28} className={`mb-4 ${feature.color}`} />
+                  <div className="mb-6 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/5 border border-white/10 shadow-inner">
+                    <feature.icon size={40} className={feature.color} />
+                  </div>
                   <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
                   <p className="text-textSecondary text-sm">{feature.desc}</p>
                 </div>
@@ -254,9 +256,11 @@ export default function PlatformHomepage() {
             <p className="text-xl text-textSecondary mb-10">Join thousands of engineers upgrading their careers through interactive visual learning.</p>
             <Link 
               href="/backend-engineering"
-              className="inline-flex bg-white text-black font-black text-lg py-5 px-12 rounded-full items-center gap-3 transition-transform hover:scale-105 shadow-[0_0_40px_rgba(255,255,255,0.2)]"
+              className="group relative bg-primary text-black font-bold py-4 px-10 rounded-full inline-flex items-center justify-center gap-3 overflow-hidden shadow-[0_0_40px_rgba(45,212,191,0.3)] hover:shadow-[0_0_60px_rgba(45,212,191,0.5)] transition-all mx-auto mt-4"
             >
-              Start Learning Today
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+              <Play fill="currentColor" size={20} className="relative z-10" />
+              <span className="relative z-10">Start Learning Today</span>
             </Link>
           </Reveal>
         </div>
