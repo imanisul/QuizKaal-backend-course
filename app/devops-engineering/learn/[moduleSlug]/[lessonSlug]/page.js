@@ -19,6 +19,11 @@ export default function DevOpsLessonPage({ params }) {
   const { moduleSlug, lessonSlug } = params;
   const router = useRouter();
 
+  // Scroll to top on load
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [lessonSlug]);
+
   // Find module and lesson
   const currentModuleIdx = devopsCourseData.modules.findIndex(m => m.slug === moduleSlug);
   const currentModule = devopsCourseData.modules[currentModuleIdx];
@@ -52,37 +57,6 @@ export default function DevOpsLessonPage({ params }) {
     }
   }
 
-  // Content Renderer
-  const renderContentBlock = (block, idx) => {
-    switch (block.type) {
-      case "explanation":
-        return <p key={idx} className="text-lg text-gray-300 leading-relaxed mb-6">{block.text}</p>;
-      case "analogy":
-        return (
-          <div key={idx} className="my-8 p-6 rounded-xl border border-blue-500/20 bg-blue-500/5 text-blue-100 italic">
-            <span className="font-bold text-blue-400 block mb-2 not-italic">Real-World Analogy:</span>
-            {block.text}
-          </div>
-        );
-      case "architecture":
-        return <AnimatedFlow key={idx} visualization={block.visualization} />;
-      case "terminal_lab":
-        return <TerminalLab key={idx} task={block.task} expectedCommand={block.expectedCommand} />;
-      case "yaml_editor":
-        return <YamlEditor key={idx} task={block.task} code={block.code} expected={block.expected} hint={block.hint} />;
-      case "knowledge_check":
-        return <KnowledgeCheck key={idx} question={block.question} options={block.options} answer={block.answer} explanation={block.explanation} />;
-      case "interview":
-        return <InterviewQuestion key={idx} question={block.question} hint={block.hint} answer={block.answer} />;
-      case "scenario_challenge":
-        return <ScenarioChallenge key={idx} scenario={block.scenario} steps={block.steps} />;
-      case "command_breakdown":
-        return <CommandBreakdown key={idx} command={block.command} parts={block.parts} />;
-      default:
-        return <div key={idx} className="text-red-500">Unknown block type: {block.type}</div>;
-    }
-  };
-
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-col lg:flex-row flex-grow max-w-[1600px] mx-auto w-full">
@@ -110,8 +84,50 @@ export default function DevOpsLessonPage({ params }) {
             {currentLesson.title}
           </h1>
 
-          <div className="space-y-2 prose prose-invert max-w-none">
-            {currentLesson.content?.map((block, idx) => renderContentBlock(block, idx))}
+          <div className="space-y-8 prose prose-invert max-w-none">
+            {currentLesson.content && (
+              <p className="text-lg text-gray-300 leading-relaxed">{currentLesson.content}</p>
+            )}
+            
+            {currentLesson.animationBrief && (
+              <div className="p-6 rounded-xl border border-blue-500/20 bg-blue-500/5 text-blue-100 italic">
+                <span className="font-bold text-blue-400 block mb-2 not-italic">Visual Concept:</span>
+                {currentLesson.animationBrief}
+              </div>
+            )}
+            
+            {currentLesson.codeSnippet && (
+              <div className="bg-[#0D1117] border border-white/10 rounded-xl overflow-hidden shadow-2xl my-8">
+                <div className="px-4 py-2 bg-white/5 border-b border-white/10 text-xs font-mono text-gray-400">Code Snippet</div>
+                <pre className="p-4 overflow-x-auto text-sm font-mono text-green-400 m-0 bg-transparent">
+                  <code>{currentLesson.codeSnippet}</code>
+                </pre>
+              </div>
+            )}
+            
+            {currentLesson.expectedCommand && (
+              <div className="my-8">
+                <TerminalLab task={currentLesson.instructions || "Run the required command"} expectedCommand={currentLesson.expectedCommand} />
+              </div>
+            )}
+
+            {currentLesson.mistake && (
+              <div className="p-6 rounded-xl border border-red-500/20 bg-red-500/5 text-red-200 my-8">
+                <span className="font-bold text-red-400 block mb-2">Common Mistake:</span>
+                {currentLesson.mistake}
+              </div>
+            )}
+
+            {currentLesson.quiz && (
+              <div className="my-8">
+                <KnowledgeCheck 
+                  question={currentLesson.quiz.question} 
+                  options={currentLesson.quiz.options} 
+                  answer={currentLesson.quiz.correctAnswerIndex} 
+                  explanation={currentLesson.quiz.explanation} 
+                />
+              </div>
+            )}
           </div>
 
           {/* Bottom Navigation */}
