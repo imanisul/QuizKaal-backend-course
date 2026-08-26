@@ -1,5 +1,5 @@
 // Master Curriculum for QuizKaal Learn
-
+import { devopsModules } from './devops/index';
 export const roadmap = [
   // =========================================
   // BACKEND ENGINEERING SECTION
@@ -199,6 +199,23 @@ export const roadmap = [
   },
 
 
+  ...devopsModules.map(m => ({
+    courseId: "devops-engineering",
+    phase: m.title,
+    emoji: "Cloud",
+    description: "DevOps Engineer phase",
+    gradient: "linear-gradient(135deg, #10b981, #34d399)",
+    lessons: m.lessons.map(l => ({
+      id: Math.random(),
+      slug: l.slug,
+      emoji: "Terminal",
+      title: l.title,
+      summary: l.title,
+      difficulty: "intermediate",
+      time: l.time || "15 min",
+      tags: ["DevOps"]
+    }))
+  }))
 ];
 
 export const allLessons = roadmap.flatMap((p) =>

@@ -19,6 +19,7 @@ import Footer from "@/components/home/Footer";
 // Updated Courses Data Structure
 const COURSES = [
   { id: "backend-engineering", title: "Backend Engineering", desc: "Flagship backend course", color: "from-green-400 to-emerald-600", icon: Rocket, link: "/backend-engineering", featured: true, complete: true },
+  { id: "devops-engineering", title: "DevOps Engineer", desc: "Master Cloud & DevOps", color: "from-emerald-400 to-teal-500", icon: Cloud, link: "/devops-engineering", featured: true, complete: true },
   { id: "system-design", title: "System Design", desc: "Master large scale systems", color: "from-blue-500 to-cyan-500", icon: Database, link: "/system-design", complete: true },
   { id: "mobile-course", title: "Mobile Engineering", desc: "Build iOS & Android apps", color: "from-emerald-500 to-teal-500", icon: Smartphone, link: "/mobile-course", complete: true },
   { id: "ai-prompt-engineering", title: "AI & Prompt Eng.", desc: "Master LLMs & prompting", color: "from-violet-500 to-fuchsia-500", icon: BrainCircuit, link: "/ai-prompt-engineering", complete: true },

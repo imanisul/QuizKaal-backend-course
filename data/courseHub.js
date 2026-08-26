@@ -1,5 +1,6 @@
 import { roadmap as backendRoadmap } from "./roadmap";
 import { COURSE_STRUCTURE as mobileRoadmap } from "./mobile/courseStructure";
+import { devopsCourseData } from "./devopsCourseData";
 
 // Create a generic roadmap generator for mock courses
 const generateMockRoadmap = (courseName, phases) => {
@@ -228,29 +229,21 @@ export const ALL_COURSES = [
     ])
   },
   {
-    id: "cloud-devops",
-    title: "Cloud & DevOps Roadmap",
-    shortTitle: "Cloud & DevOps",
+    id: "devops-engineering",
+    title: "DevOps Engineer",
+    shortTitle: "DevOps Engineer",
     icon: "Cloud",
-    description: "Master AWS, Docker, Kubernetes, CI/CD, and Infrastructure as Code.",
+    description: "Master Linux, Git, Docker, Kubernetes, CI/CD, Cloud, Terraform, Monitoring, DevSecOps, SRE and Production Deployment.",
     gradient: "linear-gradient(135deg, #10b981, #34d399)",
-    difficulty: "Advanced",
-    modules: 7,
-    lessons: 21,
-    duration: "45 hours",
-    status: "upcoming",
-    tags: ["AWS", "Docker", "K8s"],
-    category: "Architecture",
-    isPopular: false,
-    roadmapData: generateMockRoadmap("Cloud & DevOps", [
-      { title: "Linux Basics", icon: "Terminal" },
-      { title: "Networking for DevOps", icon: "Network" },
-      { title: "Docker Containerization", icon: "Box" },
-      { title: "CI/CD Pipelines", icon: "RefreshCw" },
-      { title: "AWS Core Services", icon: "Cloud" },
-      { title: "Infrastructure as Code (Terraform)", icon: "Code" },
-      { title: "Kubernetes Orchestration", icon: "Grid" },
-    ])
+    difficulty: "Beginner → Advanced",
+    modules: 39,
+    lessons: 150,
+    duration: "60+ hours",
+    status: "live",
+    tags: ["DevOps", "Linux", "Docker", "Kubernetes", "AWS"],
+    category: "Cloud & DevOps",
+    isPopular: true,
+    roadmapData: devopsCourseData.modules
   },
   {
     id: "dsa-mastery",

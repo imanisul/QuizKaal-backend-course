@@ -24,6 +24,7 @@ export default function TopNav() {
       isDropdown: true,
       sublinks: [
         { href: "/backend-engineering", label: "Backend Engineering", desc: "Flagship backend course", icon: "Rocket", color: "from-green-400 to-emerald-600", featured: true },
+        { href: "/devops-engineering", label: "DevOps Engineer", desc: "Master Cloud & DevOps", icon: "Cloud", color: "from-emerald-400 to-teal-500", featured: true },
         { href: "/system-design", label: "System Design", desc: "Master large scale systems", icon: "Database", color: "from-blue-500 to-cyan-500" },
         { href: "/mobile-course", label: "Mobile Engineering", desc: "Build iOS & Android apps", icon: "Smartphone", color: "from-emerald-500 to-teal-500" },
         { href: "/ai-prompt-engineering", label: "AI & Prompt Eng.", desc: "Master LLMs & prompting", icon: "BrainCircuit", color: "from-violet-500 to-fuchsia-500" },
