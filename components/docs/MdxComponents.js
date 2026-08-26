@@ -9,6 +9,8 @@ import CompletionButton from "@/components/ui/CompletionButton";
 import QuizWidget from "@/components/interactive/QuizWidget";
 import CourseNavigation from "@/components/lesson/CourseNavigation";
 import LessonHero from "@/components/lesson/LessonHero";
+import TerminalLab from "@/components/devops/TerminalLab";
+import YamlEditor from "@/components/devops/YamlEditor";
 
 // Interactive Visual Simulator Components
 import AnimatedWorkflow from "@/components/interactive/AnimatedWorkflow";
@@ -65,6 +67,8 @@ const SecurityVisualizer = (props) => <PlaceholderVisualizer name="API Security 
 const WorkerVisualizer = (props) => <PlaceholderVisualizer name="Worker Threads Visualizer" {...props} />;
 
 export const MdxComponents = {
+  TerminalLab,
+  YamlEditor,
   LearningObjectives,
   StepByStep,
   AnalogyCard,

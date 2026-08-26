@@ -1,0 +1,31 @@
+---
+title: "Linux Filesystem"
+description: "Navigate the Linux directory structure."
+phase: "03 Linux"
+---
+
+# Linux Filesystem
+
+<AnalogyCard>
+Think of the Linux filesystem like a massive office building. The root `/` is the front door. `/home` is where employees have their personal desks, and `/etc` is the manager's office where the building's rulebooks are kept.
+</AnalogyCard>
+
+## Essential Directories
+
+- `/` (Root): The beginning of everything.
+- `/home`: User directories.
+- `/etc`: Configuration files.
+- `/var`: Variable data like logs.
+
+## Hands-on Lab
+
+Try exploring the filesystem using standard commands:
+
+<TerminalLab 
+  task="List all files in the current directory, including hidden ones."
+  expectedCommand="ls -la"
+/>
+
+<PracticeExercise>
+Navigate to the `/var/log` directory and use the `tail` command to view the last 10 lines of the syslog.
+</PracticeExercise>

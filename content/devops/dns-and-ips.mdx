@@ -1,0 +1,30 @@
+---
+title: "DNS and IP Addresses"
+description: "How computers find each other on the internet."
+phase: "04 Networking"
+---
+
+# DNS and IPs
+
+<AnalogyCard>
+Imagine trying to mail a letter. Their house address is the **IP address**. But humans are bad at remembering random numbers like `142.250.190.46`, so we use a contact book that links their name ("Google") to their address. That contact book is **DNS**.
+</AnalogyCard>
+
+## How DNS Resolution Works
+
+<DnsLookupVisualizer />
+
+<CodeTabs>
+<div label="ping">
+```bash
+# Find the IP address of google.com
+ping google.com
+```
+</div>
+<div label="dig">
+```bash
+# Query detailed DNS records
+dig quizkaal.in A
+```
+</div>
+</CodeTabs>
