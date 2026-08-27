@@ -42,6 +42,7 @@ import IpVisualizer from "@/components/interactive/IpVisualizer";
 import PortVisualizer from "@/components/interactive/PortVisualizer";
 import BrowserFlowVisualizer from "@/components/interactive/BrowserFlowVisualizer";
 import MegaNetworkVisualizer from "@/components/interactive/MegaNetworkVisualizer";
+import FlowAnimator from "@/components/interactive/FlowAnimator";
 
 import DevOpsLifecycle from "@/components/interactive/DevOpsLifecycle";
 import TcpHandshakeVisualizer from "@/components/interactive/TcpHandshakeVisualizer";
@@ -52,7 +53,9 @@ import DockerArchitectureVisualizer from "@/components/interactive/DockerArchite
 import CicdPipelineVisualizer from "@/components/interactive/CicdPipelineVisualizer";
 import K8sClusterArchitecture from "@/components/interactive/K8sClusterArchitecture";
 import K8sPodCreationVisualizer from "@/components/interactive/K8sPodCreationVisualizer";
+import K8sSelfHealingVisualizer from "@/components/interactive/K8sSelfHealingVisualizer";
 import TroubleshootingFlow from "@/components/interactive/TroubleshootingFlow";
+import TerraformVisualizer from "@/components/interactive/TerraformVisualizer";
 
 // New Rich MDX Components
 import LearningObjectives from "@/components/mdx/LearningObjectives";
@@ -111,6 +114,7 @@ export const MdxComponents = {
   PortVisualizer,
   BrowserFlowVisualizer,
   MegaNetworkVisualizer,
+  FlowAnimator,
   DevOpsLifecycle,
   TcpHandshakeVisualizer,
   LinuxProcessVisualizer,
@@ -120,7 +124,9 @@ export const MdxComponents = {
   CicdPipelineVisualizer,
   K8sClusterArchitecture,
   K8sPodCreationVisualizer,
+  K8sSelfHealingVisualizer,
   TroubleshootingFlow,
+  TerraformVisualizer,
   KnowledgeCard,
   CompletionButton,
   QuizWidget,
