@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Script from "next/script";
 import { notFound } from "next/navigation";
-import { allLessons, getAdjacentLessons } from "@/data/roadmap";
+import { allLessons, getAdjacentLessons, getLessonBySlug as getRoadmapLesson } from "@/data/roadmap";
 import { getLessonBySlug } from "@/lib/mdx";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { MdxComponents } from "@/components/docs/MdxComponents";
@@ -83,6 +83,16 @@ export default async function LessonPage({ params }) {
 
   const { prev, next } = getAdjacentLessons(params.slug);
 
+  // Detect which course this lesson belongs to
+  const roadmapLesson = getRoadmapLesson(params.slug);
+  const courseId = roadmapLesson?.courseId || "backend-engineering";
+
+  const COURSE_PATHS = {
+    "backend-engineering": { path: "/roadmap", label: "Roadmap" },
+    "devops-engineering": { path: "/devops-engineering", label: "DevOps Engineer" },
+  };
+  const courseInfo = COURSE_PATHS[courseId] || COURSE_PATHS["backend-engineering"];
+
   const mdxOptions = {
     mdxOptions: {
       rehypePlugins: [
@@ -133,7 +143,7 @@ export default async function LessonPage({ params }) {
           <main className="min-w-0 global-page-pt pb-32">
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-textTertiary mb-8">
-              <Link href="/roadmap" className="hover:text-white transition-colors">Roadmap</Link>
+              <Link href={courseInfo.path} className="hover:text-white transition-colors">{courseInfo.label}</Link>
               <span>/</span>
               <span className="text-primary">{lesson.frontmatter?.phase || lesson.category}</span>
             </div>
@@ -147,7 +157,7 @@ export default async function LessonPage({ params }) {
                 time: lesson.frontmatter?.time,
                 xp: lesson.frontmatter?.xp,
                 slug: params.slug,
-                courseId: lesson.courseId || "backend-engineering"
+                courseId: courseId
               }} 
             />
 
@@ -158,7 +168,7 @@ export default async function LessonPage({ params }) {
             </ProgressiveRenderer>
 
             <div className="mt-20 pt-10 border-t border-white/10">
-              <CourseNavigation prev={prev} next={next} lessonSlug={params.slug} />
+              <CourseNavigation prev={prev} next={next} lessonSlug={params.slug} courseId={courseId} />
             </div>
           </main>
 

@@ -1,0 +1,181 @@
+---
+title: "Deployments & ReplicaSets"
+description: "Manage application replicas, perform rolling updates, and handle rollbacks with Kubernetes Deployments."
+phase: "14 Kubernetes"
+time: "35 min"
+difficulty: "intermediate"
+---
+
+<LessonHero title="Deployments & ReplicaSets" module="14 Kubernetes" difficulty="Intermediate" time="35 min" xp="100" slug="k8s-deployments" courseId="devops-engineering" />
+
+## 1. Introduction
+
+A Pod by itself is fragile — if it crashes, it's gone forever. A **Deployment** tells Kubernetes: "I want 3 copies of this Pod running at all times. If any of them crash, create a new one automatically. If I push a new version, roll it out gradually with zero downtime."
+
+---
+
+## 2. Real-Life Analogy
+
+<AnalogyCard title="The Restaurant Manager">
+  Imagine you're the manager of a restaurant. You tell the kitchen: "I always need 3 chefs on duty." If Chef #2 calls in sick, you automatically hire a temporary replacement. If you want to switch from Italian to Japanese cuisine, you don't fire all 3 chefs at once — you replace them one at a time so the restaurant never closes.
+
+  A Kubernetes Deployment is that restaurant manager for your containers.
+</AnalogyCard>
+
+---
+
+## 3. The Deployment YAML
+
+<CodeTabs>
+  <div label="deployment.yaml">
+    ```yaml
+    apiVersion: apps/v1
+    kind: Deployment
+
+    metadata:
+      name: quizkaal-api
+      labels:
+        app: quizkaal-api
+
+    spec:
+      replicas: 3        # Always keep 3 Pods running
+
+      selector:
+        matchLabels:
+          app: quizkaal-api
+
+      template:
+        metadata:
+          labels:
+            app: quizkaal-api
+
+        spec:
+          containers:
+            - name: api
+              image: quizkaal/api:1.0
+              ports:
+                - containerPort: 3000
+              resources:
+                requests:
+                  memory: "128Mi"
+                  cpu: "100m"
+                limits:
+                  memory: "256Mi"
+                  cpu: "500m"
+    ```
+  </div>
+  <div label="Commands">
+    ```bash
+    # Apply the deployment
+    kubectl apply -f deployment.yaml
+
+    # Check deployment status
+    kubectl get deployments
+
+    # See the pods created
+    kubectl get pods
+
+    # Watch pods in real-time
+    kubectl get pods -w
+
+    # Scale to 5 replicas
+    kubectl scale deployment quizkaal-api --replicas=5
+
+    # Update the image (triggers rolling update)
+    kubectl set image deployment/quizkaal-api \
+      api=quizkaal/api:2.0
+
+    # Check rollout status
+    kubectl rollout status deployment/quizkaal-api
+
+    # Rollback to previous version
+    kubectl rollout undo deployment/quizkaal-api
+
+    # View rollout history
+    kubectl rollout history deployment/quizkaal-api
+    ```
+  </div>
+</CodeTabs>
+
+---
+
+## 4. How Rolling Updates Work
+
+When you update the image from v1 to v2:
+
+```
+Step 1:  v1 ● ● ●                    (3 old pods running)
+Step 2:  v1 ● ●    v2 ●              (1 new pod created)
+Step 3:  v1 ●      v2 ● ●            (2 new pods, 1 old removed)
+Step 4:             v2 ● ● ●          (all 3 running new version)
+```
+
+At no point during this process does your application go offline! Users are seamlessly transitioned from v1 to v2.
+
+---
+
+## 5. Understanding the YAML
+
+| Field | Meaning |
+|-------|---------|
+| `apiVersion: apps/v1` | Which Kubernetes API to use |
+| `kind: Deployment` | The type of resource |
+| `metadata.name` | Name of this Deployment |
+| `spec.replicas: 3` | "Always run 3 copies" |
+| `spec.selector` | How the Deployment finds its Pods |
+| `spec.template` | The Pod template (what each Pod looks like) |
+| `resources.requests` | Minimum resources guaranteed |
+| `resources.limits` | Maximum resources allowed |
+
+---
+
+## 6. Common Mistakes
+
+<WarningCard title="Not Setting Resource Limits">
+  If you don't set `resources.limits`, a single Pod can consume all CPU and memory on a node, starving other Pods. Always set both `requests` (guaranteed minimum) and `limits` (maximum allowed). If a Pod exceeds its memory limit, Kubernetes kills it with an `OOMKilled` status.
+</WarningCard>
+
+---
+
+## 7. Knowledge Check
+
+<QuizWidget
+  question="What happens when you update the container image in a Kubernetes Deployment?"
+  options={["All pods are killed and recreated simultaneously", "Kubernetes performs a rolling update — replacing pods one at a time", "The deployment is deleted and recreated", "Nothing happens until you restart the cluster"]}
+  answer={1}
+  explanation="Kubernetes performs a rolling update by default — it creates new Pods with the updated image while gradually terminating old Pods. This ensures zero downtime during deployments."
+/>
+
+---
+
+## 8. Interview Question
+
+<InterviewPrep
+  question="What is the difference between a Deployment and a ReplicaSet in Kubernetes?"
+  answer="A ReplicaSet ensures a specified number of Pod replicas are running at any given time. A Deployment is a higher-level abstraction that manages ReplicaSets and provides declarative updates. When you update a Deployment (e.g., change the container image), it creates a new ReplicaSet, scales it up, and scales down the old ReplicaSet — enabling rolling updates and rollbacks. You should almost always use Deployments instead of managing ReplicaSets directly."
+/>
+
+---
+
+## 9. Practice Challenge
+
+**Try this on your cluster:**
+1. Create a deployment YAML for an nginx server with 3 replicas
+2. Apply it: `kubectl apply -f nginx-deployment.yaml`
+3. Verify 3 pods are running: `kubectl get pods`
+4. Scale to 5 replicas: `kubectl scale deployment nginx --replicas=5`
+5. Update image to `nginx:alpine`: `kubectl set image deployment/nginx nginx=nginx:alpine`
+6. Watch the rolling update: `kubectl rollout status deployment/nginx`
+
+---
+
+## 10. Summary
+
+- **Deployment** = "I want N replicas of this Pod, always running."
+- Rolling updates replace Pods one at a time for zero-downtime deployments.
+- `kubectl rollout undo` instantly reverts to the previous version.
+- Always set `resources.requests` and `resources.limits`.
+
+---
+
+<CourseNavigation prev={{ slug: "k8s-pods", title: "Pods", emoji: "Ship" }} next={{ slug: "k8s-services", title: "Services & Networking", emoji: "Ship" }} lessonSlug="k8s-deployments" courseId="devops-engineering" />

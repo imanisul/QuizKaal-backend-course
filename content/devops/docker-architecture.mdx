@@ -1,0 +1,219 @@
+---
+title: "Docker Architecture"
+description: "Understand the Docker CLI, Docker Daemon, images, containers, and registries — the complete architecture."
+phase: "09 Docker"
+time: "30 min"
+difficulty: "intermediate"
+---
+
+<LessonHero title="Docker Architecture" module="09 Docker" difficulty="Intermediate" time="30 min" xp="100" slug="docker-architecture" courseId="devops-engineering" />
+
+## 1. Introduction
+
+**What is this lesson?**
+Now that you understand *why* containers exist, let's understand *how* Docker actually works under the hood. This lesson explains the complete Docker architecture — every component from the CLI to the running container.
+
+---
+
+## 2. How `docker run nginx` Actually Works
+
+When you type `docker run nginx`, this is what happens behind the scenes:
+
+```
+docker run nginx
+       ↓
+Docker CLI (your terminal command)
+       ↓
+Docker Daemon (dockerd - the background service)
+       ↓
+Check: Does the 'nginx' image exist locally?
+       ↓
+No → Pull from Docker Hub (registry)
+       ↓
+Create a container from the image
+       ↓
+Set up network namespace (isolated networking)
+       ↓
+Set up filesystem (copy-on-write layer)
+       ↓
+Apply cgroups (CPU/memory limits)
+       ↓
+Start the nginx process inside the container
+       ↓
+Running Container!
+```
+
+Let's break down each component.
+
+---
+
+## 3. The Core Components
+
+### Docker CLI
+The command-line tool you interact with. It sends API requests to the Docker Daemon.
+
+### Docker Daemon (dockerd)
+A background service that manages images, containers, networks, and volumes. When you run `docker build` or `docker run`, the CLI sends the request to the Daemon.
+
+### Docker Image
+A read-only template containing your application code, runtime, libraries, and configuration. Think of it as a **blueprint** or a **Class** in OOP.
+
+### Docker Container
+A running instance of an Image. Think of it as an **object** created from a Class. You can create 100 containers from 1 image.
+
+### Docker Registry
+A storage and distribution system for Docker images. Docker Hub is the default public registry. AWS ECR and GitHub Container Registry are private alternatives.
+
+---
+
+## 4. Architecture Diagram
+
+```
+┌─────────────────────────────────────────────┐
+│                 Your Terminal                │
+│                                             │
+│  $ docker build -t myapp .                  │
+│  $ docker run -d -p 3000:3000 myapp         │
+│  $ docker push myapp:v1                     │
+│                                             │
+└────────────────────┬────────────────────────┘
+                     │ REST API
+                     ▼
+┌─────────────────────────────────────────────┐
+│              Docker Daemon                  │
+│                (dockerd)                    │
+│                                             │
+│  ┌─────────┐ ┌─────────┐ ┌──────────────┐  │
+│  │ Images  │ │Containers│ │  Networks    │  │
+│  └─────────┘ └─────────┘ └──────────────┘  │
+│  ┌─────────┐                                │
+│  │ Volumes │                                │
+│  └─────────┘                                │
+└────────────────────┬────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────┐
+│           Container Runtime                  │
+│            (containerd)                      │
+│                                             │
+│  Uses Linux Kernel Features:                │
+│  • Namespaces (isolation)                   │
+│  • cgroups (resource limits)                │
+│  • Union filesystem (layers)                │
+└─────────────────────────────────────────────┘
+```
+
+---
+
+## 5. Dockerfile → Image → Container
+
+<CodeTabs>
+  <div label="Dockerfile">
+    ```dockerfile
+    # Start with Node.js 22 on Alpine Linux (tiny: 50MB)
+    FROM node:22-alpine
+
+    # Set the working directory inside the container
+    WORKDIR /app
+
+    # Copy package files first (cache optimization!)
+    COPY package*.json ./
+
+    # Install dependencies
+    RUN npm ci --only=production
+
+    # Copy application code
+    COPY . .
+
+    # Document which port the app listens on
+    EXPOSE 3000
+
+    # Command to run when container starts
+    CMD ["node", "server.js"]
+    ```
+  </div>
+  <div label="Build & Run">
+    ```bash
+    # Build an image from the Dockerfile
+    docker build -t quizkaal-api:v1 .
+
+    # Run a container from the image
+    docker run -d \
+      --name quizkaal-api \
+      -p 3000:3000 \
+      quizkaal-api:v1
+
+    # See running containers
+    docker ps
+
+    # View logs
+    docker logs quizkaal-api
+
+    # Stop the container
+    docker stop quizkaal-api
+    ```
+  </div>
+</CodeTabs>
+
+**Breaking down the `docker run` flags:**
+- `-d` — Run in detached mode (background).
+- `--name quizkaal-api` — Give the container a human-readable name.
+- `-p 3000:3000` — Map host port 3000 to container port 3000.
+- `quizkaal-api:v1` — The image name and tag.
+
+---
+
+## 6. Linux Namespaces & cgroups
+
+Docker uses two Linux kernel features for isolation:
+
+**Namespaces** — Give each container its own isolated view of the system:
+- **PID namespace** — Container sees only its own processes.
+- **Network namespace** — Container has its own IP address.
+- **Mount namespace** — Container has its own filesystem.
+- **User namespace** — Container has its own user IDs.
+
+**cgroups (Control Groups)** — Limit how much resource each container can use:
+- CPU: "This container can use at most 2 CPU cores."
+- Memory: "This container can use at most 512MB of RAM."
+
+---
+
+## 7. Common Mistakes
+
+<WarningCard title="Forgetting to Expose Ports">
+  Beginners often run `docker run nginx` and wonder why they can't access it in their browser. The container is running nginx on port 80 **inside** the container, but nothing is mapped to your laptop's ports. You must add `-p 8080:80` to map your laptop's port 8080 to the container's port 80.
+</WarningCard>
+
+---
+
+## 8. Knowledge Check
+
+<QuizWidget
+  question="What is the role of the Docker Daemon (dockerd)?"
+  options={["It is the command-line tool you type commands into", "It is the background service that manages images, containers, and networks", "It is the public image registry", "It is the Linux kernel"]}
+  answer={1}
+  explanation="The Docker Daemon (dockerd) is the background service that does the actual work — building images, running containers, managing networks and volumes. The Docker CLI sends commands to the Daemon via a REST API."
+/>
+
+---
+
+## 9. Interview Question
+
+<InterviewPrep
+  question="Explain the Docker architecture and how a container is created."
+  answer="Docker uses a client-server architecture. The Docker CLI (client) sends commands to the Docker Daemon (server) via a REST API. When you run 'docker run nginx', the Daemon checks if the nginx image exists locally. If not, it pulls it from a registry (like Docker Hub). It then creates a container by setting up Linux namespaces (for isolation), cgroups (for resource limits), and a union filesystem (for layered storage). The container shares the host OS kernel but has its own isolated process space, network stack, and filesystem."
+/>
+
+---
+
+## 10. Summary
+
+- Docker uses a client-server architecture: CLI → Daemon → Container Runtime.
+- **Image** = read-only blueprint. **Container** = running instance.
+- Linux namespaces provide isolation; cgroups limit resources.
+- Always map ports with `-p` to access container services from your host.
+
+---
+
+<CourseNavigation prev={{ slug: "docker-vm-vs-container", title: "VM vs Container", emoji: "Box" }} next={{ slug: "docker-first-container", title: "Your First Container", emoji: "Box" }} lessonSlug="docker-architecture" courseId="devops-engineering" />

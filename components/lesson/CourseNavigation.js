@@ -5,16 +5,23 @@ import RenderIcon from "@/components/ui/IconMap";
 import CourseProgressTracker from "@/components/lms/CourseProgressTracker";
 import { Map } from "lucide-react";
 
-export default function CourseNavigation({ prev, next, lessonSlug }) {
+const COURSE_PATHS = {
+  "backend-engineering": "/roadmap",
+  "devops-engineering": "/devops-engineering",
+};
+
+export default function CourseNavigation({ prev, next, lessonSlug, courseId = "backend-engineering" }) {
+  const coursePath = COURSE_PATHS[courseId] || "/roadmap";
+
   return (
     <div>
       {/* Mark as Complete / Next Lesson */}
       {lessonSlug && (
         <CourseProgressTracker
           lessonId={lessonSlug}
-          courseId="backend-engineering"
+          courseId={courseId}
           nextLessonPath={next ? `/lessons/${next.slug}` : null}
-          coursePath="/roadmap"
+          coursePath={coursePath}
           isLastLesson={!next}
         />
       )}
@@ -29,9 +36,9 @@ export default function CourseNavigation({ prev, next, lessonSlug }) {
             </div>
           </Link>
         ) : (
-          <Link className="foot-link" href="/">
+          <Link className="foot-link" href={coursePath}>
             <div className="text-[11px] text-textTertiary uppercase tracking-wider mb-1.5">← Back</div>
-            <div className="font-bold text-[15px] flex items-center gap-1.5"><Map size={16} className="text-textSecondary" /> Roadmap</div>
+            <div className="font-bold text-[15px] flex items-center gap-1.5"><Map size={16} className="text-textSecondary" /> Course Home</div>
           </Link>
         )}
 
@@ -50,3 +57,4 @@ export default function CourseNavigation({ prev, next, lessonSlug }) {
     </div>
   );
 }
+

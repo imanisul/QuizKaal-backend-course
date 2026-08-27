@@ -1,0 +1,81 @@
+---
+title: "The DevOps Lifecycle"
+description: "Understand the complete DevOps pipeline — from code to production."
+phase: "01 Introduction"
+time: "15 min"
+difficulty: "beginner"
+---
+
+<LessonHero title="The DevOps Lifecycle" module="01 Introduction" difficulty="Beginner" time="15 min" xp="50" slug="devops-lifecycle" courseId="devops-engineering" />
+
+## 1. The Complete Pipeline
+
+In a modern DevOps organization, code travels through a pipeline:
+
+```
+Developer writes code
+       ↓
+Push to GitHub
+       ↓
+CI Pipeline triggers automatically
+       ↓
+Code is built
+       ↓
+Automated tests run
+       ↓
+Security scan
+       ↓
+Docker image built
+       ↓
+Image pushed to registry
+       ↓
+Deployed to staging
+       ↓
+Smoke tests
+       ↓
+Deployed to production
+       ↓
+Monitoring alerts if issues
+       ↓
+Feedback loop back to developer
+```
+
+This entire process happens **automatically** — often in under 10 minutes.
+
+---
+
+## 2. Key Tools at Each Stage
+
+| Stage | Tools |
+|-------|-------|
+| Code | Git, GitHub, VS Code |
+| Build | Docker, npm, Maven |
+| Test | Jest, Pytest, Selenium |
+| Security | Trivy, Snyk, SonarQube |
+| Deploy | Kubernetes, ArgoCD, Terraform |
+| Monitor | Prometheus, Grafana, ELK |
+
+You will learn all of these tools throughout this course.
+
+---
+
+## 3. Knowledge Check
+
+<QuizWidget
+  question="In a DevOps pipeline, what typically happens immediately after code is pushed to GitHub?"
+  options={["A developer manually deploys the code", "A CI pipeline triggers automatically", "The code is emailed to the operations team", "Nothing until the next scheduled release"]}
+  answer={1}
+  explanation="In a DevOps pipeline, pushing code to GitHub triggers an automated CI pipeline that builds, tests, and packages the code without any manual intervention."
+/>
+
+---
+
+## 4. Summary
+
+- Code flows through an automated pipeline from development to production.
+- Each stage (build, test, security, deploy, monitor) uses specialized tools.
+- The entire process is **automated** and provides **continuous feedback**.
+
+---
+
+<CourseNavigation prev={{ slug: "devops-culture", title: "The DevOps Culture", emoji: "Compass" }} next={{ slug: "how-computers-work", title: "How Computers Work", emoji: "Cpu" }} lessonSlug="devops-lifecycle" courseId="devops-engineering" />

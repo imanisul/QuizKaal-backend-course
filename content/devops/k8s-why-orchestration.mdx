@@ -1,0 +1,119 @@
+---
+title: "Why Kubernetes?"
+description: "Understand why container orchestration is necessary and how Kubernetes solves the problem of managing containers at scale."
+phase: "14 Kubernetes"
+time: "20 min"
+difficulty: "beginner"
+---
+
+<LessonHero title="Why Kubernetes?" module="14 Kubernetes" difficulty="Beginner" time="20 min" xp="50" slug="k8s-why-orchestration" courseId="devops-engineering" />
+
+## 1. Introduction
+
+You have learned Docker. You can containerize any application. But what happens when you need to run **500 containers** across **50 servers** in production?
+
+- What if Container #42 crashes at 3 AM? Who restarts it?
+- What if Black Friday traffic hits? Who spins up 200 more containers?
+- What if Server #7 runs out of memory? Who moves its containers to another server?
+
+You cannot do this manually. You need an **orchestrator** — a system that automatically manages, scales, heals, and distributes your containers. That system is **Kubernetes** (K8s).
+
+---
+
+## 2. Real-Life Analogy
+
+<AnalogyCard title="The Air Traffic Controller">
+  Imagine an airport with 500 flights per day. Each flight (container) needs a gate (server), a runway (network), and fuel (resources). If a runway is blocked, flights need to be rerouted. If a storm hits, some flights need to be delayed and others redirected.
+
+  You can't have 500 pilots making these decisions independently. You need an **Air Traffic Controller** — a centralized system that knows the state of every runway, gate, and aircraft, and makes intelligent decisions in real-time.
+
+  Kubernetes is the air traffic controller for your containers.
+</AnalogyCard>
+
+---
+
+## 3. The Problems K8s Solves
+
+| Problem | Without K8s | With K8s |
+|---------|-------------|----------|
+| Container crashes | Someone SSH's in and restarts it manually | K8s automatically restarts it in seconds |
+| Traffic spike | You manually launch more containers | K8s auto-scales based on CPU/memory |
+| Server failure | All containers on that server die | K8s moves them to healthy servers |
+| Deployment | Manual `docker stop` + `docker run` | Rolling update with zero downtime |
+| Load balancing | Manual nginx configuration | Kubernetes Service auto-balances |
+
+---
+
+## 4. The Kubernetes Cluster
+
+```
+                    ┌─────────────────────────────────────┐
+                    │         Control Plane                │
+                    │                                     │
+                    │  ┌──────────┐  ┌─────────────────┐  │
+                    │  │API Server│  │    Scheduler     │  │
+                    │  └──────────┘  └─────────────────┘  │
+                    │  ┌──────────┐  ┌─────────────────┐  │
+                    │  │  etcd    │  │Controller Manager│  │
+                    │  └──────────┘  └─────────────────┘  │
+                    └─────────────────────────────────────┘
+                                     │
+                    ┌────────────────┼────────────────┐
+                    │                │                │
+              ┌─────▼─────┐  ┌─────▼─────┐  ┌──────▼─────┐
+              │  Worker 1  │  │  Worker 2  │  │  Worker 3  │
+              │            │  │            │  │            │
+              │ ┌────┐┌───┐│  │ ┌────┐┌───┐│  │ ┌────┐     │
+              │ │Pod ││Pod││  │ │Pod ││Pod││  │ │Pod │     │
+              │ └────┘└───┘│  │ └────┘└───┘│  │ └────┘     │
+              │ ┌────┐     │  │ ┌────┐     │  │ ┌────┐┌───┐│
+              │ │Pod │     │  │ │Pod │     │  │ │Pod ││Pod││
+              │ └────┘     │  │ └────┘     │  │ └────┘└───┘│
+              └────────────┘  └────────────┘  └────────────┘
+```
+
+---
+
+## 5. Core Concepts Preview
+
+You will learn each of these in detail in upcoming lessons:
+
+- **Pod** — The smallest deployable unit. Contains one or more containers.
+- **Deployment** — Manages replicas of your Pod. Handles rolling updates.
+- **Service** — Provides a stable network endpoint to access your Pods.
+- **Ingress** — Routes external HTTP traffic to your Services.
+- **ConfigMap / Secret** — Inject configuration and sensitive data into Pods.
+- **Namespace** — Logical isolation within a cluster.
+
+---
+
+## 6. Knowledge Check
+
+<QuizWidget
+  question="What is the primary purpose of Kubernetes?"
+  options={["To replace Docker", "To write application code", "To automatically manage, scale, and heal containers across multiple servers", "To replace Linux"]}
+  answer={2}
+  explanation="Kubernetes orchestrates containers across multiple servers, automatically handling scaling, self-healing, rolling deployments, and load balancing."
+/>
+
+---
+
+## 7. Interview Question
+
+<InterviewPrep
+  question="Why do we need Kubernetes if we already have Docker?"
+  answer="Docker is great for running individual containers on a single machine. But in production, you run hundreds or thousands of containers across many servers. Kubernetes solves the problems that Docker alone cannot: automatic scaling (HPA), self-healing (restarting crashed containers), rolling deployments (zero-downtime updates), service discovery (stable networking between containers), load balancing, and multi-node scheduling. Docker handles the container runtime; Kubernetes handles the orchestration of containers at scale."
+/>
+
+---
+
+## 8. Summary
+
+- Kubernetes is the industry standard for container orchestration.
+- It automatically manages scaling, self-healing, deployment, and networking.
+- A K8s cluster has a **Control Plane** (brain) and **Worker Nodes** (muscles).
+- Core resources: Pod, Deployment, Service, Ingress, ConfigMap, Secret.
+
+---
+
+<CourseNavigation prev={{ slug: "ansible-roles", title: "Roles & Galaxy", emoji: "Settings" }} next={{ slug: "k8s-architecture", title: "Kubernetes Architecture", emoji: "Ship" }} lessonSlug="k8s-why-orchestration" courseId="devops-engineering" />

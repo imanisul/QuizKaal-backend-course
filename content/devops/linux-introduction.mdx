@@ -1,0 +1,74 @@
+---
+title: "Why Linux?"
+description: "Understand why Linux is the foundation of DevOps — and why every server in the world runs it."
+phase: "03 Linux"
+time: "15 min"
+difficulty: "beginner"
+---
+
+<LessonHero title="Why Linux?" module="03 Linux" difficulty="Beginner" time="15 min" xp="50" slug="linux-introduction" courseId="devops-engineering" />
+
+## 1. Introduction
+
+**Why does every DevOps engineer need Linux?**
+Because **96.3% of the world's top 1 million servers run Linux**. Every Docker container runs Linux inside. Every Kubernetes cluster runs Linux. AWS, Google Cloud, and Azure all run Linux servers. If you don't know Linux, you cannot do DevOps.
+
+---
+
+## 2. Real-Life Analogy
+
+<AnalogyCard title="The Engine Under the Hood">
+  Think of Linux like the engine of a car. Most people interact with the steering wheel, dashboard, and pedals (the GUI — like Windows or macOS). But a DevOps engineer is the mechanic who opens the hood and works directly with the engine. You need to understand how the engine works — the oil system, the pistons, the fuel injection — to keep the car running at peak performance.
+
+  Linux gives you direct access to the engine of every server in the world.
+</AnalogyCard>
+
+---
+
+## 3. Linux vs Windows vs macOS
+
+| Feature | Linux | Windows | macOS |
+|---------|-------|---------|-------|
+| Server Usage | 96%+ | ~3% | Negligible |
+| Cost | Free | Paid license | Hardware-locked |
+| Package Manager | apt, yum, dnf | None built-in | Homebrew (unofficial) |
+| Container Runtime | Native | WSL2 (emulated) | Docker Desktop (VM) |
+| Customization | Complete | Limited | Limited |
+
+---
+
+## 4. Key Linux Distributions
+
+```bash
+# Ubuntu/Debian — Most popular for servers
+apt update && apt install nginx
+
+# CentOS/RHEL/Amazon Linux — Enterprise servers
+yum install nginx
+
+# Alpine — Tiny (5MB), used inside Docker containers
+apk add nginx
+```
+
+---
+
+## 5. Knowledge Check
+
+<QuizWidget
+  question="What percentage of the world's top servers run Linux?"
+  options={["About 25%", "About 50%", "About 75%", "Over 96%"]}
+  answer={3}
+  explanation="Over 96% of the world's top 1 million servers run Linux. This makes Linux knowledge essential for any DevOps engineer."
+/>
+
+---
+
+## 6. Summary
+
+- Linux powers over 96% of the world's servers.
+- It is the foundation of Docker, Kubernetes, and all cloud platforms.
+- Key distributions: Ubuntu, CentOS/RHEL, Alpine.
+
+---
+
+<CourseNavigation prev={{ slug: "operating-systems", title: "Operating Systems", emoji: "Cpu" }} next={{ slug: "linux-filesystem", title: "Linux Filesystem", emoji: "Terminal" }} lessonSlug="linux-introduction" courseId="devops-engineering" />

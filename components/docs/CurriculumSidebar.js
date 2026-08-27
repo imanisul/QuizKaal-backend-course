@@ -97,12 +97,17 @@ export default function CurriculumSidebar() {
   const progressState = useProgress();
   const completedLessons = progressState.completedLessons || [];
 
-  const backendRoadmap = roadmap.filter(phase => phase.courseId === "backend-engineering");
-  const allLessons = backendRoadmap.flatMap(phase => phase.lessons.map(l => l.slug));
+  // Detect which course the current lesson belongs to
+  const currentLesson = roadmap.flatMap(p => p.lessons).find(l => l.slug === currentSlug);
+  const currentPhase = roadmap.find(p => p.lessons.some(l => l.slug === currentSlug));
+  const detectedCourseId = currentPhase?.courseId || "backend-engineering";
+
+  const courseRoadmap = roadmap.filter(phase => phase.courseId === detectedCourseId);
+  const allLessons = courseRoadmap.flatMap(phase => phase.lessons.map(l => l.slug));
   
   return (
     <div className="pr-4 pb-12 h-full overflow-y-auto custom-scrollbar">
-      {backendRoadmap.map((phase, idx) => {
+      {courseRoadmap.map((phase, idx) => {
         // Compute unlocked status for lessons in this phase
         const phaseWithUnlocked = {
           ...phase,

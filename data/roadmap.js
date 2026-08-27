@@ -199,23 +199,27 @@ export const roadmap = [
   },
 
 
-  ...devopsModules.map(m => ({
-    courseId: "devops-engineering",
-    phase: m.title,
-    emoji: "Cloud",
-    description: "DevOps Engineer phase",
-    gradient: "linear-gradient(135deg, #10b981, #34d399)",
-    lessons: m.lessons.map(l => ({
-      id: Math.random(),
-      slug: l.slug,
-      emoji: "Terminal",
-      title: l.title,
-      summary: l.title,
-      difficulty: "intermediate",
-      time: l.time || "15 min",
-      tags: ["DevOps"]
-    }))
-  }))
+  ...devopsModules.map(m => {
+    const meta = {"01 Introduction":{"emoji":"Compass","description":"Understand what DevOps is, its culture, and the career path ahead.","gradient":"linear-gradient(135deg, #6366f1, #818cf8)"},"02 Computer Fundamentals":{"emoji":"Cpu","description":"How computers actually work — CPU, RAM, disk, and operating systems.","gradient":"linear-gradient(135deg, #8b5cf6, #a78bfa)"},"03 Linux":{"emoji":"Terminal","description":"Master the Linux command line — the foundation of all DevOps work.","gradient":"linear-gradient(135deg, #059669, #34d399)"},"04 Networking":{"emoji":"Globe","description":"DNS, TCP/IP, firewalls, load balancers — how the internet actually works.","gradient":"linear-gradient(135deg, #0ea5e9, #38bdf8)"},"05 Git & GitHub":{"emoji":"GitBranch","description":"Version control, branching strategies, pull requests, and collaboration.","gradient":"linear-gradient(135deg, #f97316, #fb923c)"},"06 Bash Scripting":{"emoji":"FileCode","description":"Automate everything with Bash scripts — variables, loops, functions.","gradient":"linear-gradient(135deg, #84cc16, #a3e635)"},"07 YAML & JSON":{"emoji":"FileText","description":"Configuration languages used by Docker, Kubernetes, CI/CD, and more.","gradient":"linear-gradient(135deg, #ec4899, #f472b6)"},"08 Web Servers & Deployment":{"emoji":"Server","description":"Deploy applications manually, understand web servers and reverse proxies.","gradient":"linear-gradient(135deg, #14b8a6, #2dd4bf)"},"09 Docker":{"emoji":"Box","description":"Containerize applications — Dockerfile, images, networking, volumes, and optimization.","gradient":"linear-gradient(135deg, #0284c7, #38bdf8)"},"10 CI/CD":{"emoji":"GitPullRequest","description":"Continuous Integration and Continuous Deployment — automate everything.","gradient":"linear-gradient(135deg, #7c3aed, #a78bfa)"},"11 Cloud Computing":{"emoji":"Cloud","description":"Cloud fundamentals — IaaS, PaaS, SaaS, regions, and core services.","gradient":"linear-gradient(135deg, #f59e0b, #fbbf24)"},"12 Terraform":{"emoji":"Layers","description":"Infrastructure as Code — provision cloud resources with Terraform.","gradient":"linear-gradient(135deg, #7c3aed, #c084fc)"},"13 Ansible":{"emoji":"Settings","description":"Configuration management — automate server setup with Ansible playbooks.","gradient":"linear-gradient(135deg, #dc2626, #f87171)"},"14 Kubernetes":{"emoji":"Ship","description":"Container orchestration — Pods, Deployments, Services, Ingress, and production K8s.","gradient":"linear-gradient(135deg, #2563eb, #60a5fa)"},"15 Helm":{"emoji":"Anchor","description":"Kubernetes package manager — charts, values, and templating.","gradient":"linear-gradient(135deg, #0891b2, #22d3ee)"},"16 GitOps":{"emoji":"GitMerge","description":"GitOps with ArgoCD — declarative, Git-driven deployments.","gradient":"linear-gradient(135deg, #ea580c, #fb923c)"},"17 Monitoring":{"emoji":"Activity","description":"Observability — Prometheus, Grafana, and alerting.","gradient":"linear-gradient(135deg, #16a34a, #4ade80)"},"18 Logging":{"emoji":"ScrollText","description":"Centralized logging — ELK stack and log management.","gradient":"linear-gradient(135deg, #854d0e, #ca8a04)"},"19 DevSecOps":{"emoji":"Shield","description":"Security in the pipeline — scanning, secrets management, and compliance.","gradient":"linear-gradient(135deg, #b91c1c, #ef4444)"},"20 SRE":{"emoji":"Gauge","description":"Site Reliability Engineering — SLIs, SLOs, error budgets, and incident response.","gradient":"linear-gradient(135deg, #0f766e, #14b8a6)"},"21 Production Architecture":{"emoji":"Building","description":"High availability, zero-downtime deployments, blue/green, canary releases.","gradient":"linear-gradient(135deg, #475569, #94a3b8)"},"22 Troubleshooting":{"emoji":"Bug","description":"Real-world production troubleshooting — debug like a senior engineer.","gradient":"linear-gradient(135deg, #9333ea, #c084fc)"},"23 Projects":{"emoji":"Rocket","description":"Build real-world DevOps projects from scratch.","gradient":"linear-gradient(135deg, #1d4ed8, #3b82f6)"},"24 Interview Preparation":{"emoji":"GraduationCap","description":"Prepare for DevOps interviews — common questions and scenario-based challenges.","gradient":"linear-gradient(135deg, #ca8a04, #fbbf24)"}};
+    const info = meta[m.title] || {};
+    return {
+      courseId: "devops-engineering",
+      phase: m.title,
+      emoji: info.emoji || "Terminal",
+      description: info.description || "DevOps Engineering",
+      gradient: info.gradient || "linear-gradient(135deg, #10b981, #34d399)",
+      lessons: m.lessons.map((l, idx) => ({
+        id: idx + 1,
+        slug: l.slug,
+        emoji: info.emoji || "Terminal",
+        title: l.title,
+        summary: l.title,
+        difficulty: l.difficulty || "intermediate",
+        time: l.time || "15 min",
+        tags: ["DevOps"]
+      }))
+    };
+  })
 ];
 
 export const allLessons = roadmap.flatMap((p) =>

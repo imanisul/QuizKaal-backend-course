@@ -1,0 +1,209 @@
+---
+title: "Dockerfile Deep Dive"
+description: "Master the Dockerfile — every instruction, layer optimization, and production best practices."
+phase: "09 Docker"
+time: "40 min"
+difficulty: "intermediate"
+---
+
+<LessonHero title="Dockerfile Deep Dive" module="09 Docker" difficulty="Intermediate" time="40 min" xp="150" slug="docker-dockerfile" courseId="devops-engineering" />
+
+## 1. Introduction
+
+The Dockerfile is the recipe for your container. It is a simple text file that tells Docker exactly how to build an image — step by step. In this lesson, you will master every important Dockerfile instruction and learn production best practices.
+
+---
+
+## 2. The Complete Dockerfile
+
+<CodeTabs>
+  <div label="Production Dockerfile">
+    ```dockerfile
+    # ── Stage 1: Build ──────────────────────────
+    FROM node:22-alpine AS builder
+
+    WORKDIR /app
+
+    # Copy package files first (layer caching!)
+    COPY package*.json ./
+
+    # Install ALL dependencies (including devDependencies for building)
+    RUN npm ci
+
+    # Copy source code
+    COPY . .
+
+    # Build the application (TypeScript → JavaScript)
+    RUN npm run build
+
+    # ── Stage 2: Production ─────────────────────
+    FROM node:22-alpine AS production
+
+    # Create a non-root user for security
+    RUN addgroup -g 1001 appgroup && \
+        adduser -u 1001 -G appgroup -D appuser
+
+    WORKDIR /app
+
+    # Copy ONLY production dependencies
+    COPY package*.json ./
+    RUN npm ci --only=production && npm cache clean --force
+
+    # Copy built application from Stage 1
+    COPY --from=builder /app/dist ./dist
+
+    # Switch to non-root user
+    USER appuser
+
+    # Document the port
+    EXPOSE 3000
+
+    # Health check
+    HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
+      CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
+
+    # Start the application
+    CMD ["node", "dist/server.js"]
+    ```
+  </div>
+  <div label=".dockerignore">
+    ```
+    node_modules
+    .git
+    .env
+    .env.local
+    Dockerfile
+    docker-compose.yml
+    .dockerignore
+    README.md
+    .github
+    coverage
+    dist
+    ```
+  </div>
+</CodeTabs>
+
+---
+
+## 3. Instruction by Instruction
+
+| Instruction | Purpose | Example |
+|-------------|---------|---------|
+| `FROM` | Base image | `FROM node:22-alpine` |
+| `WORKDIR` | Set working directory | `WORKDIR /app` |
+| `COPY` | Copy files into image | `COPY package*.json ./` |
+| `RUN` | Execute a command during build | `RUN npm ci` |
+| `EXPOSE` | Document which port to use | `EXPOSE 3000` |
+| `CMD` | Default command when container starts | `CMD ["node", "server.js"]` |
+| `USER` | Switch to a non-root user | `USER appuser` |
+| `HEALTHCHECK` | Define health check | `HEALTHCHECK CMD curl ...` |
+| `ARG` | Build-time variable | `ARG NODE_ENV=production` |
+| `ENV` | Runtime environment variable | `ENV PORT=3000` |
+
+---
+
+## 4. Layer Caching — The Key to Fast Builds
+
+<ConceptBlock type="info" title="Why Order Matters in a Dockerfile">
+  Every Dockerfile instruction creates a new **layer**. Docker caches these layers. If a layer hasn't changed, Docker skips rebuilding it.
+
+  **Bad order (slow rebuilds):**
+  ```dockerfile
+  COPY . .            # ← Changes every time you edit code
+  RUN npm install     # ← Must reinstall ALL dependencies every time!
+  ```
+
+  **Good order (fast rebuilds):**
+  ```dockerfile
+  COPY package*.json ./   # ← Only changes when you add a dependency
+  RUN npm ci              # ← Cached! Skipped if package.json hasn't changed
+  COPY . .                # ← Only this layer rebuilds when code changes
+  ```
+
+  By copying `package.json` first and running `npm ci` before copying the rest of the code, Docker can skip the expensive `npm ci` step on 99% of builds. This reduces build time from 2 minutes to 3 seconds.
+</ConceptBlock>
+
+---
+
+## 5. CMD vs ENTRYPOINT
+
+```dockerfile
+# CMD — can be overridden by docker run arguments
+CMD ["node", "server.js"]
+# docker run myapp node test.js  ← replaces CMD
+
+# ENTRYPOINT — always runs, CMD becomes default arguments
+ENTRYPOINT ["node"]
+CMD ["server.js"]
+# docker run myapp test.js  ← runs: node test.js
+```
+
+**Rule of thumb:** Use `CMD` for most applications. Use `ENTRYPOINT` when your container is a wrapper around a specific executable.
+
+---
+
+## 6. Common Mistakes
+
+<WarningCard title="Running as Root Inside Containers">
+  By default, Docker runs processes as the `root` user inside the container. If a hacker exploits a vulnerability in your Node.js app, they gain root access to the container. Always add a non-root user and switch to it before the `CMD`:
+
+  ```dockerfile
+  RUN addgroup -g 1001 appgroup && adduser -u 1001 -G appgroup -D appuser
+  USER appuser
+  CMD ["node", "server.js"]
+  ```
+</WarningCard>
+
+---
+
+## 7. Interactive Lab
+
+<TerminalLab
+  task="Build a Docker image tagged 'quizkaal-app:v1' from the current directory."
+  expectedCommand="docker build -t quizkaal-app:v1 ."
+/>
+
+---
+
+## 8. Knowledge Check
+
+<QuizWidget
+  question="Why should you copy package.json before copying the rest of your source code in a Dockerfile?"
+  options={["It doesn't matter — you can copy everything at once", "To leverage Docker's layer caching and skip npm install when only code changes", "Because package.json must be in the root directory", "To make the image smaller"]}
+  answer={1}
+  explanation="Docker caches each layer. If package.json hasn't changed, Docker skips the expensive 'npm ci' step entirely. This can reduce build times from minutes to seconds."
+/>
+
+---
+
+## 9. Interview Question
+
+<InterviewPrep
+  question="What is the difference between CMD and ENTRYPOINT in a Dockerfile?"
+  answer="CMD sets the default command and arguments for a container, but can be completely overridden when running the container with 'docker run <image> <command>'. ENTRYPOINT sets the executable that always runs, and any CMD or 'docker run' arguments are passed as arguments to the ENTRYPOINT. Use CMD for most applications; use ENTRYPOINT when the container wraps a specific tool (like a CLI utility)."
+/>
+
+---
+
+## 10. Practice Challenge
+
+**Mini Project:**
+1. Create a file `app.js` with: `console.log("Hello from QuizKaal Container!")`
+2. Write a Dockerfile: use `node:22-alpine`, copy `app.js`, and run it
+3. Build: `docker build -t hello-quizkaal .`
+4. Run: `docker run hello-quizkaal`
+5. You should see the message print!
+
+---
+
+## 11. Summary
+
+- A Dockerfile is a recipe that builds a Docker image layer by layer.
+- **Layer caching**: Copy `package.json` first, then `npm ci`, then copy code.
+- **Multi-stage builds**: Build in one stage, copy only the output to a slim production stage.
+- **Security**: Never run as root. Always add a non-root `USER`.
+- **.dockerignore**: Exclude `node_modules`, `.git`, `.env` from the image.
+
+---
+
+<CourseNavigation prev={{ slug: "docker-images", title: "Docker Images", emoji: "Box" }} next={{ slug: "docker-layers-cache", title: "Layers & Build Cache", emoji: "Box" }} lessonSlug="docker-dockerfile" courseId="devops-engineering" />

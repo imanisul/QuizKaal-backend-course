@@ -1,31 +1,174 @@
 ---
 title: "Linux Filesystem"
-description: "Navigate the Linux directory structure."
+description: "Navigate the Linux directory structure like a pro."
 phase: "03 Linux"
+time: "30 min"
+difficulty: "beginner"
 ---
 
-# Linux Filesystem
+<LessonHero title="Linux Filesystem" module="03 Linux" difficulty="Beginner" time="30 min" xp="75" slug="linux-filesystem" courseId="devops-engineering" />
 
-<AnalogyCard>
-Think of the Linux filesystem like a massive office building. The root `/` is the front door. `/home` is where employees have their personal desks, and `/etc` is the manager's office where the building's rulebooks are kept.
+## 1. Introduction
+
+**What is this lesson?**
+In Linux, everything is a file — your documents, your programs, your hardware devices, even your network connections. Understanding the filesystem hierarchy is the first step to mastering Linux.
+
+---
+
+## 2. Real-Life Analogy
+
+<AnalogyCard title="The Office Building">
+  Think of the Linux filesystem as a massive office building. The root directory `/` is the front entrance. Each floor has a different department:
+
+  - `/home` — Employee desks (user personal files)
+  - `/etc` — The manager's office (configuration files / rule books)
+  - `/var` — The mail room (variable data, logs, databases)
+  - `/tmp` — The whiteboard (temporary notes, wiped clean regularly)
+  - `/bin` — The toolbox (essential programs like `ls`, `cat`, `cp`)
+  - `/opt` — The guest offices (optional third-party software)
 </AnalogyCard>
 
-## Essential Directories
+---
 
-- `/` (Root): The beginning of everything.
-- `/home`: User directories.
-- `/etc`: Configuration files.
-- `/var`: Variable data like logs.
+## 3. The Filesystem Hierarchy
 
-## Hands-on Lab
+```
+/                          ← Root: the starting point of everything
+├── bin/                   ← Essential commands (ls, cp, mv, cat)
+├── boot/                  ← Boot loader files (kernel)
+├── dev/                   ← Device files (hard drives, USB)
+├── etc/                   ← Configuration files (nginx.conf, ssh)
+├── home/                  ← User home directories
+│   └── quizkaal/          ← Your personal directory
+├── opt/                   ← Optional/third-party software
+├── proc/                  ← Virtual filesystem (running processes)
+├── root/                  ← Root user's home directory
+├── tmp/                   ← Temporary files (cleared on reboot)
+├── usr/                   ← User programs and libraries
+│   ├── bin/               ← User commands
+│   └── lib/               ← Libraries
+└── var/                   ← Variable data
+    ├── log/               ← System logs
+    └── www/               ← Web server files
+```
 
-Try exploring the filesystem using standard commands:
+---
 
-<TerminalLab 
-  task="List all files in the current directory, including hidden ones."
-  expectedCommand="ls -la"
+## 4. Essential Navigation Commands
+
+<CodeTabs>
+  <div label="Navigation">
+    ```bash
+    # Print current directory
+    pwd
+    # Output: /home/quizkaal
+
+    # List files (detailed view)
+    ls -la
+    # Shows permissions, owner, size, date
+
+    # Change directory
+    cd /var/log
+
+    # Go up one level
+    cd ..
+
+    # Go to home directory
+    cd ~
+
+    # Go to previous directory
+    cd -
+    ```
+  </div>
+  <div label="File Operations">
+    ```bash
+    # Create a directory
+    mkdir my-project
+
+    # Create a file
+    touch README.md
+
+    # Copy a file
+    cp README.md backup.md
+
+    # Move/rename a file
+    mv backup.md docs/backup.md
+
+    # Delete a file
+    rm old-file.txt
+
+    # Delete a directory recursively
+    rm -rf temp-folder
+    ```
+  </div>
+  <div label="Viewing Files">
+    ```bash
+    # View entire file
+    cat /etc/hostname
+
+    # View with paging
+    less /var/log/syslog
+
+    # View first 20 lines
+    head -20 /var/log/syslog
+
+    # View last 20 lines (and follow live)
+    tail -20 -f /var/log/syslog
+
+    # Search inside a file
+    grep "error" /var/log/syslog
+    ```
+  </div>
+</CodeTabs>
+
+---
+
+## 5. Interactive Lab
+
+<TerminalLab
+  task="Navigate to the /var/log directory and list all files including hidden ones."
+  expectedCommand="cd /var/log && ls -la"
 />
 
-<PracticeExercise>
-Navigate to the `/var/log` directory and use the `tail` command to view the last 10 lines of the syslog.
-</PracticeExercise>
+---
+
+## 6. Common Mistakes
+
+<WarningCard title="rm -rf / — The Most Dangerous Command">
+  Never, ever run `rm -rf /` — this deletes your entire filesystem, including the operating system itself. There is no recycle bin in Linux. Deleted files are gone forever.
+
+  **Safe practice:** Always double-check your path before running `rm -rf`. Use `ls` first to see what you're about to delete.
+</WarningCard>
+
+---
+
+## 7. Knowledge Check
+
+<QuizWidget
+  question="What does the /etc directory contain in Linux?"
+  options={["User home directories", "System configuration files", "Temporary files", "Log files"]}
+  answer={1}
+  explanation="The /etc directory contains system-wide configuration files. For example, /etc/nginx/nginx.conf holds the Nginx web server configuration, and /etc/ssh/sshd_config configures the SSH server."
+/>
+
+---
+
+## 8. Interview Question
+
+<InterviewPrep
+  question="What is the difference between /bin and /usr/bin in Linux?"
+  answer="/bin contains essential system commands that are needed for the system to boot and run in single-user mode (like ls, cp, mv, cat). /usr/bin contains user-level application binaries that are not essential for booting (like git, python, curl). On modern Linux distributions, /bin is often a symlink to /usr/bin."
+/>
+
+---
+
+## 9. Summary
+
+- Everything in Linux is a file — including hardware devices.
+- The root `/` is the starting point of the filesystem.
+- Key directories: `/etc` (config), `/var/log` (logs), `/home` (users), `/bin` (commands).
+- Master `ls`, `cd`, `cat`, `grep`, `head`, `tail` — you will use them every day.
+
+---
+
+<CourseNavigation prev={{ slug: "linux-introduction", title: "Why Linux?", emoji: "Terminal" }} next={{ slug: "linux-commands", title: "Essential Commands", emoji: "Terminal" }} lessonSlug="linux-filesystem" courseId="devops-engineering" />
