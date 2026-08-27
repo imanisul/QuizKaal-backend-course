@@ -56,6 +56,7 @@ import K8sPodCreationVisualizer from "@/components/interactive/K8sPodCreationVis
 import K8sSelfHealingVisualizer from "@/components/interactive/K8sSelfHealingVisualizer";
 import TroubleshootingFlow from "@/components/interactive/TroubleshootingFlow";
 import TerraformVisualizer from "@/components/interactive/TerraformVisualizer";
+import ComputerArchitectureVisualizer from "@/components/interactive/ComputerArchitectureVisualizer";
 
 // New Rich MDX Components
 import LearningObjectives from "@/components/mdx/LearningObjectives";
@@ -127,6 +128,7 @@ export const MdxComponents = {
   K8sSelfHealingVisualizer,
   TroubleshootingFlow,
   TerraformVisualizer,
+  ComputerArchitectureVisualizer,
   KnowledgeCard,
   CompletionButton,
   QuizWidget,

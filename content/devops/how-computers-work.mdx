@@ -1,0 +1,66 @@
+---
+title: "How Computers Work"
+description: "Understand the core components of a computer: CPU, RAM, Disk, and I/O."
+phase: "02 Computer Fundamentals"
+time: "15 min"
+difficulty: "beginner"
+---
+
+<LessonHero title="How Computers Work" module="02 Computer Fundamentals" difficulty="Beginner" time="15 min" xp="100" slug="how-computers-work" courseId="devops-engineering" />
+
+## 1. Introduction
+
+Before we can master servers, clouds, and containers, we must understand the fundamental building blocks of any computer. A massive AWS EC2 server running Kubernetes works on the exact same core principles as the smartphone in your pocket. 
+
+Let's break down the four critical components of a computer system: **Input**, **Processing (CPU)**, **Memory (RAM)**, **Storage (Disk)**, and **Output**.
+
+---
+
+## 2. Interactive Architecture
+
+Watch how data flows through a computer when you simply type the word "hello" and save it. Use the playback controls to step through the animation.
+
+<ComputerArchitectureVisualizer />
+
+---
+
+## 3. The Core Components
+
+<BehindTheScenes title="Deep Dive: CPU (Central Processing Unit)">
+The CPU is the brain of the computer. It executes instructions. The speed of a CPU is measured in Gigahertz (GHz), meaning billions of cycles per second. A 3GHz processor can execute roughly 3 billion instructions every single second.
+</BehindTheScenes>
+
+<BehindTheScenes title="Deep Dive: RAM (Random Access Memory)">
+RAM is volatile memory. It's incredibly fast but temporary. When you open a program or a file, it is loaded into RAM so the CPU can access it instantly. When the computer turns off, everything in RAM is erased. If a computer has too many tabs open, it runs out of RAM and starts using the slower Disk (Swapping), causing lag.
+</BehindTheScenes>
+
+<BehindTheScenes title="Deep Dive: Storage (SSD/HDD)">
+Storage is non-volatile. It remembers data even when the power is off. Solid State Drives (SSDs) are much faster than older Hard Disk Drives (HDDs) because they have no moving parts. However, even the fastest SSD is still significantly slower than RAM.
+</BehindTheScenes>
+
+---
+
+## 4. Why does this matter for DevOps?
+
+As a DevOps Engineer, you will constantly monitor these metrics on production servers:
+
+- **High CPU Usage**: Is the application stuck in an infinite loop? Do we need to scale up and add more servers?
+- **High Memory Usage (OOM)**: Did the application leak memory? If a container runs out of RAM, Linux will automatically kill it (OOMKilled).
+- **High Disk I/O**: Is the database reading/writing too much data? Is the disk full?
+
+Understanding the physical limits of hardware is essential to optimizing software.
+
+---
+
+## 5. Knowledge Check
+
+<QuizWidget
+  question="If an application is running slowly and you see high 'Swap' usage, which component is likely the bottleneck?"
+  options={["CPU", "RAM", "Storage", "Network"]}
+  answer={1}
+  explanation="When RAM is full, the operating system starts using the storage disk as 'fake RAM' (called Swap). Because disk is much slower than RAM, the application slows down significantly."
+/>
+
+---
+
+<CourseNavigation prev={{ slug: "devops-culture", title: "DevOps Culture", emoji: "🔄" }} next={{ slug: "linux-introduction", title: "Introduction to Linux", emoji: "🐧" }} lessonSlug="how-computers-work" courseId="devops-engineering" />
