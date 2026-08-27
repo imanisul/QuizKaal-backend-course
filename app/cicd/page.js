@@ -1,15 +1,59 @@
-import CICDContent from "./CICDContent";
+"use client";
 
-
+import React from "react";
+import { RefreshCw, Play } from "lucide-react";
+import CourseLandingLayout from "@/components/ui/CourseLandingLayout";
+import { ALL_COURSES } from "@/data/courseHub";
+import Link from "next/link";
+import { IconMap } from "@/components/ui/IconMap"; // Assuming this exists or I'll just use a default
 
 export default function CICDPage() {
+  const courseData = ALL_COURSES.find(c => c.id === "cicd-pipeline");
+  
+  const modules = courseData.roadmapData.map((phase, idx) => {
+    const colors = [
+      "from-green-400 to-emerald-500",
+      "from-teal-400 to-cyan-500",
+      "from-blue-400 to-indigo-500",
+      "from-purple-400 to-fuchsia-500"
+    ];
+    
+    return {
+      title: phase.title,
+      desc: phase.description,
+      color: colors[idx % colors.length],
+      icon: RefreshCw, // fallback
+      topics: phase.lessons.map((lesson) => ({
+        id: lesson.slug,
+        title: lesson.title,
+        slug: lesson.slug,
+        diff: lesson.difficulty,
+        time: lesson.time
+      }))
+    };
+  });
+
+  const extraHeroContent = (
+    <Link 
+      href="/cicd/learn"
+      className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-4 px-10 rounded-full flex items-center justify-center gap-3 transition-transform hover:scale-105 shadow-[0_0_20px_rgba(16,185,129,0.4)]"
+    >
+      <Play fill="currentColor" size={20} />
+      Start Pipeline Simulator
+    </Link>
+  );
+
   return (
-    <div className="flex bg-[#0a0c10] min-h-screen text-white font-ui selection:bg-primary/30">
-      <div className="flex-1 w-[95%] max-w-[1800px] mx-auto min-h-screen relative border-x border-white/[0.02]">
-        <main className="px-4 lg:px-8 xl:px-12 global-page-pt pb-32">
-          <CICDContent />
-        </main>
-      </div>
-    </div>
+    <CourseLandingLayout
+      courseId="cicd-pipeline"
+      title={courseData.title}
+      description={courseData.description}
+      icon={RefreshCw}
+      themeColor="from-green-400 to-emerald-500"
+      bgGlow="from-green-400/20 to-emerald-500/20"
+      modules={modules}
+      basePath="/cicd/learn#"
+      extraHeroContent={extraHeroContent}
+    />
   );
 }

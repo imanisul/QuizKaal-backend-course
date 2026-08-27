@@ -10,6 +10,7 @@ import CourseNavigation from "@/components/lesson/CourseNavigation";
 import ProgressGuard from "@/components/lesson/ProgressGuard";
 import TableOfContents from "@/components/lesson/TableOfContents";
 import CourseProgressBar from "@/components/lesson/CourseProgressBar";
+import CourseLessonLayout from "@/components/ui/CourseLessonLayout";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
@@ -124,60 +125,48 @@ export default async function LessonPage({ params }) {
       <Script id="schema-breadcrumb" type="application/ld+json" strategy="afterInteractive">
         {JSON.stringify(breadcrumbSchema)}
       </Script>
-      <CourseProgressBar />
+
       <ProgressGuard lessonSlug={params.slug}>
-        <div className="grid grid-cols-1 xl:grid-cols-[240px_minmax(0,1fr)_240px] gap-10 max-w-[1400px] mx-auto px-6 sm:px-8 relative z-[1]">
-          
-          {/* Left Sidebar (Global Nav) */}
-          <aside className="hidden xl:block pb-32 global-sticky-sidebar overflow-y-auto border-r border-white/10 pr-2">
-            <h3 className="font-bold text-sm tracking-widest uppercase text-textTertiary mb-6 ml-2">Curriculum</h3>
-            <CurriculumSidebar />
-          </aside>
+        <MobileLessonNav headings={headings}>
+          <CurriculumSidebar />
+        </MobileLessonNav>
 
-          {/* Mobile Drawer Navigation */}
-          <MobileLessonNav headings={headings}>
-            <CurriculumSidebar />
-          </MobileLessonNav>
+        <CourseLessonLayout
+          lesson={{
+            title: lesson.frontmatter?.title,
+            summary: lesson.frontmatter?.description,
+            phase: lesson.frontmatter?.phase,
+            difficulty: lesson.frontmatter?.difficulty,
+            time: lesson.frontmatter?.time,
+            xp: lesson.frontmatter?.xp,
+            emoji: lesson.frontmatter?.emoji || "Terminal",
+            id: lesson.id || lesson.slug
+          }}
+          courseId={courseId}
+          courseName={courseInfo.label}
+          allLessonIds={allLessons.filter(l => l.courseId === courseId).map(l => l.slug)}
+          backLink={courseInfo.path}
+          sidebar={
+            <>
+              <h3 className="font-bold text-sm tracking-widest uppercase text-textTertiary mb-6 ml-2">Curriculum</h3>
+              <CurriculumSidebar />
+            </>
+          }
+          toc={
+            <>
+              <h3 className="font-bold text-sm tracking-widest uppercase text-textTertiary mb-6">On This Page</h3>
+              <TableOfContents headings={headings} />
+            </>
+          }
+        >
+          <ProgressiveRenderer key={params.slug}>
+            <MDXRemote source={lesson.content} components={MdxComponents} options={mdxOptions} />
+          </ProgressiveRenderer>
 
-          {/* Main Content (MDX) */}
-          <main className="min-w-0 global-page-pt pb-32">
-            {/* Breadcrumbs */}
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-textTertiary mb-8">
-              <Link href={courseInfo.path} className="hover:text-white transition-colors">{courseInfo.label}</Link>
-              <span>/</span>
-              <span className="text-primary">{lesson.frontmatter?.phase || lesson.category}</span>
-            </div>
-
-            <LessonHero 
-              lesson={{
-                title: lesson.frontmatter?.title,
-                summary: lesson.frontmatter?.description,
-                phase: lesson.frontmatter?.phase,
-                difficulty: lesson.frontmatter?.difficulty,
-                time: lesson.frontmatter?.time,
-                xp: lesson.frontmatter?.xp,
-                slug: params.slug,
-                courseId: courseId
-              }} 
-            />
-
-            <ProgressiveRenderer key={params.slug}>
-              <article className="prose prose-invert max-w-none prose-headings:scroll-mt-24">
-                <MDXRemote source={lesson.content} components={MdxComponents} options={mdxOptions} />
-              </article>
-            </ProgressiveRenderer>
-
-            <div className="mt-20 pt-10 border-t border-white/10">
-              <CourseNavigation prev={prev} next={next} lessonSlug={params.slug} courseId={courseId} />
-            </div>
-          </main>
-
-          {/* Right Sidebar (TOC) */}
-          <aside className="hidden xl:block pb-32 global-sticky-sidebar overflow-y-auto pl-6">
-            <h3 className="font-bold text-sm tracking-widest uppercase text-textTertiary mb-6">On This Page</h3>
-            <TableOfContents headings={headings} />
-          </aside>
-        </div>
+          <div className="mt-20 pt-10 border-t border-white/10">
+            <CourseNavigation prev={prev} next={next} lessonSlug={params.slug} courseId={courseId} />
+          </div>
+        </CourseLessonLayout>
       </ProgressGuard>
     </>
   );

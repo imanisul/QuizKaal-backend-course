@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle2, Lock } from "lucide-react";
 import CourseHeader from '@/components/ui/CourseHeader';
-import { useCourseProgress, useProgress } from "@/utils/progressEngine";
+import { useCourseProgress, useProgress, progressEngine } from "@/utils/progressEngine";
 
 export default function CourseLandingLayout({
   courseId,
@@ -114,7 +114,8 @@ export default function CourseLandingLayout({
                   {module.topics.map((topic, tIdx) => {
                     const isCompleted = completedGlobal.includes(topic.slug);
                     const isCurrent = nextLessonSlug === topic.slug;
-                    const isLocked = false; // By default we keep them unlocked to allow free exploration
+                    // Use progressEngine to check if the user can access this lesson
+                    const isLocked = !progressEngine.canAccessLesson(courseId, topic.slug, allLessonIds, progressState);
 
                     return (
                       <motion.div

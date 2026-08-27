@@ -39,32 +39,42 @@ export default async function LessonPage({ params }) {
   try {
     const source = fs.readFileSync(filePath, 'utf8');
     const currentPath = `/mobile-course/${module}/${lesson}`;
-    const { moduleTitle } = lookupTitles(module, lesson);
+    const { moduleTitle, lessonTitle } = lookupTitles(module, lesson);
     
     const allLessons = flattenCourse(COURSE_STRUCTURE);
     const currentIndex = allLessons.findIndex(p => p.path === currentPath);
     const nextLesson = currentIndex !== -1 && currentIndex + 1 < allLessons.length 
       ? allLessons[currentIndex + 1] 
       : null;
+      
+    // Import dynamically so it doesn't break server/client boundaries if needed
+    const CourseLessonLayout = (await import('@/components/ui/CourseLessonLayout')).default;
     
     return (
       <ProgressGuard lessonSlug={lesson}>
-        <article className="pb-24 pt-8">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-8">
-            <Link href="/mobile-course" className="hover:text-white transition-colors">Mobile Engineering</Link>
-            <span>/</span>
-            <span className="text-blue-400">{moduleTitle}</span>
-          </div>
+        <CourseLessonLayout
+          lesson={{
+            title: lessonTitle,
+            phase: moduleTitle,
+            id: lesson
+          }}
+          courseId="mobile-engineering"
+          courseName="Mobile Mastery"
+          allLessonIds={allLessons.map(l => l.lessonSlug)}
+          backLink="/mobile-course"
+        >
           <MDXRemote source={source} components={components} />
           
-          <CourseProgressTracker
-            lessonId={lesson}
-            courseId="mobile-engineering"
-            nextLessonPath={nextLesson ? nextLesson.path : null}
-            coursePath="/mobile-course"
-            isLastLesson={!nextLesson}
-          />
-        </article>
+          <div className="mt-20 pt-10 border-t border-white/10">
+            <CourseProgressTracker
+              lessonId={lesson}
+              courseId="mobile-engineering"
+              nextLessonPath={nextLesson ? nextLesson.path : null}
+              coursePath="/mobile-course"
+              isLastLesson={!nextLesson}
+            />
+          </div>
+        </CourseLessonLayout>
       </ProgressGuard>
     );
   } catch (e) {
