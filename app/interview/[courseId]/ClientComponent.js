@@ -4,6 +4,7 @@ import InterviewDashboard from "./InterviewDashboard";
 export async function generateStaticParams() {
   return [
     { courseId: 'backend-engineering' },
+    { courseId: 'devops-engineering' },
     { courseId: 'system-design' },
     { courseId: 'react-mastery' },
     { courseId: 'mobile-engineering' },
@@ -27,6 +28,7 @@ export default async function InterviewCoursePage({ params }) {
 
   const courseNames = {
     'backend-engineering': 'Backend Engineering',
+    'devops-engineering': 'DevOps Engineer',
     'system-design': 'System Design',
     'react-mastery': 'React Mastery',
     'mobile-engineering': 'Mobile Engineering',

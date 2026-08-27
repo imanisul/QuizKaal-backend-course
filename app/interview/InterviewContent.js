@@ -12,6 +12,7 @@ import ParticleField from "@/components/ui/ParticleField";
 
 const INTERVIEW_CATEGORIES = [
   { id: "backend-engineering", name: "Backend Engineering", description: "Internet, HTTP, Node.js, Scaling, Databases, Microservices.", questions: 305, difficulty: "Advanced", time: "35 Hours", icon: Server, color: "from-green-400 to-emerald-600", shadow: "shadow-green-500/20" },
+  { id: "devops-engineering", name: "DevOps Engineer", description: "Linux, Networking, Git, Docker, CI/CD, AWS, Terraform, Kubernetes, SRE.", questions: 610, difficulty: "Advanced", time: "60+ Hours", icon: Terminal, color: "from-orange-400 to-red-600", shadow: "shadow-orange-500/20" },
   { id: "system-design", name: "System Design", description: "Scalability, Load Balancing, Caching, Sharding, and CAP theorem.", questions: 255, difficulty: "Expert", time: "40 Hours", icon: Network, color: "from-slate-400 to-slate-600", shadow: "shadow-slate-500/20" },
   { id: "react-mastery", name: "React Mastery", description: "JSX, Components, Hooks, Context, Performance, Next.js.", questions: 310, difficulty: "Intermediate", time: "20 Hours", icon: Atom, color: "from-cyan-400 to-blue-600", shadow: "shadow-cyan-500/20" },
   { id: "mobile-engineering", name: "Mobile Engineering", description: "React Native, Flutter, Navigation, Offline Storage, Push Notifications.", questions: 260, difficulty: "Advanced", time: "25 Hours", icon: Smartphone, color: "from-blue-400 to-cyan-500", shadow: "shadow-blue-500/20" },
