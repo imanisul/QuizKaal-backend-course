@@ -4,20 +4,24 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Lock } from "lucide-react";
 import { useCourseProgress } from "@/utils/progressEngine";
-import { allLessons } from "@/data/roadmap";
+import { allLessons, getLessonBySlug } from "@/data/roadmap";
 import { COURSE_STRUCTURE as MOBILE_COURSE_STRUCTURE, flattenCourse as flattenMobileCourse } from "@/data/mobile/courseStructure";
 import { motion } from "framer-motion";
 
-const backendLessons = allLessons.filter(l => l.courseId === "backend-engineering").map(l => l.slug);
 const mobileLessons = flattenMobileCourse(MOBILE_COURSE_STRUCTURE).map(l => l.lessonSlug);
 
 export default function ProgressGuard({ lessonSlug, children }) {
   const pathname = usePathname() || "";
   const isMobileCourse = pathname.includes("/mobile-course/");
+  
+  // Resolve roadmap lesson
+  const roadmapLesson = getLessonBySlug(lessonSlug);
+  const detectedCourseId = roadmapLesson?.courseId || "backend-engineering";
 
-  const courseId = isMobileCourse ? "mobile-engineering" : "backend-engineering";
-  const allLessonIds = isMobileCourse ? mobileLessons : backendLessons;
-  const returnPath = isMobileCourse ? "/mobile-course" : "/roadmap";
+  const courseId = isMobileCourse ? "mobile-engineering" : detectedCourseId;
+  const courseLessons = allLessons.filter(l => l.courseId === courseId).map(l => l.slug);
+  const allLessonIds = isMobileCourse ? mobileLessons : courseLessons;
+  const returnPath = isMobileCourse ? "/mobile-course" : (courseId === "devops-engineering" ? "/devops-engineering" : "/roadmap");
 
   const courseStats = useCourseProgress(courseId, allLessonIds);
   const [mounted, setMounted] = useState(false);

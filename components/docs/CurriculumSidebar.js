@@ -11,6 +11,7 @@ import { useProgress } from "@/utils/progressEngine";
 
 function LessonLink({ lesson, isActive, isCompleted, isUnlocked }) {
   const activeRef = useRef(null);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     if (isActive && activeRef.current) {
@@ -18,22 +19,46 @@ function LessonLink({ lesson, isActive, isCompleted, isUnlocked }) {
     }
   }, [isActive]);
 
+  const handleClick = (e) => {
+    if (!isUnlocked) {
+      e.preventDefault();
+      setShowTooltip(true);
+      setTimeout(() => setShowTooltip(false), 2000);
+    }
+  };
+
   return (
-    <Link 
-      href={isUnlocked ? `/lessons/${lesson.slug}` : "#"}
-      ref={isActive ? activeRef : null}
-      className={`
-        text-[13px] py-1.5 px-3 rounded-md transition-all flex items-center justify-between
-        ${isActive ? "bg-primary/10 text-primary font-medium" : "text-textSecondary hover:text-white hover:bg-white/5"}
-        ${!isUnlocked ? "opacity-50 cursor-not-allowed hover:bg-transparent hover:text-textSecondary" : ""}
-      `}
-    >
-      <span className="flex items-center gap-2 line-clamp-2" title={lesson.title}>
-        {isCompleted && <CheckCircle2 size={12} className="text-emerald-500 shrink-0" />}
-        <span>{lesson.title}</span>
-      </span>
-      {!isUnlocked && <Lock size={12} />}
-    </Link>
+    <div className="relative">
+      <Link 
+        href={isUnlocked ? `/lessons/${lesson.slug}` : "#"}
+        onClick={handleClick}
+        ref={isActive ? activeRef : null}
+        className={`
+          text-[13px] py-1.5 px-3 rounded-md transition-all flex items-center justify-between
+          ${isActive ? "bg-primary/10 text-primary font-medium" : "text-textSecondary hover:text-white hover:bg-white/5"}
+          ${!isUnlocked ? "opacity-50 cursor-not-allowed hover:bg-transparent hover:text-textSecondary" : ""}
+        `}
+      >
+        <span className="flex items-center gap-2 line-clamp-2" title={lesson.title}>
+          {isCompleted && <CheckCircle2 size={12} className="text-emerald-500 shrink-0" />}
+          <span>{lesson.title}</span>
+        </span>
+        {!isUnlocked && <Lock size={12} />}
+      </Link>
+      
+      <AnimatePresence>
+        {showTooltip && (
+          <motion.div 
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="absolute left-0 bottom-full mb-1 w-48 p-2 bg-surface border border-white/10 rounded-md shadow-xl z-50 text-[11px] text-textSecondary text-center pointer-events-none"
+          >
+            Complete the previous lesson to unlock this lesson.
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
@@ -41,22 +66,47 @@ function PhaseGroup({ phaseData, currentSlug, completedLessons }) {
   // Auto-expand if the phase contains the current lesson
   const isActivePhase = phaseData.lessons.some(l => l.slug === currentSlug);
   const [isOpen, setIsOpen] = useState(isActivePhase);
+  const [showTooltip, setShowTooltip] = useState(false);
   
-  // All lessons in a phase are unlocked if it's the first lesson, or if they are in the unlocked array
-  // We'll compute it dynamically for each lesson below.
+  const isPhaseUnlocked = phaseData.lessons[0]?.isUnlocked;
+
+  const handleToggle = () => {
+    if (!isPhaseUnlocked) {
+      setShowTooltip(true);
+      setTimeout(() => setShowTooltip(false), 2000);
+      return;
+    }
+    setIsOpen(!isOpen);
+  };
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 relative">
       <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between text-left py-2 px-2 rounded-lg hover:bg-white/5 transition-colors ${isActivePhase ? "text-white" : "text-textSecondary"}`}
+        onClick={handleToggle}
+        className={`w-full flex items-center justify-between text-left py-2 px-2 rounded-lg transition-colors 
+          ${isActivePhase ? "text-white" : "text-textSecondary"}
+          ${!isPhaseUnlocked ? "opacity-50 cursor-not-allowed" : "hover:bg-white/5"}
+        `}
       >
         <div className="flex items-center gap-2">
           <RenderIcon iconName={phaseData.emoji} size={16} />
           <span className="font-semibold text-sm">{phaseData.phase}</span>
         </div>
-        {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+        {!isPhaseUnlocked ? <Lock size={14} /> : (isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />)}
       </button>
+
+      <AnimatePresence>
+        {showTooltip && (
+          <motion.div 
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="absolute left-0 top-full mt-1 w-full p-2 bg-surface border border-white/10 rounded-md shadow-xl z-50 text-[11px] text-textSecondary text-center pointer-events-none"
+          >
+            Complete previous modules to unlock.
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence initial={false}>
         {isOpen && (

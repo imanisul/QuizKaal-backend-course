@@ -125,18 +125,34 @@ The Dockerfile is the recipe for your container. It is a simple text file that t
 
 ---
 
-## 5. CMD vs ENTRYPOINT
-
-```dockerfile
-# CMD — can be overridden by docker run arguments
-CMD ["node", "server.js"]
-# docker run myapp node test.js  ← replaces CMD
-
-# ENTRYPOINT — always runs, CMD becomes default arguments
-ENTRYPOINT ["node"]
-CMD ["server.js"]
-# docker run myapp test.js  ← runs: node test.js
-```
+<ComparisonMatrix 
+  title="CMD vs ENTRYPOINT"
+  leftTitle="CMD"
+  rightTitle="ENTRYPOINT"
+  rows={[
+    {
+      concept: "Purpose",
+      left: "Sets default command/args",
+      right: "Sets the executable to run",
+      leftIcon: "check",
+      rightIcon: "check"
+    },
+    {
+      concept: "Override behavior",
+      left: "Easily replaced by 'docker run myapp bash'",
+      right: "Difficult to override (requires --entrypoint flag)",
+      leftIcon: "check",
+      rightIcon: "cross"
+    },
+    {
+      concept: "When to use",
+      left: "For most web applications and services",
+      right: "When container is a wrapper for a specific CLI tool",
+      leftIcon: "check",
+      rightIcon: "check"
+    }
+  ]}
+/>
 
 **Rule of thumb:** Use `CMD` for most applications. Use `ENTRYPOINT` when your container is a wrapper around a specific executable.
 
@@ -179,8 +195,13 @@ CMD ["server.js"]
 ## 9. Interview Question
 
 <InterviewPrep
-  question="What is the difference between CMD and ENTRYPOINT in a Dockerfile?"
-  answer="CMD sets the default command and arguments for a container, but can be completely overridden when running the container with 'docker run <image> <command>'. ENTRYPOINT sets the executable that always runs, and any CMD or 'docker run' arguments are passed as arguments to the ENTRYPOINT. Use CMD for most applications; use ENTRYPOINT when the container wraps a specific tool (like a CLI utility)."
+  questions={[
+    {
+      level: "Intermediate",
+      question: "What is the difference between CMD and ENTRYPOINT in a Dockerfile?",
+      answer: "CMD sets the default command and arguments for a container, but can be completely overridden when running the container with 'docker run <image> <command>'. ENTRYPOINT sets the executable that always runs, and any CMD or 'docker run' arguments are passed as arguments to the ENTRYPOINT. Use CMD for most applications; use ENTRYPOINT when the container wraps a specific tool (like a CLI utility)."
+    }
+  ]}
 />
 
 ---
@@ -190,9 +211,14 @@ CMD ["server.js"]
 **Mini Project:**
 1. Create a file `app.js` with: `console.log("Hello from QuizKaal Container!")`
 2. Write a Dockerfile: use `node:22-alpine`, copy `app.js`, and run it
-3. Build: `docker build -t hello-quizkaal .`
-4. Run: `docker run hello-quizkaal`
-5. You should see the message print!
+
+<CodeOutput 
+  command="docker build -t hello-quizkaal . && docker run hello-quizkaal"
+  output="Step 1/3 : FROM node:22-alpine
+...
+Successfully built 1a2b3c4d
+Hello from QuizKaal Container!"
+/>
 
 ---
 

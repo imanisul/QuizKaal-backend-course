@@ -28,6 +28,8 @@ export default function CourseProgressTracker({
   lessonId,
   courseId,
   nextLessonPath = null,
+  nextLessonTitle = "Next Lesson",
+  nextLessonDescription = "",
   coursePath = "/roadmap",
   xpReward = 50,
   isLastLesson = false,
@@ -114,19 +116,29 @@ export default function CourseProgressTracker({
             key="next-lesson"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex flex-col items-center gap-4"
+            className="w-full max-w-xl mx-auto flex flex-col items-center gap-6"
           >
-            <div className="flex items-center gap-2 text-emerald-400 font-bold mb-2">
-              <CheckCircle2 size={20} /> Lesson Completed! +{xpReward} XP
+            <div className="flex items-center gap-2 text-emerald-400 font-bold mb-4 text-xl">
+              <CheckCircle2 size={24} /> Lesson Completed! +{xpReward} XP
             </div>
 
             {nextLessonPath ? (
-              <Link
-                href={nextLessonPath}
-                className="group px-8 py-4 bg-white text-black rounded-2xl font-black text-lg shadow-[0_0_30px_rgba(255,255,255,0.2)] hover:shadow-[0_0_50px_rgba(255,255,255,0.4)] transition-all hover:scale-105 flex items-center gap-3"
-              >
-                Next Lesson <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
+              <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-left flex flex-col items-start gap-4">
+                <div className="w-full border-b border-white/10 pb-4">
+                  <h3 className="text-sm font-bold text-textTertiary uppercase tracking-widest mb-2">Up Next</h3>
+                  <h2 className="text-2xl font-black text-white mb-2">{nextLessonTitle}</h2>
+                  {nextLessonDescription && (
+                    <p className="text-textSecondary leading-relaxed">{nextLessonDescription}</p>
+                  )}
+                </div>
+                
+                <Link
+                  href={nextLessonPath}
+                  className="w-full mt-2 group px-6 py-4 bg-white text-black rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 flex items-center justify-center gap-3"
+                >
+                  Open Next Lesson <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </div>
             ) : (
               <Link
                 href={coursePath}

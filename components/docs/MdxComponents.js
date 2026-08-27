@@ -43,6 +43,17 @@ import PortVisualizer from "@/components/interactive/PortVisualizer";
 import BrowserFlowVisualizer from "@/components/interactive/BrowserFlowVisualizer";
 import MegaNetworkVisualizer from "@/components/interactive/MegaNetworkVisualizer";
 
+import DevOpsLifecycle from "@/components/interactive/DevOpsLifecycle";
+import TcpHandshakeVisualizer from "@/components/interactive/TcpHandshakeVisualizer";
+import LinuxProcessVisualizer from "@/components/interactive/LinuxProcessVisualizer";
+import InteractiveFilesystem from "@/components/interactive/InteractiveFilesystem";
+import GitFlowVisualizer from "@/components/interactive/GitFlowVisualizer";
+import DockerArchitectureVisualizer from "@/components/interactive/DockerArchitectureVisualizer";
+import CicdPipelineVisualizer from "@/components/interactive/CicdPipelineVisualizer";
+import K8sClusterArchitecture from "@/components/interactive/K8sClusterArchitecture";
+import K8sPodCreationVisualizer from "@/components/interactive/K8sPodCreationVisualizer";
+import TroubleshootingFlow from "@/components/interactive/TroubleshootingFlow";
+
 // New Rich MDX Components
 import LearningObjectives from "@/components/mdx/LearningObjectives";
 import StepByStep from "@/components/mdx/StepByStep";
@@ -52,6 +63,11 @@ import WarningCard from "@/components/mdx/WarningCard";
 import InterviewPrep from "@/components/mdx/InterviewPrep";
 import LessonSummary from "@/components/mdx/LessonSummary";
 import PracticeExercise from "@/components/mdx/PracticeExercise";
+import ComparisonMatrix from "@/components/mdx/ComparisonMatrix";
+import StepProcess from "@/components/mdx/StepProcess";
+import CodeOutput from "@/components/mdx/CodeOutput";
+import BehindTheScenes from "@/components/mdx/BehindTheScenes";
+import IncidentSimulator from "@/components/mdx/IncidentSimulator";
 
 
 import PlaceholderVisualizer from "@/components/interactive/PlaceholderVisualizer";
@@ -78,6 +94,11 @@ export const MdxComponents = {
   LessonSummary,
   PracticeExercise,
   ConceptBlock,
+  ComparisonMatrix,
+  StepProcess,
+  CodeOutput,
+  BehindTheScenes,
+  IncidentSimulator,
   CourseNavigation: () => null,
   LessonHero: () => null,
   InternetVisualizer,
@@ -90,6 +111,16 @@ export const MdxComponents = {
   PortVisualizer,
   BrowserFlowVisualizer,
   MegaNetworkVisualizer,
+  DevOpsLifecycle,
+  TcpHandshakeVisualizer,
+  LinuxProcessVisualizer,
+  InteractiveFilesystem,
+  GitFlowVisualizer,
+  DockerArchitectureVisualizer,
+  CicdPipelineVisualizer,
+  K8sClusterArchitecture,
+  K8sPodCreationVisualizer,
+  TroubleshootingFlow,
   KnowledgeCard,
   CompletionButton,
   QuizWidget,

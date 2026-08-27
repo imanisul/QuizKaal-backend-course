@@ -19,29 +19,7 @@ Now that you understand *why* containers exist, let's understand *how* Docker ac
 
 When you type `docker run nginx`, this is what happens behind the scenes:
 
-```
-docker run nginx
-       ↓
-Docker CLI (your terminal command)
-       ↓
-Docker Daemon (dockerd - the background service)
-       ↓
-Check: Does the 'nginx' image exist locally?
-       ↓
-No → Pull from Docker Hub (registry)
-       ↓
-Create a container from the image
-       ↓
-Set up network namespace (isolated networking)
-       ↓
-Set up filesystem (copy-on-write layer)
-       ↓
-Apply cgroups (CPU/memory limits)
-       ↓
-Start the nginx process inside the container
-       ↓
-Running Container!
-```
+<DockerArchitectureVisualizer />
 
 Let's break down each component.
 
@@ -68,40 +46,11 @@ A storage and distribution system for Docker images. Docker Hub is the default p
 
 ## 4. Architecture Diagram
 
-```
-┌─────────────────────────────────────────────┐
-│                 Your Terminal                │
-│                                             │
-│  $ docker build -t myapp .                  │
-│  $ docker run -d -p 3000:3000 myapp         │
-│  $ docker push myapp:v1                     │
-│                                             │
-└────────────────────┬────────────────────────┘
-                     │ REST API
-                     ▼
-┌─────────────────────────────────────────────┐
-│              Docker Daemon                  │
-│                (dockerd)                    │
-│                                             │
-│  ┌─────────┐ ┌─────────┐ ┌──────────────┐  │
-│  │ Images  │ │Containers│ │  Networks    │  │
-│  └─────────┘ └─────────┘ └──────────────┘  │
-│  ┌─────────┐                                │
-│  │ Volumes │                                │
-│  └─────────┘                                │
-└────────────────────┬────────────────────────┘
-                     │
-                     ▼
-┌─────────────────────────────────────────────┐
-│           Container Runtime                  │
-│            (containerd)                      │
-│                                             │
-│  Uses Linux Kernel Features:                │
-│  • Namespaces (isolation)                   │
-│  • cgroups (resource limits)                │
-│  • Union filesystem (layers)                │
-└─────────────────────────────────────────────┘
-```
+<BehindTheScenes title="Deep Dive: Container Runtime (containerd)">
+The Docker Daemon doesn't actually run containers itself anymore. It delegates that job to **containerd** and **runc**. 
+
+When you run a container, Docker passes the image and configuration to `containerd`, which then calls `runc` to create the Linux namespaces and cgroups, finally starting the process. This modular architecture makes Docker much more stable and standardized.
+</BehindTheScenes>
 
 ---
 
@@ -201,8 +150,13 @@ Docker uses two Linux kernel features for isolation:
 ## 9. Interview Question
 
 <InterviewPrep
-  question="Explain the Docker architecture and how a container is created."
-  answer="Docker uses a client-server architecture. The Docker CLI (client) sends commands to the Docker Daemon (server) via a REST API. When you run 'docker run nginx', the Daemon checks if the nginx image exists locally. If not, it pulls it from a registry (like Docker Hub). It then creates a container by setting up Linux namespaces (for isolation), cgroups (for resource limits), and a union filesystem (for layered storage). The container shares the host OS kernel but has its own isolated process space, network stack, and filesystem."
+  questions={[
+    {
+      level: "Intermediate",
+      question: "Explain the Docker architecture and how a container is created.",
+      answer: "Docker uses a client-server architecture. The Docker CLI (client) sends commands to the Docker Daemon (server) via a REST API. When you run 'docker run nginx', the Daemon checks if the nginx image exists locally. If not, it pulls it from a registry (like Docker Hub). It then creates a container by setting up Linux namespaces (for isolation), cgroups (for resource limits), and a union filesystem (for layered storage). The container shares the host OS kernel but has its own isolated process space, network stack, and filesystem."
+    }
+  ]}
 />
 
 ---

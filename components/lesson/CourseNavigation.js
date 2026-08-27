@@ -21,6 +21,8 @@ export default function CourseNavigation({ prev, next, lessonSlug, courseId = "b
           lessonId={lessonSlug}
           courseId={courseId}
           nextLessonPath={next ? `/lessons/${next.slug}` : null}
+          nextLessonTitle={next ? next.title : null}
+          nextLessonDescription={next ? next.summary : null}
           coursePath={coursePath}
           isLastLesson={!next}
         />
